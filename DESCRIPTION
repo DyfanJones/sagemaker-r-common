@@ -1,0 +1,33 @@
+Package: R6sagemaker.common
+Type: Package
+Title: R6sagemaker lower level api calls.
+Version: 0.1.0
+Authors@R: c(person("Dyfan", "Jones", email="dyfan.r.jones@gmail.com", role= c("aut", "cre")),
+             person("Amazon.com, Inc.", role = "cph"))
+Description: `R6sagemaker` lower level api calls
+Imports:
+    lgr,
+    processx,
+    urltools,
+    paws,
+    R6,
+Suggests:
+    crayon,
+    testthat,
+    readr
+License: Apache License (>= 2.0)
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.1
+Collate: 
+    'error.R'
+    'r_utils.R'
+    'utils.R'
+    'image_uris.R'
+    'fw_utils.R'
+    'git_utils.R'
+    'logs.R'
+    'metadata_properties.R'
+    'set_credentials.R'
+    'vpc_utils.R'
+    'zzz.R'
