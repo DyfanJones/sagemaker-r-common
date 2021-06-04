@@ -2,9 +2,10 @@
 # https://github.com/aws/sagemaker-python-sdk/blob/master/src/sagemaker/_studio.py
 
 #' @include r_utils.R
+#' @include utils.R
 
-#' @import R6sagemaker.common
 #' @import lgr
+#' @importFrom jsonlite read_json
 
 STUDIO_PROJECT_CONFIG = ".sagemaker-code-config"
 
@@ -40,7 +41,7 @@ STUDIO_PROJECT_CONFIG = ".sagemaker-code-config"
 #   The project config path, if it exists. Otherwise None.
 .find_config <- function(working_dir = NULL){
   tryCatch({
-    wd = if(!is.null(working_dir)) work_dir else getwd()
+    wd = if(!is.null(working_dir)) working_dir else getwd()
     path = NULL
     while(is.null(path) && !grepl("/", wd)){
       candidate = file.path(wd, STUDIO_PROJECT_CONFIG)

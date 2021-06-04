@@ -6,6 +6,7 @@
 #' @include set_credentials.R
 #' @include vpc_utils.R
 #' @include studio.R
+#' @include pkg_variables.R
 
 #' @import paws
 #' @import R6
@@ -2908,23 +2909,22 @@ pipeline_container_def <- function(models, instance_type=NULL){
   return(c_defs)
 }
 
-# Create a production variant description suitable for use in a ``ProductionVariant`` list.
-# This is also part of a ``CreateEndpointConfig`` request.
-# Args:
-#   model_name (str): The name of the SageMaker model this production variant references.
-# instance_type (str): The EC2 instance type for this production variant. For example,
-# 'ml.c4.8xlarge'.
-# initial_instance_count (int): The initial instance count for this production variant
-# (default: 1).
-# variant_name (string): The ``VariantName`` of this production variant
-# (default: 'AllTraffic').
-# initial_weight (int): The relative ``InitialVariantWeight`` of this production variant
-# (default: 1).
-# accelerator_type (str): Type of Elastic Inference accelerator for this production variant.
-# For example, 'ml.eia1.medium'.
-# For more information: https://docs.aws.amazon.com/sagemaker/latest/dg/ei.html
-# Returns:
-#   dict[str, str]: An SageMaker ``ProductionVariant`` description
+#' @title Create a production variant description suitable for use in a ``ProductionVariant`` list.
+#' @description This is also part of a ``CreateEndpointConfig`` request.
+#' @param model_name (str): The name of the SageMaker model this production variant references.
+#' @param instance_type (str): The EC2 instance type for this production variant. For example,
+#'              ml.c4.8xlarge'.
+#' @param initial_instance_count (int): The initial instance count for this production variant
+#'              (default: 1).
+#' @param variant_name (string): The ``VariantName`` of this production variant
+#'              (default: 'AllTraffic').
+#' @param initial_weight (int): The relative ``InitialVariantWeight`` of this production variant
+#'              (default: 1).
+#' @param accelerator_type (str): Type of Elastic Inference accelerator for this production variant.
+#'              For example, 'ml.eia1.medium'.
+#'              For more information: \url{https://docs.aws.amazon.com/sagemaker/latest/dg/ei.html}
+#' @return dict[str, str]: An SageMaker ``ProductionVariant`` description
+#' @export
 production_variant <- function(model_name,
                                instance_type,
                                initial_instance_count=1,
