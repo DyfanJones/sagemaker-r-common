@@ -12,9 +12,6 @@ warn_if_parameter_server_with_multi_gpu(training_instance_type, distribution)
 \item{distribution}{(dict): A dictionary with information to enable distributed training.
 (Defaults to None if distributed training is not enabled.).}
 }
-\value{
-
-}
 \description{
 Warn the user that training will not fully leverage all the GPU
              cores if parameter server is enabled and a multi-GPU instance is selected.

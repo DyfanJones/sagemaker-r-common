@@ -7,9 +7,9 @@
 remove_arg(name, arg = NULL)
 }
 \arguments{
-\item{name:}{name of deprecated argument}
+\item{name}{(str): name of deprecated argument}
 
-\item{arg:}{the argument to check}
+\item{arg}{(str): the argument to check}
 }
 \description{
 Raises warning, if not None.

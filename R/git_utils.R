@@ -6,6 +6,8 @@
 #' @include error.R
 
 #' @importFrom processx run
+#' @importFrom utils URLencode
+#' @importFrom fs is_file
 
 #' @title Clone Sagemaker repositories by calling git
 #' @description Git clone repo containing the training code and serving code. This method
@@ -75,11 +77,11 @@ git_clone_repo <- function(git_config,
   if (!is.null(source_dir)){
     if (dir.exists(file.path(dest_dir, source_dir)))
       ValueError$new("Source directory does not exist in the repo.")
-    if (!file_test("-f",(file.path(dest_dir, source_dir, entry_point))))
+    if (!fs::is_file(file.path(dest_dir, source_dir, entry_point)))
       ValueError$new("Entry point does not exist in the repo.")
     updated_paths$source_dir = file.path(dest_dir, source_dir)
   } else {
-    if (!file_test("-f", (file.path(dest_dir, entry_point)))){
+    if (!fs::is_file(file.path(dest_dir, entry_point))){
       updated_paths$entry_point = file.path(dest_dir, entry_point)
     } else {ValueError$new("Entry point does not exist in the repo.")}
   }
@@ -226,7 +228,7 @@ git_clone_repo <- function(git_config,
 .run_clone_command <-function(repo_url, dest_dir){
   if (startsWith(repo_url, "https://")){
     processx::run("git", args = c("clone", repo_url, dest_dir), env = c("current", GIT_TERMINAL_PROMPT = "0"))
-  } else if (repo_url.startswith("git@")){
+  } else if (startsWith(repo_url, "git@")){
     sshnoprompt = tempfile()
     on.exit(unlink(sshnoprompt))
     writeLines("ssh -oBatchMode=yes $@", sshnoprompt)
@@ -259,7 +261,7 @@ git_clone_repo <- function(git_config,
 # Returns:
 #   str: the component needed for the git clone command.
 .insert_username_and_password_to_repo_url <- function(url, username, password){
-  password = URLencode(password, reserved = T)
+  password = utils::URLencode(password, reserved = T)
   index = nchar("https://")
   pt1 = substring(url, 1, index)
   pt4 = substring(url, index+1, nchar(url))

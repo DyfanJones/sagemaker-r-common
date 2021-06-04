@@ -11,14 +11,14 @@ V2_URL = "https://sagemaker.readthedocs.io/en/stable/v2.html"
 }
 
 #' @title Raise a warning for a no-op in sagemaker>=2
-#' @param phrase: the prefix phrase of the warning message.
+#' @param phrase (str): the prefix phrase of the warning message.
 #' @export
 removed_warning <- function(phrase){
   .warn(sprintf("%s is a no-op", phrase))
 }
 
 #' @title Raise a warning for a rename in sagemaker>=2
-#' @param phrase: the prefix phrase of the warning message.
+#' @param phrase (str): the prefix phrase of the warning message.
 #' @export
 renamed_warning <- function(phrase){
   .warn(sprintf("%s has been renamed", phrase))
@@ -26,10 +26,10 @@ renamed_warning <- function(phrase){
 
 #' @title Checks if the deprecated argument is in kwargs
 #' @description Raises warning, if present.
-#' @param old_name: name of deprecated argument
-#' @param new_name: name of the new argument
-#' @param value: value associated with new name, if supplied
-#' @param kwargs: keyword arguments dict
+#' @param old_name (str): name of deprecated argument
+#' @param new_name (str): name of the new argument
+#' @param value (str): value associated with new name, if supplied
+#' @param kwargs (list): keyword arguments dict
 #' @return value of the keyword argument, if present
 #' @export
 renamed_kwargs <- function(old_name,
@@ -45,8 +45,8 @@ renamed_kwargs <- function(old_name,
 
 #' @title Checks if the deprecated argument is populated.
 #' @description Raises warning, if not None.
-#' @param name: name of deprecated argument
-#' @param arg: the argument to check
+#' @param name (str): name of deprecated argument
+#' @param arg (str): the argument to check
 #' @export
 remove_arg <- function(name,
                        arg = NULL){
@@ -57,8 +57,8 @@ remove_arg <- function(name,
 
 #' @title Checks if the deprecated argument is in kwargs
 #' @description Raises warning, if present.
-#' @param name: name of deprecated argument
-#' @param kwargs: keyword arguments dict
+#' @param name (str): name of deprecated argument
+#' @param kwargs (str): keyword arguments dict
 #' @export
 removed_kwargs <- function(name,
                            kwargs){
@@ -67,8 +67,8 @@ removed_kwargs <- function(name,
 }
 
 #' @title Wrap a function with a deprecation warning.
-#' @param func: Function to wrap in a deprecation warning.
-#' @param name: The name that has been deprecated.
+#' @param func (str): Function to wrap in a deprecation warning.
+#' @param name (str): The name that has been deprecated.
 #' @return The modified function
 #' @export
 deprecated_function <- function(func, name){

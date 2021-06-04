@@ -7,9 +7,9 @@
 removed_kwargs(name, kwargs)
 }
 \arguments{
-\item{name:}{name of deprecated argument}
+\item{name}{(str): name of deprecated argument}
 
-\item{kwargs:}{keyword arguments dict}
+\item{kwargs}{(str): keyword arguments dict}
 }
 \description{
 Raises warning, if present.

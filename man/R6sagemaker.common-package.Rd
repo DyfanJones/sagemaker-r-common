@@ -6,7 +6,7 @@
 \alias{R6sagemaker.common-package}
 \title{r6sagemaker.common: this is just a placeholder}
 \description{
-`R6sagemaker` lower level api calls
+`R6sagemaker` lower level api calls.
 }
 \author{
 \strong{Maintainer}: Dyfan Jones \email{dyfan.r.jones@gmail.com}

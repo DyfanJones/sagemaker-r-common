@@ -7,6 +7,7 @@
 #' @include error.R
 
 #' @import lgr
+#' @importFrom fs is_file
 
 .TAR_SOURCE_FILENAME <- ".tar.gz"
 
@@ -51,7 +52,7 @@ SMDISTRIBUTED_SUPPORTED_STRATEGIES = c("dataparallel", "modelparallel")
 #' @export
 validate_source_dir <- function(script, directory){
   if (is.character(directory)){
-    if (!file_test("-f",file.path(directory, script))){
+    if (!fs::is_file(file.path(directory, script))){
       ValueError$new(sprintf('No file named "%s" was found in directory "%s".',script, directory))
     }
   }
@@ -299,7 +300,6 @@ model_code_key_prefix <- function(code_location_key_prefix, model_name, image){
 #' @param training_instance_type (str): A string representing the type of training instance selected.
 #' @param distribution (dict): A dictionary with information to enable distributed training.
 #'              (Defaults to None if distributed training is not enabled.).
-#' @return
 #' @export
 warn_if_parameter_server_with_multi_gpu <- function(training_instance_type, distribution){
   if (training_instance_type == "local" || is.null(distribution))

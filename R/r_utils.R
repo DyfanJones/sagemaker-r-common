@@ -122,12 +122,6 @@ islistempty = function(obj) {(is.null(obj) || length(obj) == 0)}
 #' @export
 split_str <- function(str, split = ",") unlist(strsplit(str, split = split))
 
-#' @title check if file location is a directory or not
-#' @param directory (str): directory path location
-#' @keywords internal
-#' @export
-is.dir <- function(directory) {(file.exists(directory) && !file_test("-f", directory))}
-
 #' @title Format of R6 classes
 #' @param self (R6Class):
 #' @keywords internal
@@ -155,10 +149,10 @@ Enum <- function(..., .class=NULL) {
 }
 
 #' @export
-print.Enum <- function(env){
-  l_env = as.list(env)
-  values = paste(names(env), shQuote(unname(l_env)), sep = ": ")
-  cat(sprintf("<Enum environment: %s>\n", data.table::address(env)))
+print.Enum <- function(x, ...){
+  l_env = as.list(x)
+  values = paste(names(x), shQuote(unname(l_env)), sep = ": ")
+  cat(sprintf("<Enum environment: %s>\n", data.table::address(x)))
   cat("Values:\n")
   cat(paste("  -", values, collapse = "\n"))
 }

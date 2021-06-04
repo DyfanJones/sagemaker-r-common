@@ -7,9 +7,9 @@
 deprecated_function(func, name)
 }
 \arguments{
-\item{func:}{Function to wrap in a deprecation warning.}
+\item{func}{(str): Function to wrap in a deprecation warning.}
 
-\item{name:}{The name that has been deprecated.}
+\item{name}{(str): The name that has been deprecated.}
 }
 \value{
 The modified function

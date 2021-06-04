@@ -34,9 +34,6 @@ model will be saved}
 interact with S3.}
 
 \item{kms_key}{(str): KMS key ARN for encrypting the repacked model file}
-
-\item{container}{(default: []). The library folders will be copied to
-SageMaker in the same folder where the entrypoint is copied.}
 }
 \value{
 str: path to the new packed model

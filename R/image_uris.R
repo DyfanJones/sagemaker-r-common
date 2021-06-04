@@ -7,6 +7,7 @@
 #' @import jsonlite
 #' @import R6
 #' @import lgr
+#' @importFrom methods getPackageName
 
 #' @title ImageUris Class
 #' @description Class to create and format sagemaker docker images stored in ECR
@@ -334,7 +335,7 @@ ImageUris = R6Class("ImageUris",
 
 # Loads the JSON config for the given framework.
 config_for_framework = function(framework){
-  fname= system.file("image_uri_config", sprintf("%s.json", framework), package= getPackageName())
+  fname= system.file("image_uri_config", sprintf("%s.json", framework), package=methods::getPackageName())
 
   # check if framework json file exists first
   if(!file.exists(fname))

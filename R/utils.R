@@ -5,7 +5,8 @@
 #' @include error.R
 
 #' @importFrom stats runif
-#' @importFrom utils tar
+#' @importFrom utils tar untar
+#' @importFrom fs is_dir
 
 ECR_URI_PATTERN <- "^(\\d+)(\\.)dkr(\\.)ecr(\\.)(.+)(\\.)(.*)(/)(.*:.*)$"
 MAX_BUCKET_PATHS_COUNT = 5
@@ -16,7 +17,6 @@ DEFAULT_SLEEP_TIME_SECONDS = 10
 
 #' @title Create a training job name based on the image name and a timestamp.
 #' @param image (str): Image name.
-#' @param max_length (int): Maximum length for the resulting string (default: 63).
 #' @return str: Training job name using the algorithm from the image name and a
 #'        timestamp.
 #' @export
@@ -132,8 +132,8 @@ get_short_version = function(framework_version){
 }
 
 #' @title Returns true if training job's secondary status message has changed.
-#' @param current_job_description: Current job description, returned from DescribeTrainingJob call.
-#' @param prev_job_description: Previous job description, returned from DescribeTrainingJob call.
+#' @param current_job_description (str): Current job description, returned from DescribeTrainingJob call.
+#' @param prev_job_description (str): Previous job description, returned from DescribeTrainingJob call.
 #' @return boolean: Whether the secondary status message of a training job changed
 #'              or not.
 #' @export
@@ -224,7 +224,7 @@ download_folder = function(bucket_name,
   # Do this first, in case the object has broader permissions than the bucket.
   if(!grepl("/$", prefix)){
     tryCatch({
-      obj = s3$get_object(Bucket = bucket, Key = prefix)
+      obj = s3$get_object(Bucket = bucket_name, Key = prefix)
       write_bin(obj$Body, file_destination)
       return(invisible(NULL))
     },
@@ -259,7 +259,7 @@ download_folder = function(bucket_name,
   # a "keys" list.
   while(!identical(next_token, character(0))){
     response = s3$list_objects_v2(
-      Bucket = bucket,
+      Bucket = bucket_name,
       Prefix = prefix,
       ContinuationToken = next_token)
     # For each object, save its key or directory.
@@ -272,7 +272,7 @@ download_folder = function(bucket_name,
     s3_relative_path = trimws(substr(obj_sum,nchar(prefix)+1,nchar(obj_sum)), "left", "/")
     file_path = file.path(target, s3_relative_path)
     dir.create(dirname(file_path), recursive = T, showWarnings = F)
-    obj = s3$get_object(Bucket = bucket, Key = obj_sum)
+    obj = s3$get_object(Bucket = bucket_name, Key = obj_sum)
     write_bin(obj$Body, file_path)
   }
 }
@@ -305,8 +305,6 @@ create_tar_file = function(source_files, target=NULL){
 #'              into the model
 #' @param dependencies (list[str]): A list of paths to directories (absolute or
 #'              relative) with any additional libraries that will be exported to the
-#' @param container (default: []). The library folders will be copied to
-#'              SageMaker in the same folder where the entrypoint is copied.
 #' @param model_uri (str): S3 or file system location of the original model tar
 #' @param repacked_model_uri (str): path or file system location where the new
 #'              model will be saved
@@ -357,7 +355,7 @@ repack_model <- function(inference_script,
     s3_parts = split_s3_uri(source_directory)
     obj = sagemaker_session$s3$get_object(Bucket = s3_parts$bucket, Key = s3_parts$key)
     write_bin(obj$Body, local_code_path)
-    untar(local_code_path, exdir = code_dir)
+    utils::untar(local_code_path, exdir = code_dir)
     on.exit(unlink(local_code_path, recursive = T))
   } else if (!is.null(source_directory)) {
     if (file.exists(code_dir)) {
@@ -373,10 +371,10 @@ repack_model <- function(inference_script,
 
   for (dependency in dependencies) {
     lib_dir = file.path(code_dir, "lib")
-    if (is.dir(dependency)) {
+    if (fs::is_dir(dependency)) {
       file.copy(dependency, file.path(lib_dir, basename(dependency)), recursive = T)
     } else {
-      if (!is.dir(lib_dir)) {
+      if (!fs::is_dir(lib_dir)) {
         dir.create(lib_dir, recursive = TRUE)}
       file.copy(dependency, lib_dir, recursive = T)}
   }
@@ -394,7 +392,7 @@ repack_model <- function(inference_script,
   } else{
     local_model_path = gsub("file://", "", model_uri)
   }
-  untar(local_model_path, exdir = tmp_model_dir)
+  utils::untar(local_model_path, exdir = tmp_model_dir)
   return(tmp_model_dir)
 }
 

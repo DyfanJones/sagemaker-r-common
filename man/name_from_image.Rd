@@ -8,8 +8,6 @@ name_from_image(image)
 }
 \arguments{
 \item{image}{(str): Image name.}
-
-\item{max_length}{(int): Maximum length for the resulting string (default: 63).}
 }
 \value{
 str: Training job name using the algorithm from the image name and a

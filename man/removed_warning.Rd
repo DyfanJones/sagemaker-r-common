@@ -7,7 +7,7 @@
 removed_warning(phrase)
 }
 \arguments{
-\item{phrase:}{the prefix phrase of the warning message.}
+\item{phrase}{(str): the prefix phrase of the warning message.}
 }
 \description{
 Raise a warning for a no-op in sagemaker>=2

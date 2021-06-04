@@ -10,9 +10,9 @@ secondary_training_status_changed(
 )
 }
 \arguments{
-\item{current_job_description:}{Current job description, returned from DescribeTrainingJob call.}
+\item{current_job_description}{(str): Current job description, returned from DescribeTrainingJob call.}
 
-\item{prev_job_description:}{Previous job description, returned from DescribeTrainingJob call.}
+\item{prev_job_description}{(str): Previous job description, returned from DescribeTrainingJob call.}
 }
 \value{
 boolean: Whether the secondary status message of a training job changed

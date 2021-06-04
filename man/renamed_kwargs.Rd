@@ -7,13 +7,13 @@
 renamed_kwargs(old_name, new_name, value, kwargs)
 }
 \arguments{
-\item{old_name:}{name of deprecated argument}
+\item{old_name}{(str): name of deprecated argument}
 
-\item{new_name:}{name of the new argument}
+\item{new_name}{(str): name of the new argument}
 
-\item{value:}{value associated with new name, if supplied}
+\item{value}{(str): value associated with new name, if supplied}
 
-\item{kwargs:}{keyword arguments dict}
+\item{kwargs}{(list): keyword arguments dict}
 }
 \value{
 value of the keyword argument, if present
