@@ -12,9 +12,6 @@
 #' @importFrom methods is as
 "_PACKAGE"
 
-
-
-
 #' @include logs.R
 
 .onLoad <- function(libname, pkgname) {
