@@ -4,10 +4,7 @@
 \alias{PawsCredentials}
 \title{Sagemaker Session Class}
 \description{
-Sets up AWS credentials to pass through to other sagemaker classes#'
-}
-\seealso{
-[paws_cred]
+Sets up AWS credentials to pass through to other Sagemaker classes
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
