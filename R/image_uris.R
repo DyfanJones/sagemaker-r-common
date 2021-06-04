@@ -59,11 +59,11 @@ ImageUris = R6Class("ImageUris",
         version_config = version_config[[full_base_framework_version]]
       }
 
-      py_version = private$.validate_py_version_and_set_if_needed(py_version, version_config)
+      py_version = private$.validate_py_version_and_set_if_needed(py_version, version_config, framework)
       version_config = if(is.null(py_version)) version_config else {version_config[[py_version]] %||% version_config}
 
       registry = private$.registry_from_region(region, version_config$registries)
-      hostname = regional_endpoint("ecr", region)
+      hostname = regional_hostname("ecr", region)
 
       repo = version_config[["repository"]]
 
@@ -279,7 +279,8 @@ ImageUris = R6Class("ImageUris",
 
     # # Checks if the Python version is one of the supported versions.
     .validate_py_version_and_set_if_needed = function(py_version,
-                                                      version_config){
+                                                      version_config,
+                                                      framework){
       if ("repository" %in% names(version_config)){
         available_versions = unlist(version_config$py_versions)
       } else {
@@ -333,7 +334,7 @@ ImageUris = R6Class("ImageUris",
 
 # Loads the JSON config for the given framework.
 config_for_framework = function(framework){
-  fname= system.file("image_uri_config", sprintf("%s.json", framework), package= "R6sagemaker")
+  fname= system.file("image_uri_config", sprintf("%s.json", framework), package= getPackageName())
 
   # check if framework json file exists first
   if(!file.exists(fname))
