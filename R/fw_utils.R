@@ -300,6 +300,7 @@ model_code_key_prefix <- function(code_location_key_prefix, model_name, image){
 #' @param distribution (dict): A dictionary with information to enable distributed training.
 #'              (Defaults to None if distributed training is not enabled.).
 #' @return
+#' @export
 warn_if_parameter_server_with_multi_gpu <- function(training_instance_type, distribution){
   if (training_instance_type == "local" || is.null(distribution))
     return(invisible(NULL))
@@ -379,30 +380,17 @@ validate_smdistributed <- function(instance_type,
   }
 }
 
-# Check if request is using unsupported arguments.
-# Validate if user specifies a supported instance type, framework version, and python
-# version.
-# Args:
-#   instance_type (str): A string representing the type of training instance selected. Ex: `ml.p3.16xlarge`
-# framework_name (str): A string representing the name of framework selected. Ex: `tensorflow`
-# framework_version (str): A string representing the framework version selected. Ex: `2.3.1`
-# py_version (str): A string representing the python version selected. Ex: `py3`
-# distribution (dict): A dictionary with information to enable distributed training.
-# (Defaults to None if distributed training is not enabled.) Ex:
-#   .. code:: python
-# {
-#   "smdistributed": {
-#     "dataparallel": {
-#       "enabled": True
-#     }
-#   }
-# }
-# image_uri (str): A string representing a Docker image URI.
-# Raises:
-#   ValueError: if
-# (`instance_type` is not in SM_DATAPARALLEL_SUPPORTED_INSTANCE_TYPES or
-#  `py_version` is not python3 or
-#  `framework_version` is not in SM_DATAPARALLEL_SUPPORTED_FRAMEWORK_VERSION
+#' @title Check if request is using unsupported arguments.
+#' @description Validate if user specifies a supported instance type, framework version, and python
+#'              version.
+#' @param instance_type (str): A string representing the type of training instance selected. Ex: `ml.p3.16xlarge`
+#' @param framework_name (str): A string representing the name of framework selected. Ex: `tensorflow`
+#' @param framework_version (str): A string representing the framework version selected. Ex: `2.3.1`
+#' @param py_version (str): A string representing the python version selected. Ex: `py3`
+#' @param distribution (dict): A dictionary with information to enable distributed training.
+#'              (Defaults to None if distributed training is not enabled.)
+#' @keywords internal
+#' @export
 .validate_smdataparallel_args <- function(instance_type,
                                           framework_name,
                                           framework_version,
@@ -446,20 +434,20 @@ validate_smdistributed <- function(instance_type,
     ValueError$new(err_msg)
 }
 
-# Returns boolean indicating whether the region supports Amazon SageMaker Debugger.
-# Args:
-#   region_name (str): Name of the region to check against.
-# Returns:
-#   bool: Whether or not the region supports Amazon SageMaker Debugger.
+#' @title Returns boolean indicating whether the region supports Amazon SageMaker Debugger.
+#' @param region_name (str): Name of the region to check against.
+#' @return bool: Whether or not the region supports Amazon SageMaker Debugger.
+#' @keywords internal
+#' @export
 .region_supports_debugger <- function(region_name){
   return (!(tolower(region_name) %in% DEBUGGER_UNSUPPORTED_REGIONS))
 }
 
-# Returns bool indicating whether region supports Amazon SageMaker Debugger profiling feature.
-# Args:
-#   region_name (str): Name of the region to check against.
-# Returns:
-#   bool: Whether or not the region supports Amazon SageMaker Debugger profiling feature.
+#' @title Returns bool indicating whether region supports Amazon SageMaker Debugger profiling feature.
+#' @param region_name (str): Name of the region to check against.
+#' @return bool: Whether or not the region supports Amazon SageMaker Debugger profiling feature.
+#' @keywords internal
+#' @export
 .region_supports_profiler <- function(region_name){
   return(!(tolower(region_name) %in% PROFILER_UNSUPPORTED_REGIONS))
 }
@@ -479,6 +467,10 @@ validate_version_or_image_args <- function(framework_version, py_version, image_
 }
 
 
+#' @title Raise warning for deprecated python versions
+#' @param framework (str): model framework
+#' @param latest_supported_version (str): latest supported version
+#' @export
 python_deprecation_warning <- function(framework, latest_supported_version){
   return(sprintf(PYTHON_2_DEPRECATION_WARNING,
                  latest_supported_version, framework, framework, framework))

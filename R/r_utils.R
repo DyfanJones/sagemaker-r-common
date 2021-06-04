@@ -140,6 +140,11 @@ format_class <- function(self){
     data.table::address(self))
 }
 
+#' @title Create Enum "like" environments
+#' @param ... (obj): parameters to be create into an Enum like environment
+#' @param .class (str):
+#' @keywords internal
+#' @export
 Enum <- function(..., .class=NULL) {
   kwargs = list(...)
   env = list2env(kwargs, parent = emptyenv())

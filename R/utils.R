@@ -32,6 +32,13 @@ name_from_image <- function(image){
 #' @param max_length (int): Maximum length for the resulting string (default: 63).
 #' @param short (bool): Whether or not to use a truncated timestamp (default: False).
 #' @return str: Input parameter with appended timestamp.
+#' @export
+name_from_base <- function(base, max_length = 63, short = FALSE){
+  timestamp = if(short) sagemaker_short_timestamp() else sagemaker_timestamp()
+  trimmed_base = substring(base, 1,(max_length - length(timestamp) - 1))
+  return(sprintf("%s-%s", trimmed_base, timestamp))
+}
+
 name_from_base <- function(base, max_length = 63, short = FALSE){
   timestamp = if(short) sagemaker_short_timestamp() else sagemaker_timestamp()
   trimmed_base = substring(base, 1,(max_length - length(timestamp) - 1))
@@ -78,7 +85,7 @@ base_from_name <- function(name){
 sagemaker_timestamp <- function(){
   moment = Sys.time()
   moment_ms = split_str(format(as.numeric(moment,3), nsmall = 3), "\\.")[2]
-  strftime(paste0(Sys.time(),"%Y-%m-%d-%H-%M-%S-",moment_ms),tz="GMT")
+  strftime(moment,paste0("%Y-%m-%d-%H-%M-%S-",moment_ms),tz="GMT")
 }
 
 #' @title Return a timestamp that is relatively short in length

@@ -4,6 +4,7 @@
 #' @description Create Sagemaker error format.
 #' @keywords internal
 #' @name SagemakerError
+#' @export
 SagemakerError = R6Class("SagemakerError",
   public = list(
    #' @description Initialize SagemakerError class
@@ -35,16 +36,20 @@ SagemakerError = R6Class("SagemakerError",
 )
 
 #' @rdname SagemakerError
+#' @export
 NotImplementedError = R6Class("NotImplementedError", inherit = SagemakerError)
 
 #' @rdname SagemakerError
+#' @export
 ValueError = R6Class("ValueError", inherit = SagemakerError)
 
 #' @rdname SagemakerError
+#' @export
 TypeError = R6Class("TypeError", inherit = SagemakerError)
 
 # Raised when resource status is not expected and thus not allowed for further execution
 #' @rdname SagemakerError
+#' @export
 UnexpectedStatusError = R6Class("UnexpectedStatusError",
   inherit = ValueError,
   public = list(
@@ -64,7 +69,9 @@ UnexpectedStatusError = R6Class("UnexpectedStatusError",
 )
 
 #' @rdname SagemakerError
+#' @export
 RuntimeError = R6Class("RuntimeError", inherit = SagemakerError)
 
 #' @rdname SagemakerError
+#' @export
 AttributeError = R6Class("AttributeError", inherit = SagemakerError)

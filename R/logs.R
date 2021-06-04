@@ -3,7 +3,12 @@
 
 #' @import lgr
 
-# set format for SageMaker
+#' @title Set format for SageMaker
+#' @param log_fmt (str): a character scalar containing format tokens
+#' @param timestamp_fmt (str): a character scalar.
+#' @param log_cols (list): a named list of functions (like the ones provided by the package crayon)
+#' @keywords internal
+#' @export
 sagemaker_log_layout <- function(
   log_fmt="%L[%t] %m",
   timestamp_fmt = "%Y-%m-%d %H:%M:%OS",

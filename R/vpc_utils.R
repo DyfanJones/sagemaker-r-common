@@ -4,11 +4,11 @@
 #' @include r_utils.R
 #' @include error.R
 
-#' @title Vpc Configuration
+#' @title Vpc Configuration environment list
 #' @description Contains default vpc configurations.
 #' @keywords internal
 #' @export
-vpc_config = Enum(
+vpc_configuration_env = Enum(
   SUBNETS_KEY = "Subnets",
   SECURITY_GROUP_IDS_KEY = "SecurityGroupIds",
   VPC_CONFIG_KEY = "VpcConfig",
@@ -67,31 +67,31 @@ vpc_sanitize <- function(vpc_config = NULL){
   if (is.null(vpc_config))
     return(vpc_config)
   if (!inherits(vpc_config, "list"))
-    ValueError$new("vpc_config is not a `list()`: ", vpc_config, call)
+    ValueError$new("vpc_config is not a `list()`: ", vpc_config)
 
   if (length(vpc_config) == 0)
     ValueError$new("vpc_config is empty")
 
-  subnets = vpc_config[[vpc_config$SUBNETS_KEY]]
+  subnets = vpc_config[[vpc_configuration_env$SUBNETS_KEY]]
 
   if (is.null(subnets))
-    ValueError$new(sprintf("vpc_config is missing key: %s", vpc_config$SUBNETS_KEY))
+    ValueError$new(sprintf("vpc_config is missing key: %s", vpc_configuration_env$SUBNETS_KEY))
   if (!inherits(subnets, "list"))
-    ValueError$new(sprintf("vpc_config value for %s is not a list: %s", vpc_config$SUBNETS_KEY, subnets))
+    ValueError$new(sprintf("vpc_config value for %s is not a list: %s", vpc_configuration_env$SUBNETS_KEY, subnets))
 
   if (length(subnets) == 0)
-    ValueError$new(sprintf("vpc_config value for %s is empty", vpc_config$SUBNETS_KEY))
+    ValueError$new(sprintf("vpc_config value for %s is empty", vpc_configuration_env$SUBNETS_KEY))
 
-  security_group_ids = vpc_config[[vpc_config$SECURITY_GROUP_IDS_KEY]]
+  security_group_ids = vpc_config[[vpc_configuration_env$SECURITY_GROUP_IDS_KEY]]
   if (length(security_group_ids) == 0)
-    ValueError$new(sprintf("vpc_config is missing key: %s", vpc_config$SECURITY_GROUP_IDS_KEY))
+    ValueError$new(sprintf("vpc_config is missing key: %s", vpc_configuration_env$SECURITY_GROUP_IDS_KEY))
 
   if (!inherits(subnets, "list"))
     ValueError$new(sprintf("vpc_config value for %s is not a list: %s",
-      vpc_config$SECURITY_GROUP_IDS_KEY, security_group_ids))
+      vpc_configuration_env$SECURITY_GROUP_IDS_KEY, security_group_ids))
 
   if (length(security_group_ids) == 0)
-    ValueError$new(sprintf("vpc_config value for %s is empty", vpc_config$SECURITY_GROUP_IDS_KEY))
+    ValueError$new(sprintf("vpc_config value for %s is empty", vpc_configuration_env$SECURITY_GROUP_IDS_KEY))
 
   return(list(Subnets = subnets, SecurityGroupIds = security_group_ids))
 }
