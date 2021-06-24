@@ -123,13 +123,12 @@ islistempty = function(obj) {(is.null(obj) || length(obj) == 0)}
 split_str <- function(str, split = ",") unlist(strsplit(str, split = split))
 
 #' @title Format of R6 classes
-#' @param self (R6Class):
+#' @param self ([R6::R6Class])
 #' @keywords internal
 #' @export
 format_class <- function(self){
   sprintf(
-    "<%s::%s at %s>\n",
-    getPackageName(),
+    "<%s at %s>\n",
     class(self)[1],
     data.table::address(self))
 }
@@ -157,3 +156,20 @@ print.Enum <- function(x, ...){
   cat(paste("  -", values, collapse = "\n"))
 }
 
+#' @title Safe method to invoke paws functions
+#' @keywords internal
+#' @examples
+#' \dontrun{
+#'   library(R6sagemaker.common)
+#'
+#'   s3 <- paws::s3()
+#'
+#'   params <- list(
+#'      Bucket = "made-up"
+#'   )
+#'   .invoke(s3$list_objects_v2, params)
+#' }
+#' @export
+.invoke <- function(.fn, args){
+  do.call(".fn", args)
+}
