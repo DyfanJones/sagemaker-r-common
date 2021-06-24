@@ -2003,11 +2003,11 @@ Framework = R6Class("Framework",
       }
 
       # Modify hyperparameters in-place to point to the right code directory and script URIs
-      self$.hyperparameters[[DIR_PARAM_NAME]] = code_dir
-      self$.hyperparameters[[SCRIPT_PARAM_NAME]] = script
-      self$.hyperparameters[[CONTAINER_LOG_LEVEL_PARAM_NAME]] = self$container_log_level
-      self$.hyperparameters[[JOB_NAME_PARAM_NAME]] = self$.current_job_name
-      self$.hyperparameters[[SAGEMAKER_REGION_PARAM_NAME]] = self$sagemaker_session$paws_region_name
+      self$.hyperparameters[[model_parameters$DIR_PARAM_NAME]] = code_dir
+      self$.hyperparameters[[model_parameters$SCRIPT_PARAM_NAME]] = script
+      self$.hyperparameters[[model_parameters$CONTAINER_LOG_LEVEL_PARAM_NAME]] = self$container_log_level
+      self$.hyperparameters[[model_parameters$JOB_NAME_PARAM_NAME]] = self$.current_job_name
+      self$.hyperparameters[[model_parameters$SAGEMAKER_REGION_PARAM_NAME]] = self$sagemaker_session$paws_region_name
 
       private$.validate_and_set_debugger_configs()
     },
@@ -2300,10 +2300,10 @@ Framework = R6Class("Framework",
       init_params = super$.prepare_init_params_from_job_description(
         job_details, model_channel_name)
 
-      init_params$entry_point = init_params$hyperparameters[[SCRIPT_PARAM_NAME]]
+      init_params$entry_point = init_params$hyperparameters[[model_parameters$SCRIPT_PARAM_NAME]]
 
-      init_params$source_dir = init_params$hyperparameters[[DIR_PARAM_NAME]]
-      init_params$container_log_level = init_params$hyperparameters[[CONTAINER_LOG_LEVEL_PARAM_NAME]]
+      init_params$source_dir = init_params$hyperparameters[[model_parameters$DIR_PARAM_NAME]]
+      init_params$container_log_level = init_params$hyperparameters[[model_parameters$CONTAINER_LOG_LEVEL_PARAM_NAME]]
 
       hyperparameters = list()
       for (i in seq_along(init_params$hyperparameters)) {
