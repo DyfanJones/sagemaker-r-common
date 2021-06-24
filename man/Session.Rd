@@ -85,6 +85,10 @@ bucket based on a naming convention which includes the current AWS account ID.
 \item \href{#method-logs_for_job}{\code{Session$logs_for_job()}}
 \item \href{#method-logs_for_processing_job}{\code{Session$logs_for_processing_job()}}
 \item \href{#method-logs_for_transform_job}{\code{Session$logs_for_transform_job()}}
+\item \href{#method-start_query_execution}{\code{Session$start_query_execution()}}
+\item \href{#method-get_query_execution}{\code{Session$get_query_execution()}}
+\item \href{#method-wait_for_athena_query}{\code{Session$wait_for_athena_query()}}
+\item \href{#method-download_athena_query_result}{\code{Session$download_athena_query_result()}}
 \item \href{#method-format}{\code{Session$format()}}
 \item \href{#method-clone}{\code{Session$clone()}}
 }
@@ -253,7 +257,7 @@ str: The body of the s3 file as a string.
 \subsection{Method \code{list_s3_files()}}{
 Lists the S3 files given an S3 bucket and key.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Session$list_s3_files(bucket, key_prefix)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Session$list_s3_files(bucket, key_prefix = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -2360,6 +2364,103 @@ Display the logs for a given transform job, optionally tailing them until the
 
 \item{\code{poll}}{(int): The interval in seconds between polling for new log entries and job
 completion (Default: 10).}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-start_query_execution"></a>}}
+\if{latex}{\out{\hypertarget{method-start_query_execution}{}}}
+\subsection{Method \code{start_query_execution()}}{
+Start Athena query execution.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Session$start_query_execution(
+  catalog,
+  database,
+  query_string,
+  output_location,
+  kms_key = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{catalog}}{(str): name of the data catalog.}
+
+\item{\code{database}}{(str): name of the data catalog database.}
+
+\item{\code{query_string}}{(str): SQL expression.}
+
+\item{\code{output_location}}{(str): S3 location of the output file.}
+
+\item{\code{kms_key}}{(str): KMS key id will be used to encrypt the result if given.}
+
+\item{\code{Response}}{dict from the service.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_query_execution"></a>}}
+\if{latex}{\out{\hypertarget{method-get_query_execution}{}}}
+\subsection{Method \code{get_query_execution()}}{
+Get execution status of the Athena query.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Session$get_query_execution(query_execution_id)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{query_execution_id}}{(str): execution ID of the Athena query.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-wait_for_athena_query"></a>}}
+\if{latex}{\out{\hypertarget{method-wait_for_athena_query}{}}}
+\subsection{Method \code{wait_for_athena_query()}}{
+Wait for Athena query to finish.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Session$wait_for_athena_query(query_execution_id, poll = 5)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{query_execution_id}}{(str): execution ID of the Athena query.}
+
+\item{\code{poll}}{(int): time interval to poll get_query_execution API.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-download_athena_query_result"></a>}}
+\if{latex}{\out{\hypertarget{method-download_athena_query_result}{}}}
+\subsection{Method \code{download_athena_query_result()}}{
+Download query result file from S3.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Session$download_athena_query_result(
+  bucket,
+  prefix,
+  query_execution_id,
+  filename
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{bucket}}{(str): name of the S3 bucket where the result file is stored.}
+
+\item{\code{prefix}}{(str): S3 prefix of the result file.}
+
+\item{\code{query_execution_id}}{(str): execution ID of the Athena query.}
+
+\item{\code{filename}}{(str): name of the downloaded file.}
 }
 \if{html}{\out{</div>}}
 }

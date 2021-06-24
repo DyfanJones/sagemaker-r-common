@@ -3,51 +3,14 @@
 \docType{data}
 \name{model_parameters}
 \alias{model_parameters}
-\alias{SCRIPT_PARAM_NAME}
-\alias{DIR_PARAM_NAME}
-\alias{CLOUDWATCH_METRICS_PARAM_NAME}
-\alias{CONTAINER_LOG_LEVEL_PARAM_NAME}
-\alias{JOB_NAME_PARAM_NAME}
-\alias{MODEL_SERVER_WORKERS_PARAM_NAME}
-\alias{SAGEMAKER_REGION_PARAM_NAME}
-\alias{SAGEMAKER_OUTPUT_LOCATION}
 \title{An array of parameters for modelling methods}
 \format{
-An object of class \code{character} of length 1.
-
-An object of class \code{character} of length 1.
-
-An object of class \code{character} of length 1.
-
-An object of class \code{character} of length 1.
-
-An object of class \code{character} of length 1.
-
-An object of class \code{character} of length 1.
-
-An object of class \code{character} of length 1.
-
-An object of class \code{character} of length 1.
+An object of class \code{Enum} (inherits from \code{environment}) of length 8.
 }
 \usage{
-SCRIPT_PARAM_NAME
-
-DIR_PARAM_NAME
-
-CLOUDWATCH_METRICS_PARAM_NAME
-
-CONTAINER_LOG_LEVEL_PARAM_NAME
-
-JOB_NAME_PARAM_NAME
-
-MODEL_SERVER_WORKERS_PARAM_NAME
-
-SAGEMAKER_REGION_PARAM_NAME
-
-SAGEMAKER_OUTPUT_LOCATION
+model_parameters
 }
 \description{
 An array of parameters for modelling methods
 }
-\keyword{datasets}
 \keyword{internal}

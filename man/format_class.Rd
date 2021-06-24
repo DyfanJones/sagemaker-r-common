@@ -7,7 +7,7 @@
 format_class(self)
 }
 \arguments{
-\item{self}{(R6Class):}
+\item{self}{([R6::R6Class])}
 }
 \description{
 Format of R6 classes
