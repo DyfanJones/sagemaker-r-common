@@ -801,39 +801,17 @@ Model = R6Class("Model",
 #' @title An array of parameters for modelling methods
 #' @name model_parameters
 #' @keywords internal
-NULL
-
-#' @rdname model_parameters
 #' @export
-SCRIPT_PARAM_NAME <- "sagemaker_program"
-
-#' @rdname model_parameters
-#' @export
-DIR_PARAM_NAME <- "sagemaker_submit_directory"
-
-#' @rdname model_parameters
-#' @export
-CLOUDWATCH_METRICS_PARAM_NAME <- "sagemaker_enable_cloudwatch_metrics"
-
-#' @rdname model_parameters
-#' @export
-CONTAINER_LOG_LEVEL_PARAM_NAME <- "sagemaker_container_log_level"
-
-#' @rdname model_parameters
-#' @export
-JOB_NAME_PARAM_NAME <- "sagemaker_job_name"
-
-#' @rdname model_parameters
-#' @export
-MODEL_SERVER_WORKERS_PARAM_NAME <- "sagemaker_model_server_workers"
-
-#' @rdname model_parameters
-#' @export
-SAGEMAKER_REGION_PARAM_NAME <- "sagemaker_region"
-
-#' @rdname model_parameters
-#' @export
-SAGEMAKER_OUTPUT_LOCATION <- "sagemaker_s3_output"
+model_parameters <- Enum(
+  SCRIPT_PARAM_NAME = "sagemaker_program",
+  DIR_PARAM_NAME = "sagemaker_submit_directory",
+  CLOUDWATCH_METRICS_PARAM_NAME = "sagemaker_enable_cloudwatch_metrics",
+  CONTAINER_LOG_LEVEL_PARAM_NAME = "sagemaker_container_log_level",
+  JOB_NAME_PARAM_NAME = "sagemaker_job_name",
+  MODEL_SERVER_WORKERS_PARAM_NAME = "sagemaker_model_server_workers",
+  SAGEMAKER_REGION_PARAM_NAME = "sagemaker_region",
+  SAGEMAKER_OUTPUT_LOCATION = "sagemaker_s3_output"
+)
 
 #' @title A Model for working with an SageMaker ``Framework``.
 #' @description This class hosts user-defined code in S3 and sets code location and
@@ -1087,10 +1065,10 @@ FrameworkModel = R6Class("FrameworkModel",
                    self$container_log_level,
                    self$sagemaker_session$paws_region_name)
 
-     names(output) = c(toupper(SCRIPT_PARAM_NAME),
-                       toupper(DIR_PARAM_NAME),
-                       toupper(CONTAINER_LOG_LEVEL_PARAM_NAME),
-                       toupper(SAGEMAKER_REGION_PARAM_NAME))
+     names(output) = c(toupper(model_parameters$SCRIPT_PARAM_NAME),
+                       toupper(model_parameters$DIR_PARAM_NAME),
+                       toupper(model_parameters$CONTAINER_LOG_LEVEL_PARAM_NAME),
+                       toupper(model_parameters$SAGEMAKER_REGION_PARAM_NAME))
 
      return(output)
    }
