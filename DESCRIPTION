@@ -11,6 +11,7 @@ Imports:
     urltools,
     paws,
     R6,
+    R6sagemaker.local,
     fs,
     data.table,
     jsonlite,
@@ -18,9 +19,11 @@ Imports:
     uuid,
     utils
 Suggests:
+    yaml,
     crayon,
     testthat,
     readr
+Remotes: DyfanJones/sagemaker-r-local
 License: Apache License (>= 2.0)
 Encoding: UTF-8
 RoxygenNote: 7.1.1
@@ -35,6 +38,11 @@ Collate:
     'logs.R'
     'session.R'
     'analytics.R'
+    'apiutils_paws_functions.R'
+    'apiutils_base_types.R'
+    'apiutils_utils.R'
+    'dataset_definition_inputs.R'
+    'debugger.R'
     'deprecations.R'
     'input.R'
     'job.R'
@@ -44,6 +52,15 @@ Collate:
     'fw_utils.R'
     'model.R'
     'estimator.R'
+    'lineage_api_types.R'
+    'lineage_action.R'
+    'lineage_association.R'
+    'lineage_utils.R'
+    'lineage_artifact.R'
+    'lineage_context.R'
+    'lineage_visualizer.R'
     'metadata_properties.R'
+    'network.R'
     's3.R'
+    'processing.R'
     'zzz.R'
