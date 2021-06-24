@@ -8,11 +8,34 @@
 #' @importFrom utils tar untar
 #' @importFrom fs is_dir
 
+
+#' @title Core varaibles
+#' @name common_varaibles
+#' @keywords internal
+NULL
+
+#' @rdname common_varaibles
+#' @export
 ECR_URI_PATTERN <- "^(\\d+)(\\.)dkr(\\.)ecr(\\.)(.+)(\\.)(.*)(/)(.*:.*)$"
+
+#' @rdname common_varaibles
+#' @export
 MAX_BUCKET_PATHS_COUNT = 5
+
+#' @rdname common_varaibles
+#' @export
 S3_PREFIX = "s3://"
+
+#' @rdname common_varaibles
+#' @export
 HTTP_PREFIX = "http://"
+
+#' @rdname common_varaibles
+#' @export
 HTTPS_PREFIX = "https://"
+
+#' @rdname common_varaibles
+#' @export
 DEFAULT_SLEEP_TIME_SECONDS = 10
 
 #' @title Create a training job name based on the image name and a timestamp.
@@ -112,14 +135,17 @@ build_dict <- function(key, value = NULL){
 #' @keywords internal
 #' @export
 get_config_value <- function(key_path, config = NULL){
-  if(is.null(config)) return(NULL)
-  current_section = config
+  if(is.null(config))
+    return(NULL)
 
+  current_section = config
   for(key in split_str(key_path, "\\.")){
-    if (key %in% current_section) current_section = current_section[key]
-    else return(NULL)
+    if (key %in% current_section)
+      current_section = current_section[key]
+    else
+      return(NULL)
   }
-  return(NULL)
+  return(current_section)
 }
 
 #' @title Return short version in the format of x.x
@@ -429,7 +455,7 @@ tar_subdir <- function(tarfile, srdir, compress = "gzip", ...){
   current_dir = getwd()
   setwd(srdir)
   on.exit(setwd(current_dir))
-  tar(tarfile= tarfile, files=".", compression=compress, tar = "tar" , ...)
+  tar(tarfile= tarfile, files=".", compression=compress, tar = Sys.getenv("TAR") , ...)
 }
 
 #' @title Download a Single File from S3 into a local path
