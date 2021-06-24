@@ -48,7 +48,6 @@ Session = R6Class("Session",
 
     #' @description Creates a new instance of this [R6][R6::R6Class] class.
     #'              Initialize a SageMaker \code{Session}.
-    #'
     #' @param paws_credentials (PawsCredentials): The underlying AWS credentails passed to paws SDK.
     #' @param sagemaker_client (paws::sagemaker): Client which makes Amazon SageMaker service
     #'              calls other than ``InvokeEndpoint`` (default: None). Estimators created using this
@@ -67,15 +66,15 @@ Session = R6Class("Session",
                           sagemaker_client = NULL,
                           sagemaker_runtime_client = NULL,
                           default_bucket = NULL) {
-      self$paws_credentials  <- if(inherits(paws_credentials, "PawsCredentials")) paws_credentials else PawsCredentials$new()
-
       private$.default_bucket_name_override = default_bucket
+      self$s3 = NULL
       self$config = NULL
-      # get sagemaker object from paws
-      self$sagemaker = sagemaker_client %||% paws::sagemaker(config = self$paws_credentials$credentials)
-      self$sagemaker_runtime = sagemaker_runtime_client %||% paws::sagemakerruntime(config = self$paws_credentials$credentials)
-      self$s3 = paws::s3(config = self$paws_credentials$credentials)
-      self$local_mode = FALSE
+
+      private$.initialize(
+        paws_credentials=paws_credentials,
+        sagemaker_client=sagemaker_client,
+        sagemaker_runtime_client=sagemaker_runtime_client,
+        sagemaker_featurestore_runtime_client=NULL)
     },
 
     #' @description Upload local file or directory to S3.If a single file is specified for upload, the resulting S3 object key is
@@ -135,9 +134,15 @@ Session = R6Class("Session",
                                           kms_key=NULL){
 
       if (!is.null(kms_key))
-        self$s3$put_object(Bucket = bucket, Body=charToRaw(body), SSEKMSKeyId=kms_key, ServerSideEncryption="aws:kms")
+        self$s3$put_object(
+          Bucket=bucket,
+          Body=charToRaw(body),
+          SSEKMSKeyId=kms_key,
+          ServerSideEncryption="aws:kms")
       else
-        self$s3$put_object(Bucket = bucket, Body=charToRaw(body))
+        self$s3$put_object(
+          Bucket=bucket,
+          Body=charToRaw(body))
 
       s3_uri = sprintf("s3://%s/%s",bucket, key)
       return (s3_uri)
@@ -214,7 +219,7 @@ Session = R6Class("Session",
     #' @param bucket (str): Name of the S3 Bucket to download from.
     #' @param key_prefix (str): S3 object key name prefix.
     #' @return (str): The list of files at the S3 path.
-    list_s3_files = function(bucket, key_prefix){
+    list_s3_files = function(bucket, key_prefix=NULL){
       next_token = NULL
       keys = character()
       # Loop through the contents of the bucket, 1,000 objects at a time. Gathering all keys into
@@ -386,28 +391,7 @@ Session = R6Class("Session",
       LOGGER$info("Creating training-job with name: %s", job_name)
       LOGGER$debug("train request: %s", toJSON(train_request, pretty = T, auto_unbox = T))
 
-      self$sagemaker$create_training_job(TrainingJobName = train_request$TrainingJobName,
-                             HyperParameters = train_request$HyperParameters,
-                             AlgorithmSpecification = train_request$AlgorithmSpecification,
-                             RoleArn = train_request$RoleArn,
-                             InputDataConfig = train_request$InputDataConfig,
-                             OutputDataConfig = train_request$OutputDataConfig,
-                             ResourceConfig = train_request$ResourceConfig,
-                             VpcConfig = train_request$VpcConfig,
-                             StoppingCondition = train_request$StoppingCondition,
-                             # Currently not implemented in paws
-                             # Environment = train_request$Environment,
-                             Tags = train_request$Tags,
-                             EnableNetworkIsolation = train_request$EnableNetworkIsolation,
-                             EnableInterContainerTrafficEncryption = train_request$EnableInterContainerTrafficEncryption,
-                             EnableManagedSpotTraining = train_request$EnableManagedSpotTraining,
-                             CheckpointConfig = train_request$CheckpointConfig,
-                             DebugHookConfig = train_request$DebugHookConfig,
-                             DebugRuleConfigurations = train_request$DebugRuleConfigurations,
-                             TensorBoardOutputConfig = train_request$TensorBoardOutputConfig,
-                             ExperimentConfig = train_request$ExperimentConfig,
-                             ProfilerRuleConfigurations = train_request$ProfilerRuleConfigurations,
-                             ProfilerConfig = train_request$ProfilerConfig)
+      .invoke(self$sagemaker$create_training_job, train_request)
     },
 
     #' @description Create an Amazon SageMaker processing job.
@@ -469,17 +453,7 @@ Session = R6Class("Session",
       LOGGER$info("Creating processing-job with name %s", job_name)
       LOGGER$debug("process request: %s", toJSON(process_request, pretty = T, auto_unbox = T))
 
-      self$sagemaker$create_processing_job(ProcessingInputs = process_request$ProcessingInputs,
-                               ProcessingOutputConfig = process_request$ProcessingOutputConfig,
-                               ProcessingJobName = process_request$ProcessingJobName,
-                               ProcessingResources = process_request$ProcessingResources,
-                               StoppingCondition = process_request$StoppingCondition,
-                               AppSpecification  = process_request$AppSpecification,
-                               Environment = process_request$Environment,
-                               NetworkConfig = process_request$NetworkConfig,
-                               RoleArn = process_request$RoleArn,
-                               Tags = process_request$Tags,
-                               ExperimentConfig = process_request$ExperimentConfig)
+      .invoke(self$sagemaker$create_processing_job, process_request)
     },
 
     #' @description Create an Amazon SageMaker monitoring schedule.
@@ -583,9 +557,7 @@ Session = R6Class("Session",
       LOGGER$info("Creating monitoring schedule name %s", monitoring_schedule_name)
       LOGGER$debug("monitoring_schedule_request= %s", toJSON(monitoring_schedule_request, pretty = T, auto_unbox = T))
 
-      self$sagemaker$create_monitoring_schedule(MonitoringScheduleName = monitoring_schedule_request$MonitoringScheduleName,
-                                    MonitoringScheduleConfig = monitoring_schedule_request$MonitoringScheduleConfig,
-                                    Tags= monitoring_schedule_request$Tags)
+      .invoke(self$sagemaker$create_monitoring_schedule, monitoring_schedule_request)
     },
 
     #' @description Update an Amazon SageMaker monitoring schedule.
@@ -742,8 +714,7 @@ Session = R6Class("Session",
       LOGGER$info("Updating monitoring schedule with name: %s", monitoring_schedule_name)
       LOGGER$debug("monitoring_schedule_request= %s", toJSON(monitoring_schedule_request, pretty = T, auto_unbox = T))
 
-      self$sagemaker$update_monitoring_schedule(monitoring_schedule_request$MonitoringScheduleName,
-                                                monitoring_schedule_request$MonitoringScheduleConfig)
+      .invoke(self$sagemaker$update_monitoring_schedule, monitoring_schedule_request)
     },
 
     #' @description Starts a monitoring schedule.
@@ -943,12 +914,14 @@ Session = R6Class("Session",
                                sort_by=NULL,
                                max_results=NULL){
 
-      return(self$sagemaker$list_candidates_for_auto_ml_job(AutoMLJobName = job_name,
-                                                            StatusEquals = status_equals,
-                                                            CandidateNameEquals = candidate_name,
-                                                            SortOrder = sort_order,
-                                                            SortBy = sort_by,
-                                                            MaxResults = max_results))
+      return(self$sagemaker$list_candidates_for_auto_ml_job(
+        AutoMLJobName = job_name,
+        StatusEquals = status_equals,
+        CandidateNameEquals = candidate_name,
+        SortOrder = sort_order,
+        SortBy = sort_by,
+        MaxResults = max_results)
+      )
     },
 
     #' @description Wait for an Amazon SageMaker AutoML job to complete.
@@ -1034,11 +1007,12 @@ Session = R6Class("Session",
                              tags){
 
         LOGGER$info("Creating compilation-job with name: %s", job_name)
-        self$sagemaker$create_compilation_job(CompilationJobName = job_name,
-                                              RoleArn = role,
-                                              InputConfig = input_model_config,
-                                              OutputConfig = output_model_config,
-                                              StoppingCondition = stop_condition)
+        self$sagemaker$create_compilation_job(
+          CompilationJobName = job_name,
+          RoleArn = role,
+          InputConfig = input_model_config,
+          OutputConfig = output_model_config,
+          StoppingCondition = stop_condition)
     },
 
     #' @description Create an Amazon SageMaker hyperparameter tuning job
@@ -1180,12 +1154,9 @@ Session = R6Class("Session",
 
       LOGGER$info("Creating hyperparameter tuning job with name: %s", job_name)
       LOGGER$debug("tune request: %s", toJSON(tune_request, pretty = T, auto_unbox = T))
-      self$sagemaker$create_hyper_parameter_tuning_job(HyperParameterTuningJobName = tune_request$HyperParameterTuningJobName,
-                                                       HyperParameterTuningJobConfig = tune_request$HyperParameterTuningJobConfig,
-                                                       TrainingJobDefinition = tune_request$TrainingJobDefinition,
-                                                       WarmStartConfig = tune_request$WarmStartConfig,
-                                                       Tags = tune_request$Tags)
-      },
+
+      .invoke(self$sagemaker$create_hyper_parameter_tuning_job, tune_request)
+    },
 
     #' @description Create an Amazon SageMaker hyperparameter tuning job. This method supports creating
     #'              tuning jobs with single or multiple training algorithms (estimators), while the ``tune()``
@@ -1227,12 +1198,7 @@ Session = R6Class("Session",
       LOGGER$info("Creating hyperparameter tuning job with name: %s", job_name)
       LOGGER$debug("tune request: %s", toJSON(tune_request, pretty = T, auto_unbox = T))
 
-      self$sagemaker$create_hyper_parameter_tuning_job(HyperParameterTuningJobName = tune_request$HyperParameterTuningJobName,
-                                                       HyperParameterTuningJobConfig = tune_request$HyperParameterTuningJobConfig,
-                                                       TrainingJobDefinition = tune_request$TrainingJobDefinition,
-                                                       TrainingJobDefinitions = tune_request$TrainingJobDefinitions,
-                                                       WarmStartConfig = tune_request$WarmStartConfig,
-                                                       Tags = tune_request$Tags)
+      .invoke(self$sagemaker$create_hyper_parameter_tuning_job, tune_request)
     },
 
     #' @description Calls the DescribeHyperParameterTuningJob API for the given job name
@@ -1249,13 +1215,18 @@ Session = R6Class("Session",
     #' @param name (str): Name of the Amazon SageMaker hyperparameter tuning job.
     stop_tuning_job = function(name){
       LOGGER$info("Stopping tuning job: %s", name)
-      tryCatch(self$sagemaker$stop_hyper_parameter_tuning_job(HyperParameterTuningJobName=name),
-               error = function(e) {
-                 error_code = attributes(e)$error_response$`__type`
-                 if(error_code == "ValidationException") {LOGGER$info("Tuning job: %s is alread stopped or not running.", name)
-                 } else {LOGGER$error("Error occurred while attempting to stop tuning job: %s. Please try again.", name)}
-                 stop(e$message, call. = F)
-               })
+      tryCatch({
+        self$sagemaker$stop_hyper_parameter_tuning_job(HyperParameterTuningJobName=name)
+        },
+        error = function(e) {
+          error_code = e$error_response$code
+          if(error_code == "ValidationException") {
+            LOGGER$info("Tuning job: %s is alread stopped or not running.", name)
+          } else {
+            LOGGER$error("Error occurred while attempting to stop tuning job: %s. Please try again.", name)
+          }
+          stop(e)
+      })
     },
 
     #' @description Create an Amazon SageMaker transform job.
@@ -1291,23 +1262,25 @@ Session = R6Class("Session",
                          experiment_config = NULL,
                          tags = NULL,
                          data_processing = NULL){
-      request_list = list(job_name, model_name, max_concurrent_transforms, max_payload,strategy,
-                          env, input_config, output_config, resource_config, data_processing,
-                          tags, experiment_config)
+      tags = .append_project_tags(tags)
+      request_list = private$.get_transform_request(
+        job_name=job_name,
+        model_name=model_name,
+        strategy=strategy,
+        max_concurrent_transforms=max_concurrent_transforms,
+        max_payload=max_payload,
+        env=env,
+        input_config=input_config,
+        output_config=output_config,
+        resource_config=resource_config,
+        experiment_config=experiment_config,
+        tags=tags,
+        data_processing=data_processing,
+        model_client_config=model_client_config)
       LOGGER$info("Creating transform job with name: %s", job_name)
       LOGGER$debug("Transform request: %s", toJSON(request_list, pretty = T, auto_unbox = T))
-      self$sagemaker$create_transform_job(TransformJobName = job_name,
-                                          ModelName = model_name,
-                                          MaxConcurrentTransforms = max_concurrent_transforms,
-                                          MaxPayloadInMB = max_payload,
-                                          BatchStrategy = strategy,
-                                          Environment = env,
-                                          TransformInput = input_config,
-                                          TransformOutput = output_config,
-                                          TransformResources = resource_config,
-                                          DataProcessing = data_processing,
-                                          Tags = tags,
-                                          ExperimentConfig = experiment_config)
+
+      .invoke(self$sagemaker$create_transform_job, request_list)
     },
 
     #' @description Create an Amazon SageMaker ``Model``.
@@ -1352,7 +1325,7 @@ Session = R6Class("Session",
                             tags = NULL){
 
       if(!is.null(container_defs) && !is.null(primary_container))
-        stop("Both container_defs and primary_container can not be passed as input", call.= F)
+        stop("Both container_defs and primary_container can not be passed as input")
 
       create_model_request = list(ModelName= name,
                                   ExecutionRoleArn = role)
@@ -1379,24 +1352,18 @@ Session = R6Class("Session",
       LOGGER$info("Creating model with name: %s", name)
       LOGGER$debug("CreateModel request: %s", toJSON(create_model_request, pretty = T, auto_unbox = T))
 
-      tryCatch({self$sagemaker$create_model(ModelName = create_model_request$ModelName,
-                                            PrimaryContainer = create_model_request$PrimaryContainer,
-                                            Containers = create_model_request$Containers,
-                                            ExecutionRoleArn = create_model_request$ExecutionRoleArn,
-                                            Tags = create_model_request$Tags,
-                                            VpcConfig = create_model_request$VpcConfig,
-                                            EnableNetworkIsolation = create_model_request$EnableNetworkIsolation)},
-               error=function(e){
-                 error_code = attributes(e)$error_response$`__type`
-                 if (error_code == "ValidationException"
-                   && grepl("Cannot create already existing model", e$message)){
-                   LOGGER$warn("Using already existing model: %s", name)
-                   } else {stop(e$message, call. = F)}
-                 }
-               )
+      tryCatch({
+        .invoke(self$sagemaker$create_model, create_model_request)
+        },
+        error=function(e){
+          error_code = e$error_response$Code
+          if (error_code == "ValidationException"
+              && grepl("Cannot create already existing model", e$message)){
+            LOGGER$warn("Using already existing model: %s", name)
+          } else {stop(e)}
+      })
       return(name)
     },
-
 
     #' @description Create an Amazon SageMaker ``Model`` from a SageMaker Training Job.
     #' @param training_job_name (str): The Amazon SageMaker Training Job name.
@@ -1456,11 +1423,12 @@ Session = R6Class("Session",
       LOGGER$info("Creating model package with name: %s", name)
 
       tryCatch(
-        self$sagemaker$create_model_package(ModelPackageName = name,
-                                                   ModelPackageDescription = description,
-                                                   SourceAlgorithmSpecification= SourceAlgorithmSpecification),
+        self$sagemaker$create_model_package(
+          ModelPackageName = name,
+          ModelPackageDescription = description,
+          SourceAlgorithmSpecification= SourceAlgorithmSpecification),
         error = function(e) {
-          error_code = attributes(e)$error_response$`__type`
+          error_code = e$error_response$Code
           if (error_code == "ValidationException"
               && grepl("ModelPackage already exists", e$message)) {
             LOGGER$warn("Using already existing model package: %s", name)
@@ -1514,18 +1482,7 @@ Session = R6Class("Session",
         marketplace_cert,
         approval_status,
         description)
-
-      return (self$sagemaker$create_model_package(
-        ModelPackageName = request$ModelPackageName,
-        # ModelPackageGroupName = request$ModelPackageGroupName, # Currently not implemented in
-        ModelPackageDescription= request$ModelPackageDescription,
-        # ModelMetrics= request$ModelMetrics, # Currently not implemented in
-        # MetadataProperties= request$MetadataProperties, # Currently not implemented in
-        InferenceSpecification= request$InferenceSpecification,
-        CertifyForMarketplace = request$CertifyForMarketplace
-        # ModelApprovalStatus= request$ModelApprovalStatus # Currently not implemented in
-        )
-      )
+      return (.invoke(self$sagemaker$create_model_package, request))
     },
 
     #' @description Wait for an Amazon SageMaker endpoint deployment to complete.
@@ -1585,11 +1542,12 @@ Session = R6Class("Session",
         initial_instance_count,
         accelerator_type=accelerator_type))
 
-      self$sagemaker$create_endpoint_config(EndpointConfigName = name,
-                                            ProductionVariants = ProductionVariants,
-                                            DataCaptureConfig = data_capture_config_dict,
-                                            Tags = tags,
-                                            KmsKeyId = kms_key)
+      self$sagemaker$create_endpoint_config(
+        EndpointConfigName = name,
+        ProductionVariants = ProductionVariants,
+        DataCaptureConfig = data_capture_config_dict,
+        Tags = tags,
+        KmsKeyId = kms_key)
       return(name)
     },
 
@@ -1628,12 +1586,12 @@ Session = R6Class("Session",
 
       request_tags = new_tags %||% self$list_tags(existing_endpoint_config_desc$EndpointConfigArn)
 
-      return(self$sagemaker$create_endpoint_config(EndpointConfigName = new_config_name,
-                                                   ProductionVariants = existing_endpoint_config_desc$ProductionVariants,
-                                                   DataCaptureConfig = new_data_capture_config_dict %||% existing_endpoint_config_desc$DataCaptureConfig,
-                                                   Tags = request_tags,
-                                                   KmsKeyId = new_kms_key %||% existing_endpoint_config_desc.get("KmsKeyId")))
-
+      return(self$sagemaker$create_endpoint_config(
+        EndpointConfigName = new_config_name,
+        ProductionVariants = existing_endpoint_config_desc$ProductionVariants,
+        DataCaptureConfig = new_data_capture_config_dict %||% existing_endpoint_config_desc$DataCaptureConfig,
+        Tags = request_tags,
+        KmsKeyId = new_kms_key %||% existing_endpoint_config_desc[["KmsKeyId"]]))
     },
 
     #' @description Create an Amazon SageMaker ``Endpoint`` according to the endpoint configuration
@@ -1717,9 +1675,10 @@ Session = R6Class("Session",
         next_token = list_tags_response$nextToken
 
         while(!is.null(next_token) || length(next_token) != 0){
-          list_tags_response = self$sagemaker$list_tags(ResourceArn=resource_arn,
-                                                        MaxResults=max_results,
-                                                        NextToken=next_token)
+          list_tags_response = self$sagemaker$list_tags(
+            ResourceArn=resource_arn,
+            MaxResults=max_results,
+            NextToken=next_token)
           tags_list = c(tags_list, list_tags_response$Tags)
           next_token = list_tags_response$nextToken
         }
@@ -1732,7 +1691,7 @@ Session = R6Class("Session",
       },
       error = function(e){
         LOGGER$error("Error retrieving tags. resource_arn: %s",resource_arn)
-        return(e)
+        stop(e)
       })
     },
 
@@ -1818,16 +1777,18 @@ Session = R6Class("Session",
     #' @param name (str): Name of the Amazon SageMaker batch transform job.
     stop_transform_job = function(name){
       LOGGER$info("Stopping transform job: %s", name)
-      tryCatch(self$sagemaker$stop_transform_job(TransformJobName=name),
-               error = function(e){
-                 error_code = attributes(e)$error_response$`__type`
-                 # allow to pass if the job already stopped
-                 if (error_code == "ValidationException"){
-                   LOGGER$info("Transform job: %s is already stopped or not running.", name)
-                 } else{
-                   LOGGER$error("Error occurred while attempting to stop transform job: %s", name)
-                   stop(e$message, call. = F)}
-               })
+      tryCatch({
+        self$sagemaker$stop_transform_job(TransformJobName=name)
+        },
+        error = function(e){
+          error_code = e$error_response$Code
+           # allow to pass if the job already stopped
+           if (error_code == "ValidationException"){
+             LOGGER$info("Transform job: %s is already stopped or not running.", name)
+           } else{
+             LOGGER$error("Error occurred while attempting to stop transform job: %s", name)
+             stop(e)}
+      })
     },
 
     #' @description Wait for an Amazon SageMaker endpoint deployment to complete.
@@ -1916,7 +1877,6 @@ Session = R6Class("Session",
         model_vpc_config=vpc_config_override,
         accelerator_type=accelerator_type,
         data_capture_config=data_capture_config))
-
     },
 
     #' @description Create and deploy to an ``Endpoint`` using existing model data stored in S3.
@@ -2009,11 +1969,12 @@ Session = R6Class("Session",
                                                  wait=TRUE,
                                                  data_capture_config_list=NULL){
       if (!.deployment_entity_exists(self$sagemaker$describe_endpoint_config(EndpointConfigName=name))){
-      self$sagemaker$create_endpoint_config(EndpointConfigName = name,
-                                            ProductionVariants = production_variants,
-                                            DataCaptureConfig = data_capture_config_list,
-                                            Tags = tags,
-                                            KmsKeyId = kms_key)}
+      self$sagemaker$create_endpoint_config(
+        EndpointConfigName = name,
+        ProductionVariants = production_variants,
+        DataCaptureConfig = data_capture_config_list,
+        Tags = tags,
+        KmsKeyId = kms_key)}
 
       return (self$create_endpoint(endpoint_name=name, config_name=name, tags=tags, wait=wait))
     },
@@ -2036,25 +1997,31 @@ Session = R6Class("Session",
       if(file.exists(NOTEBOOK_METADATA_FILE)){
         instance_name = read_json(NOTEBOOK_METADATA_FILE)$ResourceName
 
-        tryCatch({instance_desc = self$sagemaker$describe_notebook_instance(NotebookInstanceName=instance_name)},
-                 error=function(e) stop(sprintf("Couldn't call 'describe_notebook_instance' to get the Role \nARN of the instance %s.",instance_name),
-                                        call. = F))
+        tryCatch({
+          instance_desc = self$sagemaker$describe_notebook_instance(NotebookInstanceName=instance_name)
+          },
+          error=function(e) {
+            stop(sprintf("Couldn't call 'describe_notebook_instance' to get the Role \nARN of the instance %s.",
+                instance_name))
+        })
         return(instance_desc$RoleArn)
       }
 
       assumed_role <- paws::sts(config = self$paws_credentials$credentials)$get_caller_identity()$Arn
       if (grepl("AmazonSageMaker-ExecutionRole", assumed_role)){
         role <- gsub("^(.+)sts::(\\d+):assumed-role/(.+?)/.*$", "\\1iam::\\2:role/service-role/\\3", assumed_role)
-        return(role)}
-
+        return(role)
+      }
       role <- gsub("^(.+)sts::(\\d+):assumed-role/(.+?)/.*$", "\\1iam::\\2:role/\\3", assumed_role)
 
       # Call IAM to get the role's path
       role_name = gsub(".*/","", role)
 
-      tryCatch({role = paws::iam(config = self$paws_credentials$credentials)$get_role(RoleName = role_name)$Role$Arn},
-               error = function(e) LOGGER$warn("Couldn't call 'get_role' to get Role ARN from role name %s to get Role path.", role_name))
-
+      tryCatch({
+        role = paws::iam(config = self$paws_credentials$credentials)$get_role(RoleName = role_name)$Role$Arn},
+        error = function(e){
+          LOGGER$warn("Couldn't call 'get_role' to get Role ARN from role name %s to get Role path.", role_name)
+      })
       return(role)
     },
 
@@ -2249,6 +2216,75 @@ Session = R6Class("Session",
         private$.check_job_status(job_name, description, "TransformJobStatus")}
     },
 
+    #' @description Start Athena query execution.
+    #' @param catalog (str): name of the data catalog.
+    #' @param database (str): name of the data catalog database.
+    #' @param query_string (str): SQL expression.
+    #' @param output_location (str): S3 location of the output file.
+    #' @param kms_key (str): KMS key id will be used to encrypt the result if given.
+    #' @param Response dict from the service.
+    start_query_execution = function(catalog,
+                                     database,
+                                     query_string,
+                                     output_location,
+                                     kms_key=NULL){
+      kwargs = list(
+        QueryString=query_string, QueryExecutionContext=list(Catalog=catalog, Database=database)
+      )
+      result_config = list(OutputLocation=output_location)
+      if (!is.null(kms_key))
+        result_config = modifyList(result_config, list(
+          EncryptionConfiguration=list(EncryptionOption="SSE_KMS", KmsKey=kms_key))
+        )
+      kwargs = modifyList(kwargs, list(ResultConfiguration=result_config))
+      athena_client = paws::athena(config = self$paws_credentials$credentials)
+      return(.invoke(athena_client$start_query_execution , kwargs))
+    },
+
+    #' @description Get execution status of the Athena query.
+    #' @param query_execution_id (str): execution ID of the Athena query.
+    get_query_execution = function(query_execution_id){
+      athena_client = paws::athena(config = self$paws_credentials$credentials)
+      return(athena_client$get_query_execution(QueryExecutionId=query_execution_id))
+    },
+
+    #' @description Wait for Athena query to finish.
+    #' @param query_execution_id (str): execution ID of the Athena query.
+    #' @param poll (int): time interval to poll get_query_execution API.
+    wait_for_athena_query = function(query_execution_id,
+                                     poll=5){
+    query_state = (
+      self$get_query_execution(query_execution_id=query_execution_id)[[
+        "QueryExecution"]][["Status"]][["State"]]
+    )
+    while (!(query_state %in% c("SUCCEEDED", "FAILED"))){
+      LOGGER$info("Query %s is being executed.", query_execution_id)
+      Sys.sleep(poll)
+      query_state = (
+        self$get_query_execution(query_execution_id=query_execution_id)[[
+          "QueryExecution"]][["Status"]][["State"]]
+      )
+    }
+    if (query_state == "SUCCEEDED")
+      LOGGER$info("Query %s successfully executed.", query_execution_id)
+    else
+      LOGGER$error("Failed to execute query %s.", query_execution_id)
+    },
+
+    #' @description Download query result file from S3.
+    #' @param bucket (str): name of the S3 bucket where the result file is stored.
+    #' @param prefix (str): S3 prefix of the result file.
+    #' @param query_execution_id (str): execution ID of the Athena query.
+    #' @param filename (str): name of the downloaded file.
+    download_athena_query_result = function(bucket,
+                                            prefix,
+                                            query_execution_id,
+                                            filename){
+
+      obj = self$s3$get_object(Bucket = bucket, Key = sprintf("%s/%s.csv",prefix,query_execution_id))
+      write_bin(obj$Body, filename)
+    },
+
     #' @description foramt class
     format = function(){
       format_class(self)
@@ -2257,6 +2293,34 @@ Session = R6Class("Session",
   private = list(
     .default_bucket = NULL,
     .default_bucket_name_override = NULL,
+
+    # Initialize this SageMaker Session.
+    # Creates or uses a boto_session, sagemaker_client and sagemaker_runtime_client.
+    # Sets the region_name.
+    .initialize = function(
+      paws_credentials,
+      sagemaker_client,
+      sagemaker_runtime_client,
+      sagemaker_featurestore_runtime_client = NULL){
+
+      self$paws_credentials = if(inherits(paws_credentials, "PawsCredentials")) paws_credentials else PawsCredentials$new()
+
+      if (is.null(self$paws_credentials$credentials$region))
+          ValueError$new(
+            "Must setup local AWS configuration with a region supported by SageMaker.")
+
+      self$sagemaker = sagemaker_client %||% paws::sagemaker(config = self$paws_credentials$credentials)
+      self$sagemaker_runtime = sagemaker_runtime_client %||% paws::sagemakerruntime(config = self$paws_credentials$credentials)
+      self$s3 = paws::s3(config = self$paws_credentials$credentials)
+      if (!is.null(sagemaker_featurestore_runtime_client)) {
+        LOGGER$error("Paws currently doesn't support `sagemaker-featurestore-runtime`")
+        # self$sagemaker_featurestore_runtime_client = (
+        #   sagemaker_featurestore_runtime_client  %||% paws::sagemakerfeaturestoreruntime(
+        #     config = self$paws_credentials$credentials
+        #   )
+      }
+      self$local_mode = FALSE
+    },
 
     # Creates an S3 Bucket if it does not exist.
     # Also swallows a few common exceptions that indicate that the bucket already exists or
@@ -2441,7 +2505,8 @@ Session = R6Class("Session",
       if(!islistempty(hyperparameters))
         train_request$HyperParameters = hyperparameters
 
-      train_request$Environment = environment
+      # Paws currently doesn't support
+      # train_request$Environment = environment
       train_request$Tags = tags
       train_request$VpcConfig = vpc_config
 
@@ -2463,6 +2528,46 @@ Session = R6Class("Session",
       train_request$ProfilerRuleConfigurations = profiler_rule_configs
       train_request$ProfilerConfig = profiler_config
       return(train_request)
+    },
+
+    .get_transform_request = function(job_name,
+                                      model_name,
+                                      strategy,
+                                      max_concurrent_transforms,
+                                      max_payload,
+                                      env,
+                                      input_config,
+                                      output_config,
+                                      resource_config,
+                                      experiment_config,
+                                      tags,
+                                      data_processing,
+                                      model_client_config=NULL){
+      transform_request = list(
+        "TransformJobName"=job_name,
+        "ModelName"=model_name,
+        "TransformInput"=input_config,
+        "TransformOutput"=output_config,
+        "TransformResources"=resource_config)
+
+      transform_request[["BatchStrategy"]] = strategy
+      transform_request[["MaxConcurrentTransforms"]] = max_concurrent_transforms
+      transform_request[["MaxPayloadInMB"]] = max_payload
+
+      if (!is.null(env)){
+        LOGGER$error("Currently doesn't support Envionement")
+        # transform_request[["Environment"]] = env
+      }
+      transform_request[["Tags"]] = tags
+      transform_request[["DataProcessing"]] = data_processing
+
+      if (!islistempty(experiment_config))
+        transform_request[["ExperimentConfig"]] = experiment_config
+
+      if (!islistempty(model_client_config))
+        transform_request[["ModelClientConfig"]] = model_client_config
+
+      return(transform_request)
     },
 
     .map_training_config = function(static_hyperparameters,
@@ -2589,7 +2694,6 @@ Session = R6Class("Session",
 
       writeLines("\n")
       return(desc)
-
     },
 
     .create_model_package_status = function(model_package_name){
@@ -3066,4 +3170,3 @@ get_execution_role <- function(sagemaker_session = NULL){
     flush(stdout())
   }
 }
-
