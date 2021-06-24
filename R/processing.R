@@ -15,11 +15,11 @@
 
 #' @importFrom urltools url_parse
 #' @import R6
-#' @import R6sagemaker.local
 
 #' @title Processor Class
 #' @family Processor
 #' @description Handles Amazon SageMaker Processing tasks.
+#' @export
 Processor = R6Class("Processor",
   public = list(
     #' @field role
@@ -164,9 +164,12 @@ Processor = R6Class("Processor",
       self$.current_job_name = NULL
       self$arguments = NULL
 
-      if(self$instance_type %in% c("local", "local_gpu"))
-        if(!inherits(sagemaker_session, "LocalSession"))
+      if(self$instance_type %in% c("local", "local_gpu")){
+        if(!inherits(sagemaker_session, "LocalSession")){
+          LocalSession = pkg_method("LocalSession", "R6sagemaker.local")
           sagemaker_session = LocalSession$new()
+        }
+      }
 
       self$sagemaker_session = sagemaker_session %||% Session$new()
     },

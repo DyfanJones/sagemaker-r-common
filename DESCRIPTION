@@ -11,7 +11,6 @@ Imports:
     urltools,
     paws,
     R6,
-    R6sagemaker.local,
     fs,
     data.table,
     jsonlite,
@@ -22,8 +21,8 @@ Suggests:
     yaml,
     crayon,
     testthat,
+    R6sagemaker.local,
     readr
-Remotes: DyfanJones/sagemaker-r-local
 License: Apache License (>= 2.0)
 Encoding: UTF-8
 RoxygenNote: 7.1.1
