@@ -11,6 +11,7 @@
 #' @include image_uris.R
 #' @include job.R
 #' @include error.R
+#' @include debugger_profiler_config.R
 
 #' @import paws
 #' @import jsonlite
@@ -912,7 +913,7 @@ EstimatorBase = R6Class("EstimatorBase",
 
       if ("ProfilerConfig" %in% names(training_job_details) && !islistempty(training_job_details[["ProfilerConfig"]][[
         "S3OutputPath"]])){
-        self.profiler_config = ProfilerConfig$new(
+        self$profiler_config = ProfilerConfig$new(
           s3_output_path=training_job_details[["ProfilerConfig"]][["S3OutputPath"]])
       } else {
         self$profiler_config = ProfilerConfig$new(s3_output_path=self$output_path)
