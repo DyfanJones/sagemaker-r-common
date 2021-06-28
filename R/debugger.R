@@ -516,7 +516,7 @@ RuleBase = R6Class("RuleBase",
 
 .get_rule_config <- function(rule_name){
   rule_config = NULL
-  config_file_path = system.file("rule_config_jsons", "ruleConfigs.json", package= "R6sagemaker")
+  config_file_path = system.file("rule_config_jsons", "ruleConfigs.json", package= "R6sagemaker.common")
   if(file.exists(config_file_path)){
     configs = jsonlite::read_json(config_file_path)
     rule_config = configs[[rule_name]]
