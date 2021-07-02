@@ -21,6 +21,7 @@ Other Processor:
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{ScriptProcessor$new()}}
+\item \href{#method-get_run_args}{\code{ScriptProcessor$get_run_args()}}
 \item \href{#method-run}{\code{ScriptProcessor$run()}}
 \item \href{#method-clone}{\code{ScriptProcessor$clone()}}
 }
@@ -115,6 +116,44 @@ inter-container traffic, security group IDs, and subnets.}
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_run_args"></a>}}
+\if{latex}{\out{\hypertarget{method-get_run_args}{}}}
+\subsection{Method \code{get_run_args()}}{
+Returns a RunArgs object.
+             For processors (:class:`~sagemaker.spark.processing.PySparkProcessor`,
+             :class:`~sagemaker.spark.processing.SparkJar`) that have special
+             run() arguments, this object contains the normalized arguments for passing to
+             :class:`~sagemaker.workflow.steps.ProcessingStep`.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ScriptProcessor$get_run_args(
+  code,
+  inputs = NULL,
+  outputs = NULL,
+  arguments = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{code}}{(str): This can be an S3 URI or a local path to a file with the framework
+script to run.}
+
+\item{\code{inputs}}{(list[:class:`~sagemaker.processing.ProcessingInput`]): Input files for
+the processing job. These must be provided as
+:class:`~sagemaker.processing.ProcessingInput` objects (default: None).}
+
+\item{\code{outputs}}{(list[:class:`~sagemaker.processing.ProcessingOutput`]): Outputs for
+the processing job. These can be specified as either path strings or
+:class:`~sagemaker.processing.ProcessingOutput` objects (default: None).}
+
+\item{\code{arguments}}{(list[str]): A list of string arguments to be passed to a
+processing job (default: None).}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-run"></a>}}
 \if{latex}{\out{\hypertarget{method-run}{}}}
 \subsection{Method \code{run()}}{
@@ -128,7 +167,8 @@ Runs a processing job.
   wait = TRUE,
   logs = TRUE,
   job_name = NULL,
-  experiment_config = NULL
+  experiment_config = NULL,
+  kms_key = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -160,6 +200,9 @@ a default job name, based on the base job name and current timestamp.}
 \item{\code{experiment_config}}{(dict[str, str]): Experiment management configuration.
 Dictionary contains three optional keys:
 'ExperimentName', 'TrialName', and 'TrialComponentDisplayName'.}
+
+\item{\code{kms_key}}{(str): The ARN of the KMS key that is used to encrypt the
+user code file (default: None).}
 }
 \if{html}{\out{</div>}}
 }

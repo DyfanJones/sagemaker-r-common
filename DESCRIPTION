@@ -16,6 +16,7 @@ Imports:
     jsonlite,
     methods,
     uuid,
+    urltools,
     utils
 Suggests:
     yaml,

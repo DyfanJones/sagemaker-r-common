@@ -38,6 +38,10 @@ Other Processor:
 \item \href{#method-wait}{\code{ProcessingJob$wait()}}
 \item \href{#method-describe}{\code{ProcessingJob$describe()}}
 \item \href{#method-stop}{\code{ProcessingJob$stop()}}
+\item \href{#method-prepare_app_specification}{\code{ProcessingJob$prepare_app_specification()}}
+\item \href{#method-prepare_output_config}{\code{ProcessingJob$prepare_output_config()}}
+\item \href{#method-prepare_processing_resources}{\code{ProcessingJob$prepare_processing_resources()}}
+\item \href{#method-prepare_stopping_condition}{\code{ProcessingJob$prepare_stopping_condition()}}
 \item \href{#method-clone}{\code{ProcessingJob$clone()}}
 }
 }
@@ -204,6 +208,121 @@ the processing job.
 \if{html}{\out{<div class="r">}}\preformatted{ProcessingJob$stop()}\if{html}{\out{</div>}}
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-prepare_app_specification"></a>}}
+\if{latex}{\out{\hypertarget{method-prepare_app_specification}{}}}
+\subsection{Method \code{prepare_app_specification()}}{
+Prepares a dict that represents a ProcessingJob's AppSpecification.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ProcessingJob$prepare_app_specification(
+  container_arguments,
+  container_entrypoint,
+  image_uri
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{container_arguments}}{(list[str]): The arguments for a container
+used to run a processing job.}
+
+\item{\code{container_entrypoint}}{(list[str]): The entrypoint for a container
+used to run a processing job.}
+
+\item{\code{image_uri}}{(str): The container image to be run by the processing job.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+dict: Represents AppSpecification which configures the
+             processing job to run a specified Docker container image.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-prepare_output_config"></a>}}
+\if{latex}{\out{\hypertarget{method-prepare_output_config}{}}}
+\subsection{Method \code{prepare_output_config()}}{
+Prepares a dict that represents a ProcessingOutputConfig.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ProcessingJob$prepare_output_config(kms_key_id, outputs)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{kms_key_id}}{(str): The AWS Key Management Service (AWS KMS) key that
+Amazon SageMaker uses to encrypt the processing job output.
+KmsKeyId can be an ID of a KMS key, ARN of a KMS key, alias of a KMS key,
+or alias of a KMS key. The KmsKeyId is applied to all outputs.}
+
+\item{\code{outputs}}{(list[dict]): Output configuration information for a processing job.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+dict: Represents output configuration for the processing job.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-prepare_processing_resources"></a>}}
+\if{latex}{\out{\hypertarget{method-prepare_processing_resources}{}}}
+\subsection{Method \code{prepare_processing_resources()}}{
+Prepares a dict that represents the ProcessingResources.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ProcessingJob$prepare_processing_resources(
+  instance_count,
+  instance_type,
+  volume_kms_key_id,
+  volume_size_in_gb
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{instance_count}}{(int): The number of ML compute instances
+to use in the processing job. For distributed processing jobs,
+specify a value greater than 1. The default value is 1.}
+
+\item{\code{instance_type}}{(str): The ML compute instance type for the processing job.}
+
+\item{\code{volume_kms_key_id}}{(str): The AWS Key Management Service (AWS KMS) key
+that Amazon SageMaker uses to encrypt data on the storage
+volume attached to the ML compute instance(s) that run the processing job.}
+
+\item{\code{volume_size_in_gb}}{(int): The size of the ML storage volume in gigabytes
+that you want to provision. You must specify sufficient
+ML storage for your scenario.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+dict: Represents ProcessingResources which identifies the resources,
+             ML compute instances, and ML storage volumes to deploy
+             for a processing job.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-prepare_stopping_condition"></a>}}
+\if{latex}{\out{\hypertarget{method-prepare_stopping_condition}{}}}
+\subsection{Method \code{prepare_stopping_condition()}}{
+Prepares a dict that represents the job's StoppingCondition.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ProcessingJob$prepare_stopping_condition(max_runtime_in_seconds)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{max_runtime_in_seconds}}{(int): Specifies the maximum runtime in seconds.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+list
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}

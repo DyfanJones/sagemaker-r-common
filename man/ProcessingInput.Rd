@@ -33,13 +33,16 @@ Initializes a ``ProcessingInput`` instance. ``ProcessingInput`` accepts paramete
              to turn those parameters into a dictionary.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ProcessingInput$new(
-  source,
-  destination,
+  source = NULL,
+  destination = NULL,
   input_name = NULL,
   s3_data_type = c("S3Prefix", "ManifestFile"),
   s3_input_mode = c("File", "Pipe"),
   s3_data_distribution_type = c("FullyReplicated", "ShardedByS3Key"),
-  s3_compression_type = c("None", "Gzip")
+  s3_compression_type = c("None", "Gzip"),
+  s3_input = NULL,
+  dataset_definition = NULL,
+  app_managed = FALSE
 )}\if{html}{\out{</div>}}
 }
 
@@ -63,6 +66,14 @@ is not provided, one will be generated (eg. "input-1").}
 or "ShardedByS3Key".}
 
 \item{\code{s3_compression_type}}{(str): Valid options are "None" or "Gzip".}
+
+\item{\code{s3_input}}{(:class:`~sagemaker.dataset_definition.S3Input`)
+Metadata of data objects stored in S3}
+
+\item{\code{dataset_definition}}{(:class:`~sagemaker.dataset_definition.DatasetDefinition`)
+DatasetDefinition input}
+
+\item{\code{app_managed}}{(bool): Whether the input are managed by SageMaker or application}
 }
 \if{html}{\out{</div>}}
 }

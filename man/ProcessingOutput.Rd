@@ -36,7 +36,9 @@ Initializes a ``ProcessingOutput`` instance. ``ProcessingOutput`` accepts parame
   source,
   destination = NULL,
   output_name = NULL,
-  s3_upload_mode = c("EndOfJob", "Continuous")
+  s3_upload_mode = c("EndOfJob", "Continuous"),
+  app_managed = FALSE,
+  feature_store_output = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -52,7 +54,13 @@ is not provided, one will be generated:
 \item{\code{output_name}}{(str): The name of the output. If a name
 is not provided, one will be generated (eg. "output-1").}
 
-\item{\code{s3_upload_mode}}{(str): Valid options are "EndOfJob" or "Continuous".}
+\item{\code{s3_upload_mode}}{(str): Valid options are "EndOfJob" or "Continuous".
+s3_upload_mode (str): Valid options are "EndOfJob" or "Continuous".}
+
+\item{\code{app_managed}}{(bool): Whether the input are managed by SageMaker or application}
+
+\item{\code{feature_store_output}}{(:class:`~sagemaker.processing.FeatureStoreOutput`)
+Configuration for processing job outputs of FeatureStore.}
 }
 \if{html}{\out{</div>}}
 }
