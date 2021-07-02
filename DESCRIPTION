@@ -8,7 +8,6 @@ Description: `R6sagemaker` lower level api calls.
 Imports:
     lgr,
     processx,
-    urltools,
     paws,
     R6,
     fs,
