@@ -174,17 +174,14 @@ print.Enum <- function(x, ...){
   do.call(".fn", args)
 }
 
-# helper function taken from:
-# https://stackoverflow.com/questions/20454768/how-to-split-a-string-from-right-to-left-like-pythons-rsplit
 #' @title Split string from the right
 #' @param str : string to be split
 #' @param separator (str): Method splits string starting from the right (default `\\.`)
 #' @param maxsplit (number): The maxsplit defines the maximum number of splits.
 #' @export
 rsplit <- function(str, separator="\\.", maxsplit) {
-  if(maxsplit<0)
-    stop("maxsplit is required to be positive.")
-  p <- paste0("[^", separator, "]*")
-  rx <- paste0(separator, "(?=", paste(rep(paste0(p, separator), maxsplit - 1), collapse = ""), p, "$)")
-  unlist(strsplit(str, rx, perl = TRUE))
+  vec = unlist(strsplit(str, separator))
+  len = length(vec)
+  px = (length(vec) - maxsplit)
+  c(paste(vec[1:px], collapse=separator), vec[(px+1):len])
 }
