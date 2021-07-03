@@ -174,6 +174,8 @@ print.Enum <- function(x, ...){
   do.call(".fn", args)
 }
 
+# helper function taken from:
+# https://stackoverflow.com/questions/20454768/how-to-split-a-string-from-right-to-left-like-pythons-rsplit
 #' @title Split string from the right
 #' @param str : string to be split
 #' @param separator (str): Method splits string starting from the right (default `\\.`)
