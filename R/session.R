@@ -1323,32 +1323,15 @@ Session = R6Class("Session",
                             enable_network_isolation = FALSE,
                             primary_container = NULL,
                             tags = NULL){
-
-      if(!is.null(container_defs) && !is.null(primary_container))
-        stop("Both container_defs and primary_container can not be passed as input")
-
-      create_model_request = list(ModelName= name,
-                                  ExecutionRoleArn = role)
-
-      if (!is.null(primary_container)){
-
-        msg = paste0("primary_container is going to be deprecated in a future release. Please use ",
-                     "container_defs instead.")
-        warning(msg)
-        container_defs = primary_container
-      }
-
-      role = self$expand_role(role)
-
-      if(inherits(container_defs, "list"))
-        create_model_request$Containers = container_defs
-      else
-        create_model_request$PrimaryContainer = container_defs
-
-      create_model_request$Tags = tags
-      create_model_request$VpcConfig = vpc_config
-      create_model_request$EnableNetworkIsolation = enable_network_isolation
-
+      tags = .append_project_tags(tags)
+      create_model_request = private$.create_model_request(
+        name=name,
+        role=role,
+        container_defs=container_defs,
+        vpc_config=vpc_config,
+        enable_network_isolation=enable_network_isolation,
+        primary_container=primary_container,
+        tags=tags)
       LOGGER$info("Creating model with name: %s", name)
       LOGGER$debug("CreateModel request: %s", toJSON(create_model_request, pretty = T, auto_unbox = T))
 
@@ -2568,6 +2551,43 @@ Session = R6Class("Session",
         transform_request[["ModelClientConfig"]] = model_client_config
 
       return(transform_request)
+    },
+
+    .create_model_request = function(name,
+                                     role,
+                                     container_defs,
+                                     vpc_config=NULL,
+                                     enable_network_isolation=FALSE,
+                                     primary_container=NULL,
+                                     tags=NULL){
+      if (!is.null(container_defs) && !is.null(primary_container))
+        ValueError$new("Both container_defs and primary_container can not be passed as input")
+
+      if (!is.null(primary_container)){
+        msg = paste(
+          "primary_container is going to be deprecated in a future release. Please use ",
+          "container_defs instead.")
+        warning(msg)
+        container_defs = primary_container
+      }
+
+      if (!is_list_named(container_defs)){
+        container_definition = container_defs
+      } else {
+        container_definition = private$.expand_container_def(container_defs)
+      }
+      request = list("ModelName"=name, "ExecutionRoleArn"=role)
+      if (is.list(container_definition) && !is_list_named(container_definition)){
+        request[["Containers"]] = container_definition
+      } else {
+        request[["PrimaryContainer"]] = container_definition}
+      request[["Tags"]] = tags
+      request[["VpcConfig"]] = vpc_config
+
+      if (enable_network_isolation)
+        request[["EnableNetworkIsolation"]] = TRUE
+
+      return(request)
     },
 
     .map_training_config = function(static_hyperparameters,
