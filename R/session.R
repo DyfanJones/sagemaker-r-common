@@ -2666,7 +2666,7 @@ Session = R6Class("Session",
     },
 
     .expand_container_def = function(c_def){
-      if (is.character("character"))
+      if (is.character(c_def))
         return(container_def(c_def))
       return(c_def)
     },
