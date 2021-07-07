@@ -185,3 +185,7 @@ rsplit <- function(str, separator="\\.", maxsplit) {
   px = (length(vec) - maxsplit)
   c(paste(vec[1:px], collapse=separator), vec[(px+1):len])
 }
+
+is_list_named = function(x){
+  inherits(x, "list") && length(names(x)) > 0
+}
