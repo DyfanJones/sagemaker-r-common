@@ -1,6 +1,7 @@
 # NOTE: This code has been modified from AWS Sagemaker Python:
 # https://github.com/aws/sagemaker-python-sdk/blob/master/src/sagemaker/model.py
 
+#' @include error.R
 #' @include session.R
 #' @include logs.R
 #' @include vpc_utils.R
@@ -9,6 +10,7 @@
 #' @include transformer.R
 #' @include git_utils.R
 #' @include image_uris.R
+#' @include r_utils.R
 
 #' @import paws
 #' @import jsonlite
@@ -143,13 +145,13 @@ Model = R6Class("Model",
         approval_status,
         description)
 
-      model_package = do.call(self$sagemaker_session$create_model_package_from_containers, model_pkg_args)
+      model_package = .invoke(self$sagemaker_session$create_model_package_from_containers, model_pkg_args)
 
       return(ModelPackage$new(
         role=self$role,
         model_data=self$model_data,
         model_package_arn=model_package$ModelPackageArn)
-        )
+      )
     },
 
     #' @description Return a dict created by ``sagemaker.container_def()`` for deploying
@@ -219,12 +221,12 @@ Model = R6Class("Model",
             model_name,
             model_version,
             job_name,
-            self._compilation_job_name,
+            private$.compilation_job_name,
             resource_key,
             s3_kms_key,
             tags
       )
-      do.call(self$sagemaker_session.package_model_for_edge, config)
+      .invoke(self$sagemaker_session.package_model_for_edge, config)
       job_status = self$sagemaker_session$wait_for_edge_packaging_job(job_name)
       self$model_data = job_status$ModelArtifact
       private$.is_edge_packaged_model = TRUE
@@ -286,7 +288,6 @@ Model = R6Class("Model",
                        compiler_options=NULL){
 
       framework = framework %||% private$.framework()
-
       if (is.null(framework))
         ValueError$new(
           sprintf("You must specify framework, allowed values %s",
@@ -319,10 +320,9 @@ Model = R6Class("Model",
         framework_version
       )
 
-      do.call(self$sagemaker_session$compile_model, config)
+      .invoke(self$sagemaker_session$compile_model, config)
       job_status = self$sagemaker_session$wait_for_compilation_job(job_name)
       self$model_data = job_status[["ModelArtifacts"]][["S3ModelArtifacts"]]
-
       if (!is.null(target_instance_family)){
         if(target_instance_family == "ml_eia2"){
           return(NULL)
@@ -418,7 +418,7 @@ Model = R6Class("Model",
         LOGGER$warn("Your model is not compiled. Please compile your model before using Inferentia.")
 
       compiled_model_suffix = paste0(split_str(instance_type, "\\."), collapse = "-")
-      if (private$.is_compiled_model){
+      if (isTRUE(private$.is_compiled_model)){
         private$.ensure_base_name_if_needed(self$image_uri)
         if(!is.null(self$.base_name))
           self$.base_name = paste(self$.base_name, compiled_model_suffix, sep = "-", collapse = "-")
@@ -507,21 +507,21 @@ Model = R6Class("Model",
         env = NULL
 
       return(Transformer$new(
-                  self$name,
-                  instance_count,
-                  instance_type,
-                  strategy=strategy,
-                  assemble_with=assemble_with,
-                  output_path=output_path,
-                  output_kms_key=output_kms_key,
-                  accept=accept,
-                  max_concurrent_transforms=max_concurrent_transforms,
-                  max_payload=max_payload,
-                  env=env,
-                  tags=tags,
-                  base_transform_job_name=self$name,
-                  volume_kms_key=volume_kms_key,
-                  sagemaker_session=self$sagemaker_session)
+        self$name,
+        instance_count,
+        instance_type,
+        strategy=strategy,
+        assemble_with=assemble_with,
+        output_path=output_path,
+        output_kms_key=output_kms_key,
+        accept=accept,
+        max_concurrent_transforms=max_concurrent_transforms,
+        max_payload=max_payload,
+        env=env,
+        tags=tags,
+        base_transform_job_name=self$name,
+        volume_kms_key=volume_kms_key,
+        sagemaker_session=self$sagemaker_session)
       )
     },
 
@@ -544,18 +544,18 @@ Model = R6Class("Model",
     #' @param tags (List[dict[str, str]]): Optional. The list of tags to add to
     #'              the model. Example: >>> tags = [{'Key': 'tagname', 'Value':
     #'              'tagvalue'}] For more information about tags, see
-    #'              https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/sagemaker.html#SageMaker.Client.add_tags
+    #'              \url{https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/sagemaker.html#SageMaker.Client.add_tags}.
     .create_sagemaker_model = function(instance_type,
                                        accelerator_type=NULL,
                                        tags=NULL){
       container_def = self$prepare_container_def(instance_type, accelerator_type=accelerator_type)
-
       private$.ensure_base_name_if_needed(container_def$Image)
       private$.set_model_name_if_needed()
 
       enable_network_isolation = self$enable_network_isolation()
 
       private$.init_sagemaker_session_if_does_not_exist(instance_type)
+
       self$sagemaker_session$create_model(
         self$name,
         self$role,
@@ -610,7 +610,8 @@ Model = R6Class("Model",
                                        metadata_properties=NULL,
                                        marketplace_cert=FALSE,
                                        approval_status=NULL,
-                                       description=NULL){
+                                       description=NULL,
+                                       tags=NULL){
       if (is.null(image_uri))
         self$image_uri = image_uri
       container = list(
@@ -631,6 +632,7 @@ Model = R6Class("Model",
       model_package_args$metadata_properties = metadata_properties$to_request_list()
       model_package_args$approval_status = approval_status
       model_package_args$description = description
+      model_package_args$tags = tags
       return(model_package_args)
     },
 
@@ -642,14 +644,10 @@ Model = R6Class("Model",
         return(invisible(NULL))
 
       if (instance_type %in% c("local", "local_gpu")){
-        LOGGER$error("Currently LocalSession has not been implemented")
-
-        # TODO: LocalSession class
-        NotImplementedError$new(sprintf("instance_type %s is currently not supported", instance_type))
         self$sagemaker_session = LocalSession$new()
       } else {
           self$sagemaker_session = Session$new()}
-      },
+    },
 
     # Create a base name from the image URI if there is no model name provided.
     .ensure_base_name_if_needed = function(image_uri){
@@ -740,8 +738,9 @@ Model = R6Class("Model",
         output_model_config$TargetDevice = target_instance_type
       } else {
         if (is.null(target_platform_os) && is.null(target_platform_arch))
-          ValueError$new("target_instance_type or (target_platform_os and target_platform_arch) ",
-               "should be provided"
+          ValueError$new(
+            "target_instance_type or (target_platform_os and target_platform_arch) ",
+            "should be provided"
           )
         target_platform = list(
           "Os"= target_platform_os,
@@ -1025,7 +1024,7 @@ FrameworkModel = R6Class("FrameworkModel",
           dependencies=self$dependencies)
       }
 
-      if (repack){
+      if (repack && !is.null(self$model_data) && !is.null(self$entry_point)){
         bucket = self$bucket %||% self$sagemaker_session$default_bucket()
         repacked_model_data = paste0("s3://", paste(c(bucket, key_prefix, "model.tar.gz"), collapse = "/"))
 
