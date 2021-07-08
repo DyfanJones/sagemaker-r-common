@@ -1477,8 +1477,12 @@ Session = R6Class("Session",
 
       if (status != "Completed"){
         reason = desc$FailureReason
-        message = sprintf("Error creating model package %s: %s Reason: %s", model_package_name, status, reason)
-        stop(message, call. = F)
+        message = sprintf("Error creating model package %s: %s Reason: %s",
+          model_package_name, status, reason)
+        UnexpectedStatusError$new(
+          message,
+          allowed_statuses="Completed",
+          actual_status=status)
       }
       return(desc)
     },
@@ -1782,7 +1786,10 @@ Session = R6Class("Session",
       if(status != "InService"){
         reason = desc$FailureReason
         message = sprintf("Error hosting endpoint %s: %s. Reason: %s.", endpoint, status, reason)
-        stop(message, call. = F)
+        UnexpectedStatusError$new(
+          message,
+          allowed_statuses="InService",
+          actual_status=status)
       }
       return(desc)
     },
@@ -2777,7 +2784,10 @@ Session = R6Class("Session",
         reason = desc$FailureReason
         job_type = gsub("JobStatus", " job", status_key_name)
         message = sprintf("Error for %s %s: %s. Reason: %s", job_type, job, status, reason)
-        stop(message, call. = F)
+        UnexpectedStatusError$new(
+          message,
+          allowed_statuses=c("Completed", "Stopped"),
+          actual_status=status)
       }
     },
     # last job desc to help check if job has finished or not
