@@ -417,7 +417,7 @@ Model = R6Class("Model",
       if (startsWith(instance_type,"ml.inf") && !private$.is_compiled_model)
         LOGGER$warn("Your model is not compiled. Please compile your model before using Inferentia.")
 
-      compiled_model_suffix = paste0(split_str(instance_type, "\\."), collapse = "-")
+      compiled_model_suffix = gsub("\\.", "-", instance_type)
       if (isTRUE(private$.is_compiled_model)){
         private$.ensure_base_name_if_needed(self$image_uri)
         if(!is.null(self$.base_name))
@@ -425,7 +425,7 @@ Model = R6Class("Model",
       }
 
       self$.create_sagemaker_model(instance_type, accelerator_type, tags)
-      production_variant = production_variant(
+      prod_variant = production_variant(
         self$name, instance_type, initial_instance_count, accelerator_type=accelerator_type
       )
       if (!is.null(endpoint_name)) {
@@ -433,7 +433,7 @@ Model = R6Class("Model",
       } else {
         base_endpoint_name = self$.base_name %||% base_from_name(self$name)
         if (!is.null(private$.is_compiled_model) && !endsWith(base_endpoint_name, compiled_model_suffix))
-          base_endpoint_name = paste(self$endpoint_name, compiled_model_suffix, sep = "-", collapse = "-")
+          base_endpoint_name = paste(base_endpoint_name, compiled_model_suffix, sep = "-", collapse = "-")
         self$endpoint_name = name_from_base(base_endpoint_name)
       }
       data_capture_config_list = NULL
@@ -442,7 +442,7 @@ Model = R6Class("Model",
 
       self$sagemaker_session$endpoint_from_production_variants(
         name=self$endpoint_name,
-        production_variants=list(production_variant),
+        production_variants=list(prod_variant),
         tags=tags,
         kms_key=kms_key,
         wait=wait,
