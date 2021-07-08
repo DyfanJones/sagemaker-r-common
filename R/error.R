@@ -19,7 +19,6 @@ SagemakerError = R6Class("SagemakerError",
   private = list(
    .error_cls = NULL,
    .error_msg = NULL,
-   .error_str = NULL,
    .construct_msg_cls = function(...){
      msg_list = list(...)
      private$.error_cls = c(class(self)[-length(class(self))], "error", "condition")
@@ -31,8 +30,7 @@ SagemakerError = R6Class("SagemakerError",
    .construct_error_str = function(msg, class, attributes = NULL){
      .Data = list(message = msg)
      for(i in names(attributes)) .Data[[i]] = attributes[[i]]
-     private$.error_str = structure(.Data, class = class)
-     return(private$.error_str)
+     return(structure(.Data, class = class))
    }
   )
 )
