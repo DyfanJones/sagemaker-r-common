@@ -457,7 +457,7 @@ Model = R6Class("Model",
           predictor$deserializer = deserializer
         return(predictor)
       }
-      return(NULL)
+      return(invisible(NULL))
     },
 
     #' @description Return a ``Transformer`` that uses this Model.
