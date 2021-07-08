@@ -186,10 +186,10 @@ Session = R6Class("Session",
 
       # For each object key, create the directory on the local machine if needed, and then
       tail_s3_uri_path = fs::path_file(keys)
-      if (nchar(fs::path_ext(key_prefix)) > 0)
+      if (nchar(fs::path_ext(key_prefix)) == 0)
         tail_s3_uri_path = fs::path_rel(keys, key_prefix)
       destination_path = fs::path(path, tail_s3_uri_path)
-      fs::dir_create(destination_path)
+      fs::dir_create(fs::path_dir(destination_path))
 
       # download the file.
       for (i in 1:length(keys)){
