@@ -205,11 +205,11 @@ Session = R6Class("Session",
     #' @return str: The body of the s3 file as a string.
     read_s3_file = function(bucket,
                             key_prefix){
-
-      # Explicitly passing a None kms_key to boto3 throws a validation error.
+      # Explicitly passing a None kms_key to paws throws a validation error.
       s3_object = self$s3$get_object(Bucket=bucket, Key=key_prefix)
-
-      return(rawToChar(s3_object$Body))
+      con = rawConnection(s3_object$Body)
+      on.exit(close(con))
+      return(readLines(con, encoding = "UTF-8", warn = FALSE))
     },
 
     #' @description Lists the S3 files given an S3 bucket and key.
