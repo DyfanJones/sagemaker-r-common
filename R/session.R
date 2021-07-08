@@ -172,42 +172,27 @@ Session = R6Class("Session",
     #' NULL invisibly
     download_data = function(path, bucket, key_prefix = "", ...){
 
-      next_token = NULL
       keys = character()
+      params = list(Bucket=bucket, Prefix=key_prefix, ContinuationToken=NULL)
+
       # Loop through the contents of the bucket, 1,000 objects at a time. Gathering all keys into
       # a "keys" list.
-      while(!identical(next_token, character(0))){
-        response = self$s3$list_objects_v2(
-          Bucket = bucket,
-          Prefix = key_prefix,
-          ContinuationToken = next_token)
+      while(!identical(params$ContinuationToken, character(0))){
+        response = .invoke(self$s3$list_objects_v2, params)
         # For each object, save its key or directory.
         keys = c(keys, sapply(response$Contents, function(x) x$Key))
-        next_token = response$ContinuationToken
+        params$ContinuationToken = response$ContinuationToken
       }
 
-      tail_s3_uri_path = basename(keys)
-      # list of directories to be created
-      output = dirname(gsub(key_prefix,"", keys))
+      # For each object key, create the directory on the local machine if needed, and then
+      tail_s3_uri_path = fs::path_file(keys)
+      if (nchar(fs::path_ext(key_prefix)) > 0)
+        tail_s3_uri_path = fs::path_rel(keys, key_prefix)
+      destination_path = fs::path(path, tail_s3_uri_path)
+      fs::dir_create(destination_path)
 
-      # get only files to be downloaded
-      files = ifelse(output == "/", FALSE, ifelse(output == ".", FALSE, TRUE))
-      list_dir = gsub("^/", "", output[files])
-
-      if (path =="") path = getwd()
-      destination_path = sapply(
-        1:length(list_dir),
-        function(i) {
-          if (list_dir[i] == "")
-            file.path(path, tail_s3_uri_path[files][i])
-          else
-            file.path(path, list_dir[i], tail_s3_uri_path[files][i])
-        })
-
-      # create directory
-      sapply(dirname(destination_path), dir.create, showWarnings = F, recursive = T)
-
-      for (i in 1:length(keys[files])){
+      # download the file.
+      for (i in 1:length(keys)){
         obj = self$s3$get_object(Bucket = bucket, Key = keys[i], ...)
         write_bin(obj$Body, destination_path[i])
       }
