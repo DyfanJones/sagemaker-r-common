@@ -11,9 +11,7 @@ SagemakerError = R6Class("SagemakerError",
    #' @param ... (character): message to be outputted in error.
    initialize = function(...){
      private$.construct_msg_cls(...)
-     stop(private$.construct_error_str(
-       private$.error_msg,
-       private$.error_cls))
+     stop(private$.construct_error_str())
    }
   ),
   private = list(
@@ -27,10 +25,10 @@ SagemakerError = R6Class("SagemakerError",
        private$.error_cls[1],
        paste(msg_list, collapse = ""))
    },
-   .construct_error_str = function(msg, class, attributes = NULL){
-     .Data = list(message = msg)
+   .construct_error_str = function(attributes = NULL){
+     .Data = list(message = private$.error_msg)
      for(i in names(attributes)) .Data[[i]] = attributes[[i]]
-     return(structure(.Data, class = class))
+     return(structure(.Data, class = private$.error_cls))
    }
   )
 )
@@ -61,8 +59,6 @@ UnexpectedStatusError = R6Class("UnexpectedStatusError",
     initialize = function(..., allowed_statuses, actual_status){
       private$.construct_msg_cls(...)
       stop(private$.construct_error_str(
-        private$.error_msg,
-        private$.error_cls,
         as.list(environment())))
     }
   )
