@@ -22,9 +22,11 @@ SagemakerError = R6Class("SagemakerError",
    .error_str = NULL,
    .construct_msg_cls = function(...){
      msg_list = list(...)
-     msg = if(length(msg_list) == 0) NULL else paste(msg_list, collapse = "")
      private$.error_cls = c(class(self)[-length(class(self))], "error", "condition")
-     private$.error_msg = paste(Filter(Negate(is.null), c(private$.error_cls[1], msg)), collapse = ". ")
+     private$.error_msg = ifelse(
+       length(msg_list) == 0,
+       private$.error_cls[1],
+       paste(msg_list, collapse = ""))
    },
    .construct_error_str = function(msg, class, attributes = NULL){
      .Data = list(message = msg)
