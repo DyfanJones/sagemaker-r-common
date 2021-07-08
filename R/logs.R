@@ -10,7 +10,7 @@
 #' @keywords internal
 #' @export
 sagemaker_log_layout <- function(
-  log_fmt="%L[%t] %m",
+  log_fmt="%L [%t] %m",
   timestamp_fmt = "%Y-%m-%d %H:%M:%OS",
   log_cols = log_colours()) {
   lgr::LayoutFormat$new(
@@ -67,8 +67,8 @@ multi_stream_iter <- function(cloudwatchlogs, log_group, streams, positions= NUL
     names(positions) = streams
 
     # update sm_env positions
-    sm_env$positions = positions}
-
+    sm_env$positions = positions
+  }
   # Get all logs and remove 1 list level
   events = lapply(streams, function(s)
     log_stream(
