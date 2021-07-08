@@ -13,6 +13,7 @@
 #' @import jsonlite
 #' @import lgr
 #' @import utils
+#' @import fs
 
 NOTEBOOK_METADATA_FILE <- "/opt/ml/metadata/resource-metadata.json"
 
@@ -99,12 +100,18 @@ Session = R6Class("Session",
     upload_data = function(path, bucket = NULL, key_prefix = "data", ...){
 
       key_suffix = NULL
-
       # get all files in directory
-      if(file.exists(path) && file_test("-f",path)) local_path <- path
-      else local_path <-list.files(path, full.names = T)[!(list.files(path, full.names = T) %in% list.dirs(path, full.names = T))]
-
-      s3_key = paste(key_prefix, basename(local_path), sep = "/")
+      if(fs::is_dir(path)){
+        local_path = fs::dir_ls(path, all = T, type = "file", recurse = T)
+        dirpath = fs::path_dir(local_path)
+        s3_relative_prefix = ifelse(path == dirpath, "", fs::path_rel(dirpath))
+        s3_key = fs::path(key_prefix, s3_relative_prefix, fs::path_file(local_path))
+      } else {
+        name = fs::path_file(path)
+        local_path = path
+        s3_key = fs::path(key_prefix, name)
+        key_suffix = name
+      }
 
       # if bucke parameter hasn't been selected use class parameter
       bucket = bucket %||% self$default_bucket()
@@ -112,9 +119,14 @@ Session = R6Class("Session",
       # Upload file to s3
       for (i in 1:length(local_path)){
         obj <- readBin(local_path[i], "raw", n = file.size(local_path[i]))
-        self$s3$put_object(Body = obj, Bucket = bucket, Key = s3_key[i], ...)}
-
+        self$s3$put_object(Body = obj, Bucket = bucket, Key = s3_key[i], ...)
+      }
       s3_uri = sprintf("s3://%s/%s", bucket, key_prefix)
+      # If a specific file was used as input (instead of a directory), we return the full S3 key
+      # of the uploaded object. This prevents unintentionally using other files under the same
+      # prefix during training.
+      if (!is.null(key_suffix))
+        s3_uri = fs::path(s3_uri, key_suffix)
 
       return(s3_uri)
     },
