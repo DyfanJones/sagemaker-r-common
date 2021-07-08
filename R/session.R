@@ -126,7 +126,7 @@ Session = R6Class("Session",
       # of the uploaded object. This prevents unintentionally using other files under the same
       # prefix during training.
       if (!is.null(key_suffix))
-        s3_uri = fs::path(s3_uri, key_suffix)
+        s3_uri = sprintf("%s/%s", s3_uri, key_suffix)
 
       return(s3_uri)
     },
