@@ -38,7 +38,8 @@ renamed_kwargs <- function(old_name,
                            kwargs){
   if(old_name %in% names(renamed_kwargs)){
     value = kwargs[[old_name]] %||% value
-    eval.parent(substitute({kwargs[[new_name]] = value}))
+    kwargs[[new_name]] = value
+    assign("kwargs", kwargs, envir = parent.env(environment()))
     renamed_warning(old_name)}
   return(value)
 }
