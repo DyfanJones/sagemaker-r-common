@@ -666,7 +666,7 @@ ScriptProcessor = R6Class("ScriptProcessor",
 #' @description Provides functionality to start, describe, and stop processing jobs.
 #' @export
 ProcessingJob = R6Class("ProcessingJob",
-  inherit = R6sagemaker.common::.Job,
+  inherit = .Job,
   public = list(
     #' @field inputs
     #' A list of :class:`~sagemaker.processing.ProcessingInput` objects.
