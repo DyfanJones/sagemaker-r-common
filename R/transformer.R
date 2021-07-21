@@ -337,7 +337,6 @@ Transformer = R6Class("Transformer",
                           experiment_config,
                           model_client_config){
       transform_args = private$.get_transform_args(
-        transformer,
         data,
         data_type,
         content_type,
@@ -357,8 +356,7 @@ Transformer = R6Class("Transformer",
       return(self$.current_job_name)
     },
 
-    .get_transform_args = function(transformer,
-                                   data,
+    .get_transform_args = function(data,
                                    data_type,
                                    content_type,
                                    compression_type,
@@ -369,7 +367,7 @@ Transformer = R6Class("Transformer",
                                    experiment_config,
                                    model_client_config){
       config = private$.load_config(
-        data, data_type, content_type, compression_type, split_type, transformer
+        data, data_type, content_type, compression_type, split_type
       )
       data_processing = private$.prepare_data_processing(
         input_filter, output_filter, join_source
@@ -394,11 +392,10 @@ Transformer = R6Class("Transformer",
     },
 
     .load_config = function(data,
-                             data_type,
-                             content_type,
-                             compression_type,
-                             split_type,
-                             transformer){
+                           data_type,
+                           content_type,
+                           compression_type,
+                           split_type){
        input_config = private$.format_inputs_to_input_config(
          data, data_type, content_type, compression_type, split_type)
 
