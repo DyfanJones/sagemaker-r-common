@@ -1176,21 +1176,18 @@ Session = R6Class("Session",
                                  warm_start_config=NULL,
                                  tags=NULL){
       if (is.null(training_config) && is.null(training_config_list)){
-        stop("Either training_config or training_config_list should be provided.", call. = F)}
+        ValueError$new("Either training_config or training_config_list should be provided.")}
       if (!is.null(training_config) && !is.null(training_config_list)){
-        stop("Only one of training_config and training_config_list should be provided.", call. = F)}
+        ValueError$new("Only one of training_config and training_config_list should be provided.")}
 
-      tune_request = list(HyperParameterTuningJobName = job_name,
-                          HyperParameterTuningJobConfig = do.call(private$.map_tuning_config, tuning_config))
-
-      if(!is.null(training_config))
-        tune_request$TrainingJobDefinition = do.call(private$.map_training_config, training_config)
-
-      if (!is.null(training_config_list))
-        tune_request$TrainingJobDefinitions= lapply(training_config_list, function(training_cfg) do.call(private$.map_training_config, training_cfg))
-
-      tune_request$Tags = tags
-      tune_request$WarmStartConfig = warm_start_config
+      tune_request = private$.get_tuning_request(
+        job_name=job_name,
+        tuning_config=tuning_config,
+        training_config=training_config,
+        training_config_list=training_config_list,
+        warm_start_config=warm_start_config,
+        tags=tags
+      )
 
       LOGGER$info("Creating hyperparameter tuning job with name: %s", job_name)
       LOGGER$debug("tune request: %s", toJSON(tune_request, pretty = T, auto_unbox = T))
@@ -2340,6 +2337,46 @@ Session = R6Class("Session",
           }
         )
       }
+    },
+
+    # Construct CreateHyperParameterTuningJob request
+    # Args:
+    #   job_name (str): Name of the tuning job being created.
+    # tuning_config (dict): Configuration to launch the tuning job.
+    # training_config (dict): Configuration to launch training jobs under the tuning job
+    # using a single algorithm.
+    # training_config_list (list[dict]): A list of configurations to launch training jobs
+    # under the tuning job using one or multiple algorithms. Either training_config
+    # or training_config_list should be provided, but not both.
+    # warm_start_config (dict): Configuration defining the type of warm start and
+    # other required configurations.
+    # tags (list[dict]): List of tags for labeling the tuning job. For more, see
+    # https://docs.aws.amazon.com/sagemaker/latest/dg/API_Tag.html.
+    # Returns:
+    #   dict: A dictionary for CreateHyperParameterTuningJob request
+    .get_tuning_request = function(job_name,
+                                   tuning_config,
+                                   training_config=NULL,
+                                   training_config_list=NULL,
+                                   warm_start_config=NULL,
+                                   tags=NULL){
+      tune_request = list(
+        HyperParameterTuningJobName = job_name,
+        HyperParameterTuningJobConfig = do.call(private$.map_tuning_config, tuning_config)
+      )
+      if(!is.null(training_config))
+        tune_request$TrainingJobDefinition = do.call(private$.map_training_config, training_config)
+
+      if (!is.null(training_config_list))
+        tune_request$TrainingJobDefinitions= lapply(
+          training_config_list, function(training_cfg)
+            do.call(private$.map_training_config, training_cfg)
+        )
+
+      tune_request$WarmStartConfig = warm_start_config
+      tune_request$Tags = tags
+
+      return(tune_request)
     },
 
     .map_tuning_config = function(strategy,
