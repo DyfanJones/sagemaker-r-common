@@ -334,31 +334,66 @@ Transformer = R6Class("Transformer",
                           input_filter,
                           output_filter,
                           join_source,
-                          experiment_config){
-      config = private$.load_config(data, data_type, content_type, compression_type, split_type, transformer)
-
-      data_processing = private$.prepare_data_processing(input_filter, output_filter, join_source)
+                          experiment_config,
+                          model_client_config){
+      transform_args = private$.get_transform_args(
+        transformer,
+        data,
+        data_type,
+        content_type,
+        compression_type,
+        split_type,
+        input_filter,
+        output_filter,
+        join_source,
+        experiment_config,
+        model_client_config
+      )
 
       # start transform job
-      self$sagemaker_session$transform(
-        job_name=self$.current_job_name,
-        model_name=self$model_name,
-        strategy=self$strategy,
-        max_concurrent_transforms=self$max_concurrent_transforms,
-        max_payload=self$max_payload,
-        env=self$env,
-        input_config=config$input_config,
-        output_config=config$output_config,
-        resource_config=config$resource_config,
-        experiment_config=experiment_config,
-        tags=self$tags,
-        data_processing=data_processing)
+      .invoke(self$sagemaker_session$transform, transform_args)
 
       # return current_job name
       return(self$.current_job_name)
     },
 
-     .load_config = function(data,
+    .get_transform_args = function(transformer,
+                                   data,
+                                   data_type,
+                                   content_type,
+                                   compression_type,
+                                   split_type,
+                                   input_filter,
+                                   output_filter,
+                                   join_source,
+                                   experiment_config,
+                                   model_client_config){
+      config = private$.load_config(
+        data, data_type, content_type, compression_type, split_type, transformer
+      )
+      data_processing = private$.prepare_data_processing(
+        input_filter, output_filter, join_source
+      )
+
+      transform_args = modifyList(
+        config,
+        list(
+          "job_name"=self$.current_job_name,
+          "model_name"=self$model_name,
+          "strategy"=self$strategy,
+          "max_concurrent_transforms"=self$max_concurrent_transforms,
+          "max_payload"=self$max_payload,
+          "env"=self$env,
+          "experiment_config"=experiment_config,
+          "model_client_config"=model_client_config,
+          "tags"=self$tags,
+          "data_processing"=data_processing
+        )
+      )
+      return(transform_args)
+    },
+
+    .load_config = function(data,
                              data_type,
                              content_type,
                              compression_type,
@@ -379,7 +414,8 @@ Transformer = R6Class("Transformer",
        return (list("input_config"= input_config,
                    "output_config"= output_config,
                    "resource_config"= resource_config))
-     },
+    },
+
     .format_inputs_to_input_config = function(data,
                                               data_type,
                                               content_type = NULL,
@@ -388,13 +424,13 @@ Transformer = R6Class("Transformer",
       config = list("DataSource" = list("S3DataSource" = list("S3DataType"= data_type, "S3Uri"= data)))
 
       if (!is.null(content_type))
-        config["ContentType"] = content_type
+        config[["ContentType"]] = content_type
 
       if (!is.null(compression_type))
-        config["CompressionType"] = compression_type
+        config[["CompressionType"]] = compression_type
 
       if (!is.null(split_type))
-        config["SplitType"] = split_type
+        config[["SplitType"]] = split_type
 
       return(config)
     },
