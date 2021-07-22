@@ -43,10 +43,9 @@ IsSubR6Class <- function(subclass, cls) {
 #' @param chunk_size (int):
 #' @keywords internal
 #' @export
-write_bin <- function(
-  obj,
-  filename,
-  chunk_size = 2L ^ 20L) {
+write_bin <- function(obj,
+                      filename,
+                      chunk_size = 2L ^ 20L) {
 
   # if readr is available then use readr::write_file else loop writeBin
   if (pkg_env$readr$available){
@@ -65,14 +64,16 @@ write_bin <- function(
   start <- seq(1, max_len, chunk_size)
   end <- c(start[-1]-1, max_len)
 
+  # Open for reading and appending.
   con <- file(filename, "a+b")
   on.exit(close(con))
 
-  if (length(split_vec) == 1)
+  if (length(start) == 1)
     writeBin(obj,con)
   else
     sapply(seq_along(start), function(i){writeBin(obj[start[i]:end[i]],con)})
-  invisible(TRUE)
+
+  return(invisible(TRUE))
 }
 
 #' @title If api call fails retry call
