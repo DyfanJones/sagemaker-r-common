@@ -61,8 +61,9 @@ write_bin <- function(
     file.rename(l$file, paste(l, collapse = "."))
     return(invisible(TRUE))
   }
-  total_size <- length(obj)
-  split_vec <- seq(1, total_size, chunk_size)
+  max_len <- length(obj)
+  start <- seq(1, max_len, chunk_size)
+  end <- c(start[-1]-1, max_len)
 
   con <- file(filename, "a+b")
   on.exit(close(con))
@@ -70,7 +71,7 @@ write_bin <- function(
   if (length(split_vec) == 1)
     writeBin(obj,con)
   else
-    sapply(split_vec, function(x){writeBin(obj[x:min(total_size,(x+chunk_size-1))],con)})
+    sapply(seq_along(start), function(i){writeBin(obj[start[i]:end[i]],con)})
   invisible(TRUE)
 }
 
