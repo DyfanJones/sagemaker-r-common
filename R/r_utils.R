@@ -45,7 +45,7 @@ IsSubR6Class <- function(subclass, cls) {
 #' @export
 write_bin <- function(obj,
                       filename,
-                      chunk_size = 2L ^ 20L) {
+                      chunk_size = 2^31 - 2) {
 
   # if readr is available then use readr::write_file else loop writeBin
   if (pkg_env$readr$available){
@@ -60,20 +60,31 @@ write_bin <- function(obj,
     file.rename(l$file, paste(l, collapse = "."))
     return(invisible(TRUE))
   }
-  max_len <- length(obj)
-  start <- seq(1, max_len, chunk_size)
-  end <- c(start[-1]-1, max_len)
+  base_write_raw(obj, filename, chunk_size)
+  return(invisible(TRUE))
+}
 
+base_write_raw <- function(obj,
+                           filename,
+                           chunk_size = 2^31-2){ # Only 2^31 - 1 bytes can be written in a single call
   # Open for reading and appending.
   con <- file(filename, "a+b")
   on.exit(close(con))
 
-  if (length(start) == 1)
+  # If R version is 4.0.0 + then don't need to chunk writeBin
+  # https://github.com/HenrikBengtsson/Wishlist-for-R/issues/97
+  if (getRversion() > R_system_version("4.0.0")){
     writeBin(obj,con)
-  else
-    sapply(seq_along(start), function(i){writeBin(obj[start[i]:end[i]],con)})
+  } else {
+    max_len <- length(obj)
+    start <- seq(1, max_len, chunk_size)
+    end <- c(start[-1]-1, max_len)
 
-  return(invisible(TRUE))
+    if (length(start) == 1) {
+      writeBin(obj,con)
+    } else {
+      sapply(seq_along(start), function(i){writeBin(obj[start[i]:end[i]],con)})}
+  }
 }
 
 #' @title If api call fails retry call
