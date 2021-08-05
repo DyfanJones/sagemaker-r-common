@@ -3032,6 +3032,72 @@ Session = R6Class("Session",
   lock_objects = F
 )
 
+#' @title Get arguments for create_model_package method.
+#' @param content_types (list): The supported MIME types for the input data.
+#' @param response_types (list): The supported MIME types for the output data.
+#' @param inference_instances (list): A list of the instance types that are used to
+#'              generate inferences in real-time.
+#' @param transform_instances (list): A list of the instance types on which a transformation
+#'              job can be run or on which an endpoint can be deployed.
+#' @param model_package_name (str): Model Package name, exclusive to `model_package_group_name`,
+#'              using `model_package_name` makes the Model Package un-versioned (default: None).
+#' @param model_package_group_name (str): Model Package Group name, exclusive to
+#'              `model_package_name`, using `model_package_group_name` makes the Model Package
+#'              versioned (default: None).
+#' @param image_uri (str): Inference image uri for the container. Model class' self.image will
+#'              be used if it is None (default: None).
+#' @param model_metrics (ModelMetrics): ModelMetrics object (default: None).
+#' @param metadata_properties (MetadataProperties): MetadataProperties object (default: None).
+#' @param marketplace_cert (bool): A boolean value indicating if the Model Package is certified
+#'              for AWS Marketplace (default: False).
+#' @param approval_status (str): Model Approval Status, values can be "Approved", "Rejected",
+#'              or "PendingManualApproval" (default: "PendingManualApproval").
+#' @param description (str): Model Package description (default: None).
+#' @param container_def_list (list): A list of container defintiions.
+#' @return dict: A dictionary of method argument names and values.
+#' @export
+get_model_package_args = function(content_types,
+                                  response_types,
+                                  inference_instances,
+                                  transform_instances,
+                                  model_package_name=NULL,
+                                  model_package_group_name=NULL,
+                                  model_data=NULL,
+                                  image_uri=NULL,
+                                  model_metrics=NULL,
+                                  metadata_properties=NULL,
+                                  marketplace_cert=FALSE,
+                                  approval_status=NULL,
+                                  description=NULL,
+                                  tags=NULL,
+                                  container_def_list=NULL){
+  if (!is.null(container_def_list)){
+    containers = container_def_list
+  } else {
+    container = list(
+      "Image"=image_uri,
+      "ModelDataUrl"=model_data)
+    containers = list(container)
+  }
+  model_package_args = list(
+    "containers"=containers,
+    "content_types"=content_types,
+    "response_types"=response_types,
+    "inference_instances"=inference_instances,
+    "transform_instances"=transform_instances,
+    "marketplace_cert"=marketplace_cert
+  )
+  model_package_args[["model_package_name"]] = model_package_name
+  model_package_args[["model_package_group_name"]] = model_package_group_name
+  model_package_args[["model_metrics"]] = model_metrics$.to_request_list()
+  model_package_args[["metadata_properties"]] = metadata_properties$.to_request_list()
+  model_package_args[["approval_status"]] = approval_status
+  model_package_args[["description"]] = description
+  model_package_args[["tags"]] = tags
+  return(model_package_args)
+}
+
+
 #' @title Create a definition for executing a container as part of a SageMaker model.
 #' @param image_uri (str): Docker image to run for this container.
 #' @param model_data_url (str): S3 URI of data required by this container,
@@ -3157,7 +3223,6 @@ get_execution_role <- function(sagemaker_session = NULL){
     return(TRUE)
   return(FALSE)
 }
-
 
 .log_init <- function(description, job){
   switch(job,
