@@ -4,7 +4,7 @@
 \alias{write_bin}
 \title{Write large raw connections in chunks}
 \usage{
-write_bin(obj, filename, chunk_size = 2L^20L)
+write_bin(obj, filename, chunk_size = 2^31 - 2)
 }
 \arguments{
 \item{obj}{(raw): raw connection or raw vector}

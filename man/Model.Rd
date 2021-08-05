@@ -544,7 +544,7 @@ Inference accelerator will be attached to the endpoint.}
 \item{\code{tags}}{(List[dict[str, str]]): Optional. The list of tags to add to
 the model. Example: >>> tags = [{'Key': 'tagname', 'Value':
 'tagvalue'}] For more information about tags, see
-https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/sagemaker.html#SageMaker.Client.add_tags}
+\url{https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/sagemaker.html#SageMaker.Client.add_tags}.}
 }
 \if{html}{\out{</div>}}
 }

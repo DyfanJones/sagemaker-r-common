@@ -5,7 +5,7 @@
 \title{Set format for SageMaker}
 \usage{
 sagemaker_log_layout(
-  log_fmt = "\%L[\%t] \%m",
+  log_fmt = "\%L [\%t] \%m",
   timestamp_fmt = "\%Y-\%m-\%d \%H:\%M:\%OS",
   log_cols = log_colours()
 )
