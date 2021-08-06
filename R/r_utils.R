@@ -1,4 +1,5 @@
 #' @import R6
+#' @importFrom utils getFromNamespace
 
 `%||%` <- function(x, y) if (is.null(x)) return(y) else return(x)
 
@@ -17,7 +18,7 @@ pkg_method <- function(fun, pkg) {
   if (!requireNamespace(pkg, quietly = TRUE)) {
     stop(fun,' requires the ', pkg,' package, please install it first and try again',
          call. = F)}
-  fun_name <- utils::getFromNamespace(fun, pkg)
+  fun_name <- getFromNamespace(fun, pkg)
   return(fun_name)
 }
 

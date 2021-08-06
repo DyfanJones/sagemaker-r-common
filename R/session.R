@@ -12,7 +12,6 @@
 #' @import R6
 #' @import jsonlite
 #' @import lgr
-#' @import utils
 #' @import fs
 
 NOTEBOOK_METADATA_FILE <- "/opt/ml/metadata/resource-metadata.json"
@@ -70,6 +69,7 @@ Session = R6Class("Session",
       private$.default_bucket_name_override = default_bucket
       self$s3 = NULL
       self$config = NULL
+      self$lambda_client = NULL
 
       private$.initialize(
         paws_credentials=paws_credentials,
@@ -3044,6 +3044,7 @@ Session = R6Class("Session",
 #' @param model_package_group_name (str): Model Package Group name, exclusive to
 #'              `model_package_name`, using `model_package_group_name` makes the Model Package
 #'              versioned (default: None).
+#' @param model_data : Placeholder
 #' @param image_uri (str): Inference image uri for the container. Model class' self.image will
 #'              be used if it is None (default: None).
 #' @param model_metrics (ModelMetrics): ModelMetrics object (default: None).
@@ -3053,8 +3054,9 @@ Session = R6Class("Session",
 #' @param approval_status (str): Model Approval Status, values can be "Approved", "Rejected",
 #'              or "PendingManualApproval" (default: "PendingManualApproval").
 #' @param description (str): Model Package description (default: None).
+#' @param tags : Placeholder
 #' @param container_def_list (list): A list of container defintiions.
-#' @return dict: A dictionary of method argument names and values.
+#' @return list: A dictionary of method argument names and values.
 #' @export
 get_model_package_args = function(content_types,
                                   response_types,
