@@ -40,6 +40,8 @@ using `model_package_name` makes the Model Package un-versioned (default: None).
 `model_package_name`, using `model_package_group_name` makes the Model Package
 versioned (default: None).}
 
+\item{model_data}{: Placeholder}
+
 \item{image_uri}{(str): Inference image uri for the container. Model class' self.image will
 be used if it is None (default: None).}
 
@@ -55,10 +57,12 @@ or "PendingManualApproval" (default: "PendingManualApproval").}
 
 \item{description}{(str): Model Package description (default: None).}
 
+\item{tags}{: Placeholder}
+
 \item{container_def_list}{(list): A list of container defintiions.}
 }
 \value{
-dict: A dictionary of method argument names and values.
+list: A dictionary of method argument names and values.
 }
 \description{
 Get arguments for create_model_package method.
