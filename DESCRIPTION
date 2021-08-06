@@ -16,7 +16,8 @@ Imports:
     methods,
     uuid,
     urltools,
-    utils
+    utils,
+    zip
 Suggests:
     yaml,
     crayon,
@@ -56,6 +57,7 @@ Collate:
     'fw_utils.R'
     'model.R'
     'estimator.R'
+    'lambda_helper.R'
     'lineage_api_types.R'
     'lineage_action.R'
     'lineage_association.R'
