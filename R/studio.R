@@ -9,12 +9,11 @@
 
 STUDIO_PROJECT_CONFIG = ".sagemaker-code-config"
 
-# Appends the project tag to the list of tags, if it exists.
-# Args:
-#   working_dir: the working directory to start looking.
-# tags: the list of tags to append to.
-# Returns:
-#   A possibly extended list of tags that includes the project id
+#' @title Appends the project tag to the list of tags, if it exists.
+#' @param working_dir : the working directory to start looking.
+#' @param tags : the list of tags to append to.
+#' @return A possibly extended list of tags that includes the project id
+#' @export
 .append_project_tags <- function(tags = NULL, working_dir = NULL){
   path = .find_config(working_dir)
   if (is.null(path))
