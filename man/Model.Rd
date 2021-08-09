@@ -6,6 +6,9 @@
 \description{
 A SageMaker ``Model`` that can be deployed to an ``Endpoint``.
 }
+\section{Super class}{
+\code{\link[R6sagemaker.common:ModelBase]{R6sagemaker.common::ModelBase}} -> \code{Model}
+}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
@@ -20,9 +23,15 @@ A SageMaker ``Model`` that can be deployed to an ``Endpoint``.
 \item \href{#method-transformer}{\code{Model$transformer()}}
 \item \href{#method-delete_model}{\code{Model$delete_model()}}
 \item \href{#method-.create_sagemaker_model}{\code{Model$.create_sagemaker_model()}}
-\item \href{#method-format}{\code{Model$format()}}
 \item \href{#method-clone}{\code{Model$clone()}}
 }
+}
+\if{html}{
+\out{<details open ><summary>Inherited methods</summary>}
+\itemize{
+\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="ModelBase" data-id="format">}\href{../../R6sagemaker.common/html/ModelBase.html#method-format}{\code{R6sagemaker.common::ModelBase$format()}}\out{</span>}
+}
+\out{</details>}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
@@ -548,16 +557,6 @@ the model. Example: >>> tags = [{'Key': 'tagname', 'Value':
 }
 \if{html}{\out{</div>}}
 }
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-format"></a>}}
-\if{latex}{\out{\hypertarget{method-format}{}}}
-\subsection{Method \code{format()}}{
-format class
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Model$format()}\if{html}{\out{</div>}}
-}
-
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}

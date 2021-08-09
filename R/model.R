@@ -19,10 +19,38 @@
 
 NEO_ALLOWED_FRAMEWORKS <- list("mxnet", "tensorflow", "keras", "pytorch", "onnx", "xgboost", "tflite")
 
+#' @title An object that encapsulates a trained model.
+#' @description Models can be deployed to compute services like a SageMaker ``Endpoint``
+#'        or Lambda. Deployed models can be used to perform real-time inference.
+#' @keywords internal
+#' @export
+ModelBase = R6Class("ModelBase",
+  public = list(
+
+    #' @description Deploy this model to a compute service.
+    #' @param ... : not currently implemented
+    deploy = function(...){
+      NotImplementedError$new()
+    },
+
+    #' @description Destroy resources associated with this model.
+    #' @param ... : not currently implemented
+    delete_model = function(...){
+      NotImplementedError$new()
+    },
+
+    #' @description format class
+    format = function(){
+      format_class(self)
+    }
+  )
+)
+
 #' @title Model Class
 #' @description A SageMaker ``Model`` that can be deployed to an ``Endpoint``.
 #' @export
 Model = R6Class("Model",
+  inherit = ModelBase,
   public = list(
 
     #' @description Creates a new instance of this [R6][R6::R6Class] class.
@@ -563,11 +591,6 @@ Model = R6Class("Model",
         vpc_config=self$vpc_config,
         enable_network_isolation=enable_network_isolation,
         tags=tags)
-    },
-
-    #' @description format class
-    format = function(){
-      return(format_class(self))
     }
   ),
   private = list(
