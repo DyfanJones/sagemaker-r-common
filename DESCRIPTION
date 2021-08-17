@@ -17,13 +17,16 @@ Imports:
     uuid,
     urltools,
     utils,
-    zip
+    zip,
+    R6sagemaker.debugger
 Suggests:
     yaml,
     crayon,
     testthat,
     R6sagemaker.local,
     readr
+Remotes:
+    DyfanJones/sagemaker-r-debugger
 License: Apache License (>= 2.0)
 Encoding: UTF-8
 RoxygenNote: 7.1.1
