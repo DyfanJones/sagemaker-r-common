@@ -6,6 +6,7 @@
 #' @include lineage_api_types.R
 
 #' @import R6
+#' @import lgr
 
 # An Amazon SageMaker artifact, which is part of a SageMaker lineage.
 # Examples:
@@ -47,6 +48,9 @@ Association = R6Class("Association",
     # Returns:
     #   list({str:str}): a list of key value pairs
     set_tag = function(tag = NULL){
+      LOGGER$warn(paste(
+        "set_tags on Association is deprecated. Use set_tags on the source or destination",
+        "entity instead."))
       return(private$.set_tags(resource_arn=self$source_arn, tags=list(tag)))
     },
 
@@ -56,6 +60,9 @@ Association = R6Class("Association",
     # Returns:
     #   list({str:str}): a list of key value pairs
     set_tags = function(tags = NULL){
+      LOGGER$warn(paste(
+        "set_tags on Association is deprecated. Use set_tags on the source or destination",
+        "entity instead."))
       return(private$.set_tags(resource_arn=self$source_arn, tags=tags))
     },
 
