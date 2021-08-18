@@ -2650,7 +2650,8 @@ Session = R6Class("Session",
                                     parameter_ranges=NULL,
                                     use_spot_instances=FALSE,
                                     checkpoint_s3_uri=NULL,
-                                    checkpoint_local_path=NULL){
+                                    checkpoint_local_path=NULL,
+                                    max_retry_attempts=NULL){
 
       training_job_definition = list(
         StaticHyperParameters = static_hyperparameters,
@@ -2700,9 +2701,9 @@ Session = R6Class("Session",
         tuning_objective$MetricName = objective_metric_name}
 
       training_job_definition$TuningObjective = tuning_objective
-
       training_job_definition$HyperParameterRanges = parameter_ranges
-
+      if (!is.null(max_retry_attempts))
+        training_job_definition$RetryStrategy = list("MaximumRetryAttempts"=max_retry_attempts)
       return(training_job_definition)
     },
 

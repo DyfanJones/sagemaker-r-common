@@ -92,6 +92,7 @@ Initialize an ``EstimatorBase`` instance.
   profiler_config = NULL,
   disable_profiler = FALSE,
   environment = NULL,
+  max_retry_attempts = NULL,
   ...
 )}\if{html}{\out{</div>}}
 }
@@ -257,6 +258,14 @@ will be disabled (default: ``False``).}
 
 \item{\code{environment}}{(dict[str, str]) : Environment variables to be set for
 use during training job (default: ``None``)}
+
+\item{\code{max_retry_attempts}}{(int): The number of times to move a job to the STARTING status.
+You can specify between 1 and 30 attempts.
+If the value of attempts is greater than zero,
+the job is retried on InternalServerFailure
+the same number of attempts as the value.
+You can cap the total duration for your job by setting ``max_wait`` and ``max_run``
+(default: ``None``)}
 
 \item{\code{...}}{: update any deprecated parameters passed into class.}
 }

@@ -160,6 +160,13 @@ EstimatorBase = R6Class("EstimatorBase",
     #'              will be disabled (default: ``False``).
     #' @param environment (dict[str, str]) : Environment variables to be set for
     #'              use during training job (default: ``None``)
+    #' @param max_retry_attempts (int): The number of times to move a job to the STARTING status.
+    #'              You can specify between 1 and 30 attempts.
+    #'              If the value of attempts is greater than zero,
+    #'              the job is retried on InternalServerFailure
+    #'              the same number of attempts as the value.
+    #'              You can cap the total duration for your job by setting ``max_wait`` and ``max_run``
+    #'              (default: ``None``)
     #' @param ... : update any deprecated parameters passed into class.
     initialize = function(role,
                           instance_count,
@@ -191,6 +198,7 @@ EstimatorBase = R6Class("EstimatorBase",
                           profiler_config=NULL,
                           disable_profiler=FALSE,
                           environment=NULL,
+                          max_retry_attempts=NULL,
                           ...) {
 
       kwargs = list(...)
@@ -278,6 +286,8 @@ EstimatorBase = R6Class("EstimatorBase",
       self$disable_profiler = disable_profiler
 
       self$environment = environment
+
+      self$max_retry_attempts = max_retry_attempts
 
       if (!.region_supports_profiler(self$sagemaker_session$paws_region_name)){
         self$disable_profiler = TRUE
@@ -1252,6 +1262,11 @@ EstimatorBase = R6Class("EstimatorBase",
       if (self$enable_network_isolation())
         train_args$enable_network_isolation = TRUE
 
+      if (!is.null(estimator$max_retry_attempts))
+        train_args[["retry_strategy"]] = list("MaximumRetryAttempts"=estimator$max_retry_attempts)
+      else
+        train_args[["retry_strategy"]] = NULL
+
       if (self$encrypt_inter_container_traffic)
         train_args$encrypt_inter_container_traffic = TRUE
 
@@ -1417,9 +1432,16 @@ EstimatorBase = R6Class("EstimatorBase",
         if (!islistempty(max_wait))
           init_params[["max_wait"]] = max_wait
       }
+
+
+      if (job_details[["RetryStrategy"]] %||% FALSE){
+        init_params[["max_retry_attempts"]] = job_details[["RetryStrategy"]][["MaximumRetryAttempts"]]
+        max_wait = job_details[["StoppingCondition"]][["MaxWaitTimeInSeconds"]]
+        if (!islistempty(max_wait))
+          init_params[["max_wait"]] = max_wait
+      }
       return(init_params)
     }
-
   ),
 
   active = list(
@@ -1592,6 +1614,13 @@ Estimator = R6Class("Estimator",
     #'              will be disabled (default: ``False``).
     #' @param environment (dict[str, str]) : Environment variables to be set for
     #'              use during training job (default: ``None``)
+    #' @param max_retry_attempts (int): The number of times to move a job to the STARTING status.
+    #'              You can specify between 1 and 30 attempts.
+    #'              If the value of attempts is greater than zero,
+    #'              the job is retried on InternalServerFailure
+    #'              the same number of attempts as the value.
+    #'              You can cap the total duration for your job by setting ``max_wait`` and ``max_run``
+    #'              (default: ``None``)
     #' @param ... : additional arguements for parent class `EstimatorBase`.
     initialize = function(image_uri,
                           role,
@@ -1625,6 +1654,7 @@ Estimator = R6Class("Estimator",
                           profiler_config=NULL,
                           disable_profiler=FALSE,
                           environment=NULL,
+                          max_retry_attempts=NULL,
                           ...){
 
       self$image_uri = image_uri
@@ -1660,6 +1690,7 @@ Estimator = R6Class("Estimator",
         profiler_config=profiler_config,
         disable_profiler=disable_profiler,
         environment=environment,
+        max_retry_attempts=max_retry_attempts,
         ...)
       attr(self, "__module__") = environmentName(Estimator$parent_env)
     },
