@@ -2,14 +2,10 @@
 % Please edit documentation in R/paws_session.R
 \name{PawsSession}
 \alias{PawsSession}
-\title{A session stores configuration state and allows you to create service
-       clients}
+\title{PawsSession Class create connection to AWS utilizing paws.}
 \description{
-A session stores configuration state and allows you to create service
-       clients
-
-A session stores configuration state and allows you to create service
-       clients
+A session stores configuration state and allows you to create paws service
+             clients.
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}

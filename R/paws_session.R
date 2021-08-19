@@ -4,8 +4,9 @@
 #' @import R6
 #' @import paws
 
-#' @title A session stores configuration state and allows you to create service
-#'        clients
+#' @title PawsSession Class create connection to AWS utilizing paws.
+#' @description A session stores configuration state and allows you to create paws service
+#'              clients.
 #' @export
 PawsSession = R6Class("PawsSession",
   public = list(
