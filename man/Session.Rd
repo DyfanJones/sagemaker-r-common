@@ -5,12 +5,12 @@
 \title{Sagemaker Session Class}
 \description{
 Manage interactions with the Amazon SageMaker APIs and any other AWS services needed.
-This class provides convenient methods for manipulating entities and resources that Amazon
-SageMaker uses, such as training jobs, endpoints, and input datasets in S3.
-AWS service calls are delegated to an underlying paws session, which by default
-is initialized using the AWS configuration chain. When you make an Amazon SageMaker API call
-that accesses an S3 bucket location and one is not specified, the ``Session`` creates a default
-bucket based on a naming convention which includes the current AWS account ID.
+             This class provides convenient methods for manipulating entities and resources that Amazon
+             SageMaker uses, such as training jobs, endpoints, and input datasets in S3.
+             AWS service calls are delegated to an underlying paws session, which by default
+             is initialized using the AWS configuration chain. When you make an Amazon SageMaker API call
+             that accesses an S3 bucket location and one is not specified, the ``Session`` creates a default
+             bucket based on a naming convention which includes the current AWS account ID.
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
@@ -101,7 +101,7 @@ Creates a new instance of this [R6][R6::R6Class] class.
              Initialize a SageMaker \code{Session}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Session$new(
-  paws_credentials = NULL,
+  paws_session = NULL,
   sagemaker_client = NULL,
   sagemaker_runtime_client = NULL,
   default_bucket = NULL
@@ -111,14 +111,14 @@ Creates a new instance of this [R6][R6::R6Class] class.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{paws_credentials}}{(PawsCredentials): The underlying AWS credentails passed to paws SDK.}
+\item{\code{paws_session}}{(\link[R6sagemaker.common]{PawsSession}): The underlying AWS credentails passed to paws SDK.}
 
-\item{\code{sagemaker_client}}{(paws::sagemaker): Client which makes Amazon SageMaker service
+\item{\code{sagemaker_client}}{(\link[paws]{sagemaker}): Client which makes Amazon SageMaker service
 calls other than ``InvokeEndpoint`` (default: None). Estimators created using this
 ``Session`` use this client. If not provided, one will be created using this
 instance's ``paws session``.}
 
-\item{\code{sagemaker_runtime_client}}{(paws::sagemakerruntime): Client which makes
+\item{\code{sagemaker_runtime_client}}{(\link[paws]{sagemakerruntime}): Client which makes
 ``InvokeEndpoint`` calls to Amazon SageMaker (default: None). Predictors created
 using this ``Session`` use this client. If not provided, one will be created using
 this instance's ``paws session``.}

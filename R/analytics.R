@@ -268,7 +268,7 @@ TrainingJobAnalytics = R6Class("TrainingJobAnalytics",
                          end_time=NULL,
                          period=NULL){
      self$sagemaker_session = sagemaker_session %||% Session$new()
-     self$.cloudwatch = cloudwatch(config = self$sagemaker_session$paws_credentials$credentials)
+     self$.cloudwatch = self$sagemaker_session$paws_session$client("cloudwatch")
      self$.training_job_name = training_job_name
      self$.start_time = start_time
      self$.end_time = end_time

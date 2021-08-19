@@ -92,7 +92,7 @@ Lambda = R6Class("Lambda",
     #' @description Method to create a lambda function.
     #' @return boto3 response from Lambda's create_function method.
     create = function(){
-      lambda_client = self$session$lambda_client %||% paws::lambda(self$session$paws_credentials)
+      lambda_client = self$session$lambda_client %||% self$session$paws_session$client("lambda")
 
       if (is.null(self$function_name))
         ValueError$new("FunctionName must be provided to create a Lambda function.")
@@ -128,7 +128,7 @@ Lambda = R6Class("Lambda",
     #' @description Method to update a lambda function.
     #' @return: paws response from Lambda's update_function method.
     update = function(){
-      lambda_client = self$session$lambda_client %||% paws::lambda(self$session$paws_credentials)
+      lambda_client = self$session$lambda_client %||% self$session$paws_session$client("lambda")
       if (!is.null(self$script)){
         tryCatch({
           response = lambda_client$update_function_code(
@@ -158,7 +158,7 @@ Lambda = R6Class("Lambda",
     #' @description Method to invoke a lambda function.
     #' @return paws response from Lambda's invoke method.
     invoke = function(){
-      lambda_client = self$session$lambda_client %||% paws::lambda(self$session$paws_credentials)
+      lambda_client = self$session$lambda_client %||% self$session$paws_session$client("lambda")
       tryCatch({
         response = lambda_client$delete_function(
           FunctionName=self$function_name %||% self$function_arn

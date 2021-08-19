@@ -3,7 +3,7 @@
 
 #' @include r_utils.R
 #' @include logs.R
-#' @include set_credentials.R
+#' @include paws_session.R
 #' @include vpc_utils.R
 #' @include studio.R
 #' @include pkg_variables.R
@@ -31,29 +31,26 @@ LogState <- list(STARTING = 1,
                  COMPLETE = 5)
 
 #' @title Sagemaker Session Class
-#'
 #' @name Session
-#' @description
-#' Manage interactions with the Amazon SageMaker APIs and any other AWS services needed.
-#' This class provides convenient methods for manipulating entities and resources that Amazon
-#' SageMaker uses, such as training jobs, endpoints, and input datasets in S3.
-#' AWS service calls are delegated to an underlying paws session, which by default
-#' is initialized using the AWS configuration chain. When you make an Amazon SageMaker API call
-#' that accesses an S3 bucket location and one is not specified, the ``Session`` creates a default
-#' bucket based on a naming convention which includes the current AWS account ID.
-#'
+#' @description Manage interactions with the Amazon SageMaker APIs and any other AWS services needed.
+#'              This class provides convenient methods for manipulating entities and resources that Amazon
+#'              SageMaker uses, such as training jobs, endpoints, and input datasets in S3.
+#'              AWS service calls are delegated to an underlying paws session, which by default
+#'              is initialized using the AWS configuration chain. When you make an Amazon SageMaker API call
+#'              that accesses an S3 bucket location and one is not specified, the ``Session`` creates a default
+#'              bucket based on a naming convention which includes the current AWS account ID.
 #' @export
 Session = R6Class("Session",
   public = list(
 
     #' @description Creates a new instance of this [R6][R6::R6Class] class.
     #'              Initialize a SageMaker \code{Session}.
-    #' @param paws_credentials (PawsCredentials): The underlying AWS credentails passed to paws SDK.
-    #' @param sagemaker_client (paws::sagemaker): Client which makes Amazon SageMaker service
+    #' @param paws_session (\link[R6sagemaker.common]{PawsSession}): The underlying AWS credentails passed to paws SDK.
+    #' @param sagemaker_client (\link[paws]{sagemaker}): Client which makes Amazon SageMaker service
     #'              calls other than ``InvokeEndpoint`` (default: None). Estimators created using this
     #'              ``Session`` use this client. If not provided, one will be created using this
     #'              instance's ``paws session``.
-    #' @param sagemaker_runtime_client (paws::sagemakerruntime): Client which makes
+    #' @param sagemaker_runtime_client (\link[paws]{sagemakerruntime}): Client which makes
     #'              ``InvokeEndpoint`` calls to Amazon SageMaker (default: None). Predictors created
     #'              using this ``Session`` use this client. If not provided, one will be created using
     #'              this instance's ``paws session``.
@@ -62,7 +59,7 @@ Session = R6Class("Session",
     #'              :func:\code{default_bucket}).
     #'              If not provided, a default bucket will be created based on the following format:
     #'              "sagemaker-{region}-{aws-account-id}". Example: "sagemaker-my-custom-bucket".
-    initialize = function(paws_credentials = NULL,
+    initialize = function(paws_session = NULL,
                           sagemaker_client = NULL,
                           sagemaker_runtime_client = NULL,
                           default_bucket = NULL) {
@@ -72,7 +69,7 @@ Session = R6Class("Session",
       self$lambda_client = NULL
 
       private$.initialize(
-        paws_credentials=paws_credentials,
+        paws_session=paws_session,
         sagemaker_client=sagemaker_client,
         sagemaker_runtime_client=sagemaker_runtime_client,
         sagemaker_featurestore_runtime_client=NULL)
@@ -241,7 +238,7 @@ Session = R6Class("Session",
       default_bucket = private$.default_bucket_name_override
 
       if(is.null(default_bucket)) {
-        account = paws::sts(config = self$paws_credentials$credentials)$get_caller_identity()$Account
+        account = self$paws_session$client("sts")$get_caller_identity()$Account
         default_bucket = sprintf("sagemaker-%s-%s", region, account)
       }
 
@@ -1969,7 +1966,7 @@ Session = R6Class("Session",
     #' @param role (str): An AWS IAM role (either name or full ARN).
     #' @return str: The corresponding AWS IAM role ARN.
     expand_role = function(role){
-      iam = paws::iam(config = self$paws_credentials$credentials)
+      iam = self$paws_session$client("iam")
       if(grepl("/", role)) return(role)
       return(iam$get_role(RoleName = role)$Role$Arn)
     },
@@ -1991,7 +1988,7 @@ Session = R6Class("Session",
         return(instance_desc$RoleArn)
       }
 
-      assumed_role <- paws::sts(config = self$paws_credentials$credentials)$get_caller_identity()$Arn
+      assumed_role <- self$paws_session$client("sts")$get_caller_identity()$Arn
       if (grepl("AmazonSageMaker-ExecutionRole", assumed_role)){
         role <- gsub("^(.+)sts::(\\d+):assumed-role/(.+?)/.*$", "\\1iam::\\2:role/service-role/\\3", assumed_role)
         return(role)
@@ -2002,7 +1999,7 @@ Session = R6Class("Session",
       role_name = gsub(".*/","", role)
 
       tryCatch({
-        role = paws::iam(config = self$paws_credentials$credentials)$get_role(RoleName = role_name)$Role$Arn},
+        role = self$paws_session$client("iam")$get_role(RoleName = role_name)$Role$Arn},
         error = function(e){
           LOGGER$warn("Couldn't call 'get_role' to get Role ARN from role name %s to get Role path.", role_name)
       })
@@ -2024,7 +2021,7 @@ Session = R6Class("Session",
                             log_type="All"){
 
       description = self$sagemaker$describe_training_job(TrainingJobName=job_name)
-      cloudwatchlogs = paws::cloudwatchlogs(config = self$paws_credentials$credentials)
+      cloudwatchlogs = self$paws_session$client("cloudwatchlogs")
       writeLines(secondary_training_status_message(description, NULL), sep = "")
 
       init_log = .log_init(description, "Training")
@@ -2115,7 +2112,7 @@ Session = R6Class("Session",
                                        poll=10){
 
       description = self$sagemaker$describe_training_job(TrainingJobName=job_name)
-      cloudwatchlogs = paws::cloudwatchlogs(config = self$paws_credentials$credentials)
+      cloudwatchlogs = self$paws_session$client("cloudwatchlogs")
 
       init_log = .log_init(description, "Processing")
 
@@ -2164,7 +2161,7 @@ Session = R6Class("Session",
                                       poll=10){
 
       description = self$sagemaker$describe_transform_job(TransformJobName=job_name)
-      cloudwatchlogs = paws::cloudwatchlogs(config = self$paws_credentials$credentials)
+      cloudwatchlogs = self$paws_session$client("cloudwatchlogs")
 
       init_log = .log_init(description, "Transform")
 
@@ -2221,14 +2218,14 @@ Session = R6Class("Session",
           EncryptionConfiguration=list(EncryptionOption="SSE_KMS", KmsKey=kms_key))
         )
       kwargs = modifyList(kwargs, list(ResultConfiguration=result_config))
-      athena_client = paws::athena(config = self$paws_credentials$credentials)
+      athena_client = self$paws_sesssion$client("athena")
       return(.invoke(athena_client$start_query_execution , kwargs))
     },
 
     #' @description Get execution status of the Athena query.
     #' @param query_execution_id (str): execution ID of the Athena query.
     get_query_execution = function(query_execution_id){
-      athena_client = paws::athena(config = self$paws_credentials$credentials)
+      athena_client = self$paws_sesssion$client("athena")
       return(athena_client$get_query_execution(QueryExecutionId=query_execution_id))
     },
 
@@ -2282,26 +2279,24 @@ Session = R6Class("Session",
     # Creates or uses a boto_session, sagemaker_client and sagemaker_runtime_client.
     # Sets the region_name.
     .initialize = function(
-      paws_credentials,
+      paws_session,
       sagemaker_client,
       sagemaker_runtime_client,
       sagemaker_featurestore_runtime_client = NULL){
 
-      self$paws_credentials = if(inherits(paws_credentials, "PawsCredentials")) paws_credentials else PawsCredentials$new()
+      self$paws_session = if(inherits(paws_session, "PawsSession")) paws_session else PawsSession$new()
 
-      if (is.null(self$paws_credentials$credentials$region))
+      if (is.null(self$paws_session$region_name))
           ValueError$new(
             "Must setup local AWS configuration with a region supported by SageMaker.")
 
-      self$sagemaker = sagemaker_client %||% paws::sagemaker(config = self$paws_credentials$credentials)
-      self$sagemaker_runtime = sagemaker_runtime_client %||% paws::sagemakerruntime(config = self$paws_credentials$credentials)
-      self$s3 = paws::s3(config = self$paws_credentials$credentials)
+      self$sagemaker = sagemaker_client %||% self$paws_session$client("sagemaker")
+      self$sagemaker_runtime = sagemaker_runtime_client %||% self$paws_session$client("sagemakerruntime")
+      self$s3 = self$paws_session$client("s3")
       if (!is.null(sagemaker_featurestore_runtime_client)) {
         LOGGER$error("Paws currently doesn't support `sagemaker-featurestore-runtime`")
         # self$sagemaker_featurestore_runtime_client = (
-        #   sagemaker_featurestore_runtime_client  %||% paws::sagemakerfeaturestoreruntime(
-        #     config = self$paws_credentials$credentials
-        #   )
+        #   sagemaker_featurestore_runtime_client  %||% self$paws_session$client("sagemakerfeaturestoreruntime")
       }
       self$local_mode = FALSE
     },
@@ -3028,7 +3023,7 @@ Session = R6Class("Session",
   active = list(
     #' @field paws_region_name
     #' Returns aws region associated with Session
-    paws_region_name = function() {self$paws_credentials$credentials$region}
+    paws_region_name = function() {self$paws_session$region_name}
   ),
   lock_objects = F
 )

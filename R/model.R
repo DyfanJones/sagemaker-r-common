@@ -5,14 +5,13 @@
 #' @include session.R
 #' @include logs.R
 #' @include vpc_utils.R
-#' @include set_credentials.R
+#' @include paws_session.R
 #' @include fw_utils.R
 #' @include transformer.R
 #' @include git_utils.R
 #' @include image_uris.R
 #' @include r_utils.R
 
-#' @import paws
 #' @import jsonlite
 #' @import R6
 #' @import lgr

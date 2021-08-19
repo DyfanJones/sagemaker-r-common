@@ -22,7 +22,7 @@ Imports:
 Suggests:
     yaml,
     crayon,
-    testthat,
+    testthat (>= 3.0.0),
     R6sagemaker.local,
     readr
 Remotes:
@@ -37,7 +37,7 @@ Collate:
     'pkg_variables.R'
     'studio.R'
     'vpc_utils.R'
-    'set_credentials.R'
+    'paws_session.R'
     'logs.R'
     'session.R'
     'analytics.R'
@@ -73,3 +73,4 @@ Collate:
     's3.R'
     'processing.R'
     'zzz.R'
+Config/testthat/edition: 3
