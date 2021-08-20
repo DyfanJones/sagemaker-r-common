@@ -141,17 +141,16 @@ Session = R6Class("Session",
                                           bucket,
                                           key,
                                           kms_key=NULL){
+      params = list(
+        Bucket=bucket,
+        Body=charToRaw(body)
+      )
+      if (!is.null(kms_key)){
+        params[["SSEKMSKeyId"]] = kms_key
+        params[["ServerSideEncryption"]] = "aws:kms"
+      }
 
-      if (!is.null(kms_key))
-        self$s3$put_object(
-          Bucket=bucket,
-          Body=charToRaw(body),
-          SSEKMSKeyId=kms_key,
-          ServerSideEncryption="aws:kms")
-      else
-        self$s3$put_object(
-          Bucket=bucket,
-          Body=charToRaw(body))
+      do.call(self$s3$put_object, params)
 
       s3_uri = sprintf("s3://%s/%s",bucket, key)
       return (s3_uri)
@@ -175,7 +174,7 @@ Session = R6Class("Session",
       # Loop through the contents of the bucket, 1,000 objects at a time. Gathering all keys into
       # a "keys" list.
       while(!identical(params$ContinuationToken, character(0))){
-        response = .invoke(self$s3$list_objects_v2, params)
+        response = do.call(self$s3$list_objects_v2, params)
         # For each object, save its key or directory.
         keys = c(keys, sapply(response$Contents, function(x) x$Key))
         params$ContinuationToken = response$ContinuationToken
@@ -219,7 +218,10 @@ Session = R6Class("Session",
       # Loop through the contents of the bucket, 1,000 objects at a time. Gathering all keys into
       # a "keys" list.
       while(!identical(next_token, character(0))){
-        response = self$s3$list_objects_v2(Bucket = bucket, Prefix = key_prefix, ContinuationToken = next_token)
+        response = self$s3$list_objects_v2(
+          Bucket = bucket,
+          Prefix = key_prefix,
+          ContinuationToken = next_token)
         keys = c(keys, sapply(response$Contents, function(x) x$Key))
         next_token = response$ContinuationToken
       }
@@ -385,7 +387,25 @@ Session = R6Class("Session",
       LOGGER$info("Creating training-job with name: %s", job_name)
       LOGGER$debug("train request: %s", toJSON(train_request, pretty = T, auto_unbox = T))
 
-      .invoke(self$sagemaker$create_training_job, train_request)
+      return(do.call(self$sagemaker$create_training_job, train_request))
+    },
+
+    #' @description Calls the UpdateTrainingJob API for the given job name and returns the response.
+    #' @param job_name (str): Name of the training job being updated.
+    #' @param profiler_rule_configs (list): List of profiler rule configurations. (default: ``None``).
+    #' @param profiler_config (dict): Configuration for how profiling information is emitted with
+    #'              SageMaker Profiler. (default: ``None``).
+    update_training_job = function(job_name,
+                                   profiler_rule_configs=NULL,
+                                   profiler_config=NULL){
+      update_training_job_request = private$.get_update_training_job_request(
+        job_name=job_name,
+        profiler_rule_configs=profiler_rule_configs,
+        profiler_config=profiler_config
+      )
+      LOGGER$info("Updating training job with name %s", job_name)
+      LOGGER$debug("Update request: %s", toJSON(update_training_job_request, pretty = T, auto_unbox = T))
+      return(do.call(self$sagemaker$update_training_job, update_training_job_request))
     },
 
     #' @description Create an Amazon SageMaker processing job.
@@ -428,26 +448,22 @@ Session = R6Class("Session",
                        tags = NULL,
                        experiment_config=NULL){
 
-      process_request = list(
-        ProcessingJobName = job_name,
-        ProcessingResources = resources,
-        AppSpecification = app_specification,
-        RoleArn = role_arn)
-
-      process_request$ProcessingInputs = inputs
-
-      if(!is.null(output_config$Outputs)) process_request$ProcessingOutputConfig = output_config
-
-      process_request$Environment = environment
-      process_request$NetworkConfig = network_config
-      process_request$StoppingCondition = stopping_condition
-      process_request$Tags = tags
-      process_request$ExperimentConfig = experiment_config
-
+      process_request = private$.get_process_request(
+        inputs=inputs,
+        output_config=output_config,
+        job_name=job_name,
+        resources=resources,
+        stopping_condition=stopping_condition,
+        app_specification=app_specification,
+        environment=environment,
+        network_config=network_config,
+        role_arn=role_arn,
+        tags=tags,
+        experiment_config=experiment_config
+      )
       LOGGER$info("Creating processing-job with name %s", job_name)
       LOGGER$debug("process request: %s", toJSON(process_request, pretty = T, auto_unbox = T))
-
-      .invoke(self$sagemaker$create_processing_job, process_request)
+      return(do.call(self$sagemaker$create_processing_job, process_request))
     },
 
     #' @description Create an Amazon SageMaker monitoring schedule.
@@ -549,7 +565,7 @@ Session = R6Class("Session",
       LOGGER$info("Creating monitoring schedule name %s", monitoring_schedule_name)
       LOGGER$debug("monitoring_schedule_request= %s", toJSON(monitoring_schedule_request, pretty = T, auto_unbox = T))
 
-      .invoke(self$sagemaker$create_monitoring_schedule, monitoring_schedule_request)
+      return(do.call(self$sagemaker$create_monitoring_schedule, monitoring_schedule_request))
     },
 
     #' @description Update an Amazon SageMaker monitoring schedule.
@@ -706,7 +722,7 @@ Session = R6Class("Session",
       LOGGER$info("Updating monitoring schedule with name: %s", monitoring_schedule_name)
       LOGGER$debug("monitoring_schedule_request= %s", toJSON(monitoring_schedule_request, pretty = T, auto_unbox = T))
 
-      .invoke(self$sagemaker$update_monitoring_schedule, monitoring_schedule_request)
+      return(do.call(self$sagemaker$update_monitoring_schedule, monitoring_schedule_request))
     },
 
     #' @description Starts a monitoring schedule.
@@ -1147,7 +1163,7 @@ Session = R6Class("Session",
       LOGGER$info("Creating hyperparameter tuning job with name: %s", job_name)
       LOGGER$debug("tune request: %s", toJSON(tune_request, pretty = T, auto_unbox = T))
 
-      .invoke(self$sagemaker$create_hyper_parameter_tuning_job, tune_request)
+      return(do.call(self$sagemaker$create_hyper_parameter_tuning_job, tune_request))
     },
 
     #' @description Create an Amazon SageMaker hyperparameter tuning job. This method supports creating
@@ -1187,7 +1203,7 @@ Session = R6Class("Session",
       LOGGER$info("Creating hyperparameter tuning job with name: %s", job_name)
       LOGGER$debug("tune request: %s", toJSON(tune_request, pretty = T, auto_unbox = T))
 
-      .invoke(self$sagemaker$create_hyper_parameter_tuning_job, tune_request)
+      return(do.call(self$sagemaker$create_hyper_parameter_tuning_job, tune_request))
     },
 
     #' @description Calls the DescribeHyperParameterTuningJob API for the given job name
@@ -1269,7 +1285,7 @@ Session = R6Class("Session",
       LOGGER$info("Creating transform job with name: %s", job_name)
       LOGGER$debug("Transform request: %s", toJSON(request_list, pretty = T, auto_unbox = T))
 
-      .invoke(self$sagemaker$create_transform_job, request_list)
+      return(do.call(self$sagemaker$create_transform_job, request_list))
     },
 
     #' @description Create an Amazon SageMaker ``Model``.
@@ -1325,7 +1341,7 @@ Session = R6Class("Session",
       LOGGER$debug("CreateModel request: %s", toJSON(create_model_request, pretty = T, auto_unbox = T))
 
       tryCatch({
-        .invoke(self$sagemaker$create_model, create_model_request)
+        return(do.call(self$sagemaker$create_model, create_model_request))
         },
         error=function(e){
           error_code = e$error_response$Code
@@ -1454,7 +1470,18 @@ Session = R6Class("Session",
         marketplace_cert,
         approval_status,
         description)
-      return (.invoke(self$sagemaker$create_model_package, request))
+
+      return(self$sagemaker$create_model_package(
+        ModelPackageName = request$ModelPackageName,
+        ModelPackageGroupName = request$ModelPackageGroupName,
+        ModelPackageDescription = request$ModelPackageDescription,
+        InferenceSpecification = request$InferenceSpecification,
+        CertifyForMarketplace = request$CertifyForMarketplace,
+        ModelApprovalStatus = request$ModelApprovalStatus,
+        MetadataProperties = request$MetadataProperties,
+        ModelMetrics = request$ModelMetrics
+        )
+      )
     },
 
     #' @description Wait for an Amazon SageMaker endpoint deployment to complete.
@@ -2217,7 +2244,12 @@ Session = R6Class("Session",
         )
       kwargs = modifyList(kwargs, list(ResultConfiguration=result_config))
       athena_client = self$paws_sesssion$client("athena")
-      return(.invoke(athena_client$start_query_execution , kwargs))
+      return(athena_client$start_query_execution(
+        QueryString = kwargs$QueryString,
+        QueryExecutionContext = kwargs$QueryExecutionContext,
+        ResultConfiguration = kwargs$ResultConfiguration
+        )
+      )
     },
 
     #' @description Get execution status of the Athena query.
@@ -2545,6 +2577,56 @@ Session = R6Class("Session",
       train_request$ProfilerRuleConfigurations = profiler_rule_configs
       train_request$ProfilerConfig = profiler_config
       return(train_request)
+    },
+
+    # Constructs a request compatible for updateing an Amazon SageMaker training job.
+    # Args:
+    #   job_name (str): Name of the training job being updated.
+    # profiler_rule_configs (list): List of profiler rule configurations. (default: ``None``).
+    # profiler_config(dict): Configuration for how profiling information is emitted with
+    # SageMaker Profiler. (default: ``None``).
+    # Returns:
+    #   Dict: an update training request dict
+    .get_update_training_job_request = function(job_name,
+                                                profiler_rule_configs=NULL,
+                                                profiler_config=NULL){
+      update_training_job_request = list(
+        "TrainingJobName"=job_name
+      )
+      update_training_job_request[["ProfilerRuleConfigurations"]] = profiler_rule_configs
+      update_training_job_request[["ProfilerConfig"]] = profiler_config
+
+      return(update_training_job_request)
+    },
+
+    .get_process_request = function(inputs,
+                                    output_config,
+                                    job_name,
+                                    resources,
+                                    stopping_condition,
+                                    app_specification,
+                                    environment,
+                                    network_config,
+                                    role_arn,
+                                    tags,
+                                    experiment_config=NULL){
+      process_request = list(
+        ProcessingJobName = job_name,
+        ProcessingResources = resources,
+        AppSpecification = app_specification,
+        RoleArn = role_arn
+      )
+      process_request$ProcessingInputs = inputs
+
+      if(!islistempty(output_config$Outputs))
+        process_request$ProcessingOutputConfig = output_config
+
+      process_request$Environment = environment
+      process_request$NetworkConfig = network_config
+      process_request$StoppingCondition = stopping_condition
+      process_request$Tags = tags
+      process_request$ExperimentConfig = experiment_config
+      return(process_request)
     },
 
     .get_transform_request = function(job_name,

@@ -30,6 +30,7 @@ Manage interactions with the Amazon SageMaker APIs and any other AWS services ne
 \item \href{#method-list_s3_files}{\code{Session$list_s3_files()}}
 \item \href{#method-default_bucket}{\code{Session$default_bucket()}}
 \item \href{#method-train}{\code{Session$train()}}
+\item \href{#method-update_training_job}{\code{Session$update_training_job()}}
 \item \href{#method-process}{\code{Session$process()}}
 \item \href{#method-create_monitoring_schedule}{\code{Session$create_monitoring_schedule()}}
 \item \href{#method-update_monitoring_schedule}{\code{Session$update_monitoring_schedule()}}
@@ -429,6 +430,32 @@ use during training job (default: ``None``)}
 }
 \subsection{Returns}{
 str: ARN of the training job, if it is created.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-update_training_job"></a>}}
+\if{latex}{\out{\hypertarget{method-update_training_job}{}}}
+\subsection{Method \code{update_training_job()}}{
+Calls the UpdateTrainingJob API for the given job name and returns the response.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Session$update_training_job(
+  job_name,
+  profiler_rule_configs = NULL,
+  profiler_config = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{job_name}}{(str): Name of the training job being updated.}
+
+\item{\code{profiler_rule_configs}}{(list): List of profiler rule configurations. (default: ``None``).}
+
+\item{\code{profiler_config}}{(dict): Configuration for how profiling information is emitted with
+SageMaker Profiler. (default: ``None``).}
+}
+\if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}
