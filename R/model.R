@@ -172,7 +172,7 @@ Model = R6Class("Model",
         approval_status,
         description)
 
-      model_package = .invoke(self$sagemaker_session$create_model_package_from_containers, model_pkg_args)
+      model_package = do.call(self$sagemaker_session$create_model_package_from_containers, model_pkg_args)
 
       return(ModelPackage$new(
         role=self$role,
@@ -253,7 +253,7 @@ Model = R6Class("Model",
             s3_kms_key,
             tags
       )
-      .invoke(self$sagemaker_session.package_model_for_edge, config)
+      do.call(self$sagemaker_session.package_model_for_edge, config)
       job_status = self$sagemaker_session$wait_for_edge_packaging_job(job_name)
       self$model_data = job_status$ModelArtifact
       private$.is_edge_packaged_model = TRUE
@@ -347,7 +347,7 @@ Model = R6Class("Model",
         framework_version
       )
 
-      .invoke(self$sagemaker_session$compile_model, config)
+      do.call(self$sagemaker_session$compile_model, config)
       job_status = self$sagemaker_session$wait_for_compilation_job(job_name)
       self$model_data = job_status[["ModelArtifacts"]][["S3ModelArtifacts"]]
       if (!is.null(target_instance_family)){

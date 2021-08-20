@@ -558,7 +558,7 @@ EstimatorBase = R6Class("EstimatorBase",
 
       # clone current class
       estimator = self$clone()
-      .invoke(estimator$initialize, init_params)
+      do.call(estimator$initialize, init_params)
 
       # update estimator class variables
       estimator$latest_training_job = init_params$base_job_name
@@ -663,7 +663,7 @@ EstimatorBase = R6Class("EstimatorBase",
         model = self$.compiled_models[[family]]
       } else{
         create_model_args$model_kms_key = self$output_kms_key
-        model = .invoke(self$create_model, create_model_args)
+        model = do.call(self$create_model, create_model_args)
       }
       model$name = model_name
 
@@ -731,7 +731,7 @@ EstimatorBase = R6Class("EstimatorBase",
       if (!is.null(compile_model_family)){
         model = private$.compiled_models[[compile_model_family]]
       } else{
-        model = .invoke(self$create_model, kwargs)}
+        model = do.call(self$create_model, kwargs)}
       model$name = model_name
       return(model$register(
         content_types,
@@ -1208,7 +1208,7 @@ EstimatorBase = R6Class("EstimatorBase",
                           experiment_config = NULL){
       train_args= private$.get_train_args(inputs, experiment_config)
 
-      .invoke(self$sagemaker_session$train, train_args)
+      do.call(self$sagemaker_session$train, train_args)
     },
 
     # Constructs a dict of arguments for an Amazon SageMaker training job from the estimator.
@@ -1356,7 +1356,7 @@ EstimatorBase = R6Class("EstimatorBase",
     .update = function(profiler_rule_configs=NULL,
                        profiler_config=NULL){
       update_args = priavte$.get_update_args(estimator, profiler_rule_configs, profiler_config)
-      .invoke(self$sagemaker_session$update_training_job, update_args)
+      do.call(self$sagemaker_session$update_training_job, update_args)
 
       return(self$latest_training_job)
     },
@@ -1773,7 +1773,7 @@ Estimator = R6Class("Estimator",
       if (!("enable_network_isolation" %in% names(args)))
           args$enable_network_isolation = self$enable_network_isolation()
 
-      return(.invoke(Model$new, args))
+      return(do.call(Model$new, args))
     }
   ),
   lock_objects = F

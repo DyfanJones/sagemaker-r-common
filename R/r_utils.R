@@ -170,24 +170,6 @@ print.Enum <- function(x, ...){
   cat(paste("  -", values, collapse = "\n"))
 }
 
-#' @title Safe method to invoke paws functions
-#' @keywords internal
-#' @examples
-#' \dontrun{
-#'   library(R6sagemaker.common)
-#'
-#'   s3 <- paws::s3()
-#'
-#'   params <- list(
-#'      Bucket = "made-up"
-#'   )
-#'   .invoke(s3$list_objects_v2, params)
-#' }
-#' @export
-.invoke <- function(.fn, args){
-  do.call(".fn", args)
-}
-
 #' @title Split string from the right
 #' @param str : string to be split
 #' @param separator (str): Method splits string starting from the right (default `\\.`)

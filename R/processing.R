@@ -729,7 +729,7 @@ ProcessingJob = R6Class("ProcessingJob",
       print(process_request_args$output_config$Outputs)
 
       # Call sagemaker_session.process using the arguments dictionary.
-      .invoke(processor$sagemaker_session$process, process_request_args)
+      do.call(processor$sagemaker_session$process, process_request_args)
 
       cls = self$clone()
       cls$initialize(

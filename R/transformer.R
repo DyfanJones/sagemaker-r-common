@@ -350,7 +350,7 @@ Transformer = R6Class("Transformer",
       )
 
       # start transform job
-      .invoke(self$sagemaker_session$transform, transform_args)
+      do.call(self$sagemaker_session$transform, transform_args)
 
       # return current_job name
       return(self$.current_job_name)

@@ -69,14 +69,17 @@ S3Uploader = R6Class("S3Uploader",
 
       sagemaker_session = sagemaker_session %||% Session$new()
       s3_parts = split_s3_uri(desired_s3_uri)
-      if (!is.null(kms_key))
-      return(sagemaker_session$upload_data(
-      path=local_path, bucket=s3_parts$bucket,
-      key_prefix=s3_parts$key, SSEKMSKeyId = kms_key))
+      params = list(
+        path=local_path,
+        bucket=s3_parts$bucket,
+        key_prefix=s3_parts$key
+      )
+      if (!is.null(kms_key)){
+        params[["SSEKMSKeyId"]] = kms_key
+        params[["ServerSideEncryption"]] = "aws:kms"
+      }
 
-      return(sagemaker_session$upload_data(
-      path=local_path, bucket=s3_parts$bucket,
-      key_prefix=s3_parts$key))
+      return(do.call(sagemaker_session$upload_data, params))
     },
 
     #' @description Static method that uploads a given file or directory to S3.
@@ -94,8 +97,7 @@ S3Uploader = R6Class("S3Uploader",
       s3_parts = split_s3_uri(desired_s3_uri)
 
       sagemaker_session$upload_string_as_file_body(
-      body=body, bucket=s3_parts$bucket,
-      key_prefix=s3_parts$key, kms_key=kms_key)
+        body=body, bucket=s3_parts$bucket, key=s3_parts$key, kms_key=kms_key)
 
       return(desired_s3_uri)
     },
@@ -127,15 +129,14 @@ S3Downloader = R6Class("S3Downloader",
                         sagemaker_session=NULL){
 
       sagemaker_session = sagemaker_session %||% Session$new()
-      s3_parts = split_s3_uri(desired_s3_uri)
-      if (!is.null(kms_key))
-      return(sagemaker_session$download_data(
-      path=local_path, bucket=s3_parts$bucket,
-      key_prefix=s3_parts$key, SSEKMSKeyId = kms_key))
-
-      return(sagemaker_session$download_data(
-      path=local_path, bucket=s3_parts$bucket,
-      key_prefix=s3_parts$key))
+      s3_parts = split_s3_uri(s3_uri)
+      params = list(
+        path = local_path,
+        bucket = s3_parts$bucket,
+        key_prefix=s3_parts$key
+      )
+      params[["SSECustomerKey"]] = kms_key
+      return(do.call(sagemaker_session$download_data, params))
     },
 
     #' @description Static method that returns the contents of an s3 uri file body as a string.
@@ -159,15 +160,15 @@ S3Downloader = R6Class("S3Downloader",
     #' @return [str]: The list of S3 URIs in the given S3 base uri.
     list = function(s3_uri,
                     sagemaker_session = NULL){
-      sagemaker_session = sagemaker_session %||% Session()
+      sagemaker_session = sagemaker_session %||% Session$new()
       s3_parts = split_s3_uri(desired_s3_uri)
 
       file_keys = sagemaker_session$list_s3_files(bucket=s3_parts$bucket, key_prefix=s3_parts$key)
       return(lapply(file_keys, function(file_key) s3_path_join("s3://", s3_parts$bucket, file_key)))
-      },
+    },
 
-      #' @description format class
-      format = function(){
+    #' @description format class
+    format = function(){
       return(format_class(self))
     }
   )
