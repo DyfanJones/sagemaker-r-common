@@ -163,14 +163,14 @@ Record = R6Class("Record",
       list_method = sagemaker_client[[paws_list_method]] %||% stop("Method not identified.", call. = F)
 
       list_request_kwargs = PawsFunctions$new()$to_paws(
-        kwargs, private$.custom_boto_names, private$.custom_paws_types)
+        kwargs, private$.custom_paws_names, private$.custom_paws_types)
 
       next_token = NULL
       resp_ll <- list()
       tryCatch({
         while(!identical(next_token, character(0))){
           list_request_kwargs[[paws_next_token_name]] = next_token
-          response_chunk = do.call(list_method, list_request_kwargs)
+          response_chunk = do.call(sagemaker_client[[paws_list_method]], list_request_kwargs)
           list_items = response_chunk[[paws_list_items_name]] %||% list()
           next_token = response_chunk[[paws_next_token_name]]
 
@@ -190,7 +190,6 @@ Record = R6Class("Record",
       sagemaker_session = sagemaker_session %||% Session$new()
       sagemaker_client = sagemaker_session$sagemaker
 
-      search_method = sagemaker_client[["search"]]
       search_request_kwargs = PawsFunctions$new()$to_paws(
         kwargs, private$.custom_paws_names,
         private$.custom_paws_types)
@@ -203,7 +202,7 @@ Record = R6Class("Record",
 
         while(!identical(next_token, character(0))){
           search_request_kwargs[[paws_next_token_name]] = next_token
-          search_method_response = do.call(search_method, search_request_kwargs)
+          search_method_response = do.call(sagemaker_client[["search"]], search_request_kwargs)
           search_items = search_method_response[["Results"]] %||% list()
           next_token = search_method_response[[paws_next_token_name]]
 
@@ -244,8 +243,7 @@ Record = R6Class("Record",
                            paws_method_members){
       api_values = as.list(self)[private$.args[paws_method_members]]
       api_kwargs = self$to_paws(api_values)
-      api_method = self$sagemaker_session$sagemaker[[paws_method]]
-      api_paws_response = do.call(api_method, api_kwargs)
+      api_paws_response = do.call(self$sagemaker_session$sagemaker[[paws_method]], api_kwargs)
       return(self$with_paws(api_paws_response))
     }
   ),
