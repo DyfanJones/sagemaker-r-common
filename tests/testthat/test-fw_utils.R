@@ -1,3 +1,6 @@
+# NOTE: This code has been modified from AWS Sagemaker Python:
+# https://github.com/aws/sagemaker-python-sdk/blob/master/tests/unit/test_fw_utils.py
+
 library(lgr)
 
 LOGGER = lgr::get_logger("R6sagemaker")

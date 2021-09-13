@@ -1,5 +1,5 @@
-# NOTE: This code has been modified from AWS Sagemaker Python: https://github.com/aws/sagemaker-python-sdk/blob/64f600d677872fe8656cdf25d68fc4950b2cd28f/tests/unit/test_inputs.py
-context("inputs Classes")
+# NOTE: This code has been modified from AWS Sagemaker Python:
+# https://github.com/aws/sagemaker-python-sdk/blob/master/tests/unit/test_inputs.py
 
 test_that("test training input all defaults", {
   prefix = "pre"

@@ -1,4 +1,5 @@
-context("ImageUris Sagemaker uris construction")
+# NOTE: This code has been modified from AWS Sagemaker Python:
+# https://github.com/aws/sagemaker-python-sdk/blob/master/tests/unit/test_image.py
 
 image_uris = ImageUris$new()
 
