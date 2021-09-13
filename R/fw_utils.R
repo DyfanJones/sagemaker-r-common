@@ -348,8 +348,8 @@ validate_smdistributed <- function(instance_type,
 
   # distribution contains smdistributed
   smdistributed = distribution$smdistributed
-  if (!inherits(smdistributed, "list"))
-    ValueError$new("smdistributed strategy requires a dictionary")
+  if (!is_list_named(smdistributed))
+    ValueError$new("smdistributed strategy requires to be a named list")
 
   if (length(smdistributed) > 1){
     # more than 1 smdistributed strategy requested by the user
@@ -357,18 +357,17 @@ validate_smdistributed <- function(instance_type,
       "Cannot use more than 1 smdistributed strategy.\n",
       "Choose one of the following supported strategies:",
       paste(SMDISTRIBUTED_SUPPORTED_STRATEGIES, collapse = ", "))
-    ValueError$new(err_msg, call. = F)
+    ValueError$new(err_msg)
   }
-
   # validate if smdistributed strategy is supported
   # currently this for loop essentially checks for only 1 key
-  for (strategy in smdistributed){
-    if (!(names(strategy) %in% SMDISTRIBUTED_SUPPORTED_STRATEGIES)){
+  for (strategy in names(smdistributed)){
+    if (!(strategy %in% SMDISTRIBUTED_SUPPORTED_STRATEGIES)){
       err_msg = paste(
         sprintf("Invalid smdistributed strategy provided: %s\n", strategy),
         sprintf("Supported strategies: %s", paste(SMDISTRIBUTED_SUPPORTED_STRATEGIES, collapse = ", "))
       )
-      ValueError$new(err_msg, call. = F)
+      ValueError$new(err_msg)
     }
   }
 
@@ -430,7 +429,7 @@ validate_smdistributed <- function(instance_type,
                        "Please specify py_version=py3")
     }
   }
-  if (length(err_msg) > 0)
+  if (nchar(err_msg) > 0)
     ValueError$new(err_msg)
 }
 
