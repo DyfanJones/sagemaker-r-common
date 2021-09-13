@@ -86,6 +86,7 @@ unique_name_from_base <- function(base, max_length=63){
 #' @return str: Algorithm name, as extracted from the image name.
 #' @export
 base_name_from_image <- function(image){
+  stopifnot(is.character(image))
   m <- grepl("^(.+/)?([^:/]+)(:[^:]+)?$", image)
   algo_name = if(!is.null(m)) gsub(".*/|:.*", "", image) else image
   return(algo_name)
