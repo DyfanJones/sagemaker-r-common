@@ -58,11 +58,11 @@ git_clone_repo <- function(git_config,
                            entry_point,
                            source_dir=NULL,
                            dependencies=NULL){
-  if(missing(entry_point)){
-    stop("Please provide an entry point.", call. = F)}
+  if(missing(entry_point))
+    ValueError$new("Please provide an entry point.")
 
   .valid_git_config(git_config)
-  dest_dir = tempdir()
+  dest_dir = tempfile()
   .generate_and_run_clone_command(git_config, dest_dir)
 
   .checkout_branch_and_commit(git_config, dest_dir)
@@ -72,24 +72,24 @@ git_clone_repo <- function(git_config,
     "source_dir"= source_dir,
     "dependencies"= dependencies)
 
-
   # check if the cloned repo contains entry point, source directory and dependencies
   if (!is.null(source_dir)){
-    if (dir.exists(file.path(dest_dir, source_dir)))
+    if (!fs::is_dir(fs::path(dest_dir, source_dir)))
       ValueError$new("Source directory does not exist in the repo.")
-    if (!fs::is_file(file.path(dest_dir, source_dir, entry_point)))
+    if (!fs::is_file(fs::path(dest_dir, source_dir, entry_point)))
       ValueError$new("Entry point does not exist in the repo.")
     updated_paths$source_dir = file.path(dest_dir, source_dir)
   } else {
-    if (!fs::is_file(file.path(dest_dir, entry_point))){
+    if (fs::is_file(fs::path(dest_dir, entry_point)))
       updated_paths$entry_point = file.path(dest_dir, entry_point)
-    } else {ValueError$new("Entry point does not exist in the repo.")}
+    else
+      ValueError$new("Entry point does not exist in the repo.")
   }
 
   if (!islistempty(dependencies)) {
     updated_paths$dependencies = list()
     for (path in dependencies){
-      if (file.exists(file.path(dest_dir, path)))
+      if (fs::dir_exists(fs::path(dest_dir, path)))
         updated_paths$dependencies = c(updated_paths$dependencies, file.path(dest_dir, path))
       else
         ValueError$new(sprintf("Dependency %s does not exist in the repo.",path))
@@ -142,7 +142,7 @@ git_clone_repo <- function(git_config,
   is_https = startsWith(git_config$repo,"https://")
   is_ssh = startsWith(git_config$repo,"git@")
   if (!is_https && !is_ssh)
-    stop("Invalid Git url provided.", call. = F)
+    ValueError$new("Invalid Git url provided.")
   if (is_ssh)
     .clone_command_for_ssh(git_config, dest_dir)
   else if ("2FA_enabled" %in% names(git_config) && git_config[["2FA_enabled"]])
@@ -209,13 +209,13 @@ git_clone_repo <- function(git_config,
 #   git_config: The git configuration.
 # dest_dir: The destination directory for the clone.
 .clone_command_for_codecommit_https <- function(git_config, dest_dir){
-    updated_url = git_config$repo
-    if ("username" %in% names(git_config) && "password" %in% names(git_config))
-      updated_url = .insert_username_and_password_to_repo_url(
-        url=git_config$repo, username=git_config$username, password=git_config$password)
-    else if ("username" %in% names(git_config) || "password" %in% names(git_config))
-      warning("Credentials provided in git config will be ignored.")
-    .run_clone_command(updated_url, dest_dir)
+  updated_url = git_config$repo
+  if ("username" %in% names(git_config) && "password" %in% names(git_config))
+    updated_url = .insert_username_and_password_to_repo_url(
+      url=git_config$repo, username=git_config$username, password=git_config$password)
+  else if ("username" %in% names(git_config) || "password" %in% names(git_config))
+    warning("Credentials provided in git config will be ignored.")
+  .run_clone_command(updated_url, dest_dir)
 }
 
 
