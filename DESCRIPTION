@@ -21,6 +21,7 @@ Imports:
     R6sagemaker.debugger
 Suggests:
     yaml,
+    mockery,
     crayon,
     testthat (>= 3.0.0),
     R6sagemaker.local,
