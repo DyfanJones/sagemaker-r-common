@@ -70,18 +70,24 @@ PawsSession = R6Class("PawsSession",
     #' @description Create a low-level service client by name.
     #' @param service_name (str): The name of a service, e.g. 's3' or 'ec2'.
     #'              A list of available services can be found \url{https://paws-r.github.io/docs/}
-    client = function(service_name){
-      stopifnot(is.character(service_name))
+    #' @param config (list): Optional configuration of credentials, endpoint, and/or region.
+    client = function(service_name, config = NULL){
+      stopifnot(is.character(service_name),
+                is.null(config) || is.list(config))
       tryCatch({
         svc = getFromNamespace(service_name, "paws")
       },
       error = function(e){
-        ValueError$new(sprintf(
-          "Unknown `paws` service: '%s'. Please try again with a valid `paws` service. ",service_name),
-          "Valid service names can be found: https://paws-r.github.io/docs/"
+        UnknownServiceError$new(sprintf(
+          "Unknown service: '%s'. Valid service names are: %s",
+          service_name, paste(ls(envir = asNamespace("paws")), collapse = ", ")
+          )
         )
       })
-      return(svc(config = self$credentials))
+
+      # Allow for credentials to be modified per client service if needed.
+      cred = modifyList(self$credentials, as.list(config))
+      return(svc(config = cred))
     },
 
     #' @description format class

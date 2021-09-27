@@ -8,6 +8,8 @@
 \alias{UnexpectedStatusError}
 \alias{RuntimeError}
 \alias{AttributeError}
+\alias{DataNotFoundError}
+\alias{UnknownServiceError}
 \title{SagemakerError}
 \description{
 Create Sagemaker error format.
@@ -269,6 +271,74 @@ The objects of this class are cloneable with this method.
 The objects of this class are cloneable with this method.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AttributeError$clone(deep = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{deep}}{Whether to make a deep clone.}
+}
+\if{html}{\out{</div>}}
+}
+}
+}
+\section{Super class}{
+\code{\link[R6sagemaker.common:SagemakerError]{R6sagemaker.common::SagemakerError}} -> \code{DataNotFoundError}
+}
+\section{Methods}{
+\subsection{Public methods}{
+\itemize{
+\item \href{#method-clone}{\code{DataNotFoundError$clone()}}
+}
+}
+\if{html}{
+\out{<details open ><summary>Inherited methods</summary>}
+\itemize{
+\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="SagemakerError" data-id="initialize">}\href{../../R6sagemaker.common/html/SagemakerError.html#method-initialize}{\code{R6sagemaker.common::SagemakerError$initialize()}}\out{</span>}
+}
+\out{</details>}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
+\subsection{Method \code{clone()}}{
+The objects of this class are cloneable with this method.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DataNotFoundError$clone(deep = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{deep}}{Whether to make a deep clone.}
+}
+\if{html}{\out{</div>}}
+}
+}
+}
+\section{Super classes}{
+\code{\link[R6sagemaker.common:SagemakerError]{R6sagemaker.common::SagemakerError}} -> \code{\link[R6sagemaker.common:DataNotFoundError]{R6sagemaker.common::DataNotFoundError}} -> \code{UnknownServiceError}
+}
+\section{Methods}{
+\subsection{Public methods}{
+\itemize{
+\item \href{#method-clone}{\code{UnknownServiceError$clone()}}
+}
+}
+\if{html}{
+\out{<details open ><summary>Inherited methods</summary>}
+\itemize{
+\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="SagemakerError" data-id="initialize">}\href{../../R6sagemaker.common/html/SagemakerError.html#method-initialize}{\code{R6sagemaker.common::SagemakerError$initialize()}}\out{</span>}
+}
+\out{</details>}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
+\subsection{Method \code{clone()}}{
+The objects of this class are cloneable with this method.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{UnknownServiceError$clone(deep = FALSE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

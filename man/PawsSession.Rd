@@ -75,7 +75,7 @@ Initialize PawsSession class
 \subsection{Method \code{client()}}{
 Create a low-level service client by name.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{PawsSession$client(service_name)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{PawsSession$client(service_name, config = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -83,6 +83,8 @@ Create a low-level service client by name.
 \describe{
 \item{\code{service_name}}{(str): The name of a service, e.g. 's3' or 'ec2'.
 A list of available services can be found \url{https://paws-r.github.io/docs/}}
+
+\item{\code{config}}{(list): Optional configuration of credentials, endpoint, and/or region.}
 }
 \if{html}{\out{</div>}}
 }

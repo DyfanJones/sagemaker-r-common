@@ -71,3 +71,11 @@ RuntimeError = R6Class("RuntimeError", inherit = SagemakerError)
 #' @rdname SagemakerError
 #' @export
 AttributeError = R6Class("AttributeError", inherit = SagemakerError)
+
+#' @rdname SagemakerError
+#' @export
+DataNotFoundError = R6Class("DataNotFoundError", inherit = SagemakerError)
+
+#' @rdname SagemakerError
+#' @export
+UnknownServiceError = R6Class("UnknownServiceError", inherit = DataNotFoundError)
