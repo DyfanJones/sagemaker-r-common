@@ -90,6 +90,7 @@ Manage interactions with the Amazon SageMaker APIs and any other AWS services ne
 \item \href{#method-get_query_execution}{\code{Session$get_query_execution()}}
 \item \href{#method-wait_for_athena_query}{\code{Session$wait_for_athena_query()}}
 \item \href{#method-download_athena_query_result}{\code{Session$download_athena_query_result()}}
+\item \href{#method-account_id}{\code{Session$account_id()}}
 \item \href{#method-format}{\code{Session$format()}}
 \item \href{#method-clone}{\code{Session$clone()}}
 }
@@ -2482,6 +2483,19 @@ Download query result file from S3.
 \item{\code{filename}}{(str): name of the downloaded file.}
 }
 \if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-account_id"></a>}}
+\if{latex}{\out{\hypertarget{method-account_id}{}}}
+\subsection{Method \code{account_id()}}{
+Get the AWS account id of the caller.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Session$account_id()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+AWS account ID.
 }
 }
 \if{html}{\out{<hr>}}

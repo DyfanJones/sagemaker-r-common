@@ -241,7 +241,9 @@ Session = R6Class("Session",
       default_bucket = private$.default_bucket_name_override
 
       if(is.null(default_bucket)) {
-        account = self$paws_session$client("sts")$get_caller_identity()$Account
+        account = self$paws_session$client(
+          "sts", config = list(region = region, endpoint = sts_regional_endpoint(region))
+          )$get_caller_identity()$Account
         default_bucket = sprintf("sagemaker-%s-%s", region, account)
       }
 
@@ -2002,32 +2004,71 @@ Session = R6Class("Session",
     get_caller_identity_arn = function(){
 
       if(file.exists(NOTEBOOK_METADATA_FILE)){
-        instance_name = read_json(NOTEBOOK_METADATA_FILE)$ResourceName
+        metadata = read_json(NOTEBOOK_METADATA_FILE)
+        instance_name = metadata[["ResourceName"]]
+        domain_id = metadata[["DomainId"]]
+        user_profile_name = metadata[["UserProfileName"]]
 
         tryCatch({
-          instance_desc = self$sagemaker$describe_notebook_instance(NotebookInstanceName=instance_name)
+          if(is.null(domain_id)){
+            instance_desc = self$sagemaker$describe_notebook_instance(NotebookInstanceName=instance_name)
+            return(instance_desc$RoleArn)
+          }
+          user_profile_desc = self$sagemaker$describe_user_profile(
+            DomainId=domain_id, UserProfileName=user_profile_name
+          )
+
+          # First, try to find role in userSettings
+          if (!is.null(user_profile_desc[["UserSettings"]][["ExecutionRole"]]))
+            return(user_profile_desc[["UserSettings"]][["ExecutionRole"]])
+
+          # If not found, fallback to the domain
+          domain_desc = self$sagemaker$describe_domain(DomainId=domain_id)
+          return(domain_desc[["DefaultUserSettings"]][["ExecutionRole"]])
           },
           error=function(e) {
-            stop(sprintf("Couldn't call 'describe_notebook_instance' to get the Role \nARN of the instance %s.",
-                instance_name))
+            LOGGER$debug(
+              "Couldn't call 'describe_notebook_instance' to get the Role \nARN of the instance %s.",
+              instance_name)
         })
-        return(instance_desc$RoleArn)
       }
+      assumed_role = self$paws_session$client(
+        "sts",
+        config = list(
+          region = self$paws_region_name,
+          endpoint = sts_regional_endpoint(self$paws_region_name)
+          )
+      )$get_caller_identity()[["Arn"]]
 
-      assumed_role <- self$paws_session$client("sts")$get_caller_identity()$Arn
-      if (grepl("AmazonSageMaker-ExecutionRole", assumed_role)){
-        role <- gsub("^(.+)sts::(\\d+):assumed-role/(.+?)/.*$", "\\1iam::\\2:role/service-role/\\3", assumed_role)
-        return(role)
-      }
-      role <- gsub("^(.+)sts::(\\d+):assumed-role/(.+?)/.*$", "\\1iam::\\2:role/\\3", assumed_role)
+      role = gsub("^(.+)sts::(\\d+):assumed-role/(.+?)/.*$", "\\1iam::\\2:role/\\3", assumed_role)
 
       # Call IAM to get the role's path
-      role_name = gsub(".*/","", role)
-
+      role_name = substr(role, gregexpr("/",role)[[1]][1] + 1, nchar(role))
       tryCatch({
-        role = self$paws_session$client("iam")$get_role(RoleName = role_name)$Role$Arn},
-        error = function(e){
-          LOGGER$warn("Couldn't call 'get_role' to get Role ARN from role name %s to get Role path.", role_name)
+        role = self$paws_session$client("iam")$get_role(RoleName=role_name)[["Role"]][["Arn"]]
+      }, error = function(e){
+        LOGGER$warn(
+          "Couldn't call 'get_role' to get Role ARN from role name %s to get Role path.",
+          role_name
+        )
+        # This conditional has been present since the inception of SageMaker
+        # Guessing this conditional's purpose was to handle lack of IAM permissions
+        # https://github.com/aws/sagemaker-python-sdk/issues/2089#issuecomment-791802713
+        if (grepl("AmazonSageMaker-ExecutionRole", assumed_role)){
+          LOGGER$warn(
+            "Assuming role was created in SageMaker AWS console, ",
+            "as the name contains `AmazonSageMaker-ExecutionRole`. ",
+            "Defaulting to Role ARN with service-role in path. ",
+            "If this Role ARN is incorrect, please add ",
+            "IAM read permissions to your role or supply the ",
+            "Role Arn directly."
+          )
+          role = gsub(
+            "^(.+)sts::(\\d+):assumed-role/(.+?)/.*$",
+            "\\1iam::\\2:role/service-role/\\3",
+            assumed_role
+          )
+        }
       })
       return(role)
     },
@@ -2295,6 +2336,16 @@ Session = R6Class("Session",
 
       obj = self$s3$get_object(Bucket = bucket, Key = sprintf("%s/%s.csv",prefix,query_execution_id))
       write_bin(obj$Body, filename)
+    },
+
+    #' @description Get the AWS account id of the caller.
+    #' @return AWS account ID.
+    account_id = function(){
+      region = self$paws_region_name
+      sts_client = self$paws_session$client(
+        "sts", config = list(region=region, endpoint=sts_regional_endpoint(region))
+      )
+      return(sts_client$get_caller_identity()[["Account"]])
     },
 
     #' @description foramt class
