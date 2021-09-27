@@ -143,7 +143,8 @@ Session = R6Class("Session",
                                           kms_key=NULL){
       params = list(
         Bucket=bucket,
-        Body=charToRaw(body)
+        Body=charToRaw(body),
+        Key = key
       )
       if (!is.null(kms_key)){
         params[["SSEKMSKeyId"]] = kms_key
