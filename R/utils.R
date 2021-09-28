@@ -40,11 +40,12 @@ DEFAULT_SLEEP_TIME_SECONDS = 10
 
 #' @title Create a training job name based on the image name and a timestamp.
 #' @param image (str): Image name.
+#' @param max_length (int): Maximum length for the resulting string (default: 63).
 #' @return str: Training job name using the algorithm from the image name and a
 #'        timestamp.
 #' @export
-name_from_image <- function(image){
-  return(name_from_base(base_name_from_image(image)))
+name_from_image <- function(image, max_length=63L){
+  return(name_from_base(base_name_from_image(image), max_length = max_length))
 }
 
 #' @title Append a timestamp to the provided string.
@@ -56,12 +57,6 @@ name_from_image <- function(image){
 #' @param short (bool): Whether or not to use a truncated timestamp (default: False).
 #' @return str: Input parameter with appended timestamp.
 #' @export
-name_from_base <- function(base, max_length = 63, short = FALSE){
-  timestamp = if(short) sagemaker_short_timestamp() else sagemaker_timestamp()
-  trimmed_base = substring(base, 1,(max_length - length(timestamp) - 1))
-  return(sprintf("%s-%s", trimmed_base, timestamp))
-}
-
 name_from_base <- function(base, max_length = 63, short = FALSE){
   timestamp = if(short) sagemaker_short_timestamp() else sagemaker_timestamp()
   trimmed_base = substring(base, 1,(max_length - length(timestamp) - 1))
@@ -141,8 +136,8 @@ get_config_value <- function(key_path, config = NULL){
 
   current_section = config
   for(key in split_str(key_path, "\\.")){
-    if (key %in% current_section)
-      current_section = current_section[key]
+    if (key %in% names(current_section))
+      current_section = current_section[[key]]
     else
       return(NULL)
   }
@@ -154,8 +149,8 @@ get_config_value <- function(key_path, config = NULL){
 #' @return str: The short version string
 #' @export
 get_short_version = function(framework_version){
-  fm_vs = split_str(framework_version, "\\.")
-  return(paste(fm_vs[1:min(3,length(fm_vs))], collapse = "."))
+  x = numeric_version(framework_version)
+  return(paste(c(x[[1,1]], x[1,2]), collapse = "."))
 }
 
 #' @title Returns true if training job's secondary status message has changed.
@@ -222,7 +217,7 @@ secondary_training_status_message <- function(job_description=NULL,
   }
 
   status_strs = sprintf("%s %s - %s",
-    job_description$LastModifiedTime,
+    strftime(job_description$LastModifiedTime, format = "%Y-%m-%d %H:%M:%S", tz = "UTC"),
     transitions_to_print$Status,
     transitions_to_print$StatusMessage)
 

@@ -4,10 +4,12 @@
 \alias{name_from_image}
 \title{Create a training job name based on the image name and a timestamp.}
 \usage{
-name_from_image(image)
+name_from_image(image, max_length = 63L)
 }
 \arguments{
 \item{image}{(str): Image name.}
+
+\item{max_length}{(int): Maximum length for the resulting string (default: 63).}
 }
 \value{
 str: Training job name using the algorithm from the image name and a
