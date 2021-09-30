@@ -236,16 +236,15 @@ download_folder = function(bucket_name,
                            prefix,
                            target,
                            sagemaker_session){
-  paws_session = sagemaker_session$paws_session
   s3 = sagemaker_session$s3
 
   prefix = trimws(prefix, "left", "/")
 
-  file_destination = file.path(target, basename(prefix))
   # Try to download the prefix as an object first, in case it is a file and not a 'directory'.
   # Do this first, in case the object has broader permissions than the bucket.
   if(!grepl("/$", prefix)){
     tryCatch({
+      file_destination = fs::path(target, basename(prefix))
       obj = s3$get_object(Bucket = bucket_name, Key = prefix)
       write_bin(obj$Body, file_destination)
       return(invisible(NULL))
@@ -292,26 +291,31 @@ download_folder = function(bucket_name,
 
   for(obj_sum in keys){
     s3_relative_path = trimws(substr(obj_sum,nchar(prefix)+1,nchar(obj_sum)), "left", "/")
-    file_path = file.path(target, s3_relative_path)
-    dir.create(dirname(file_path), recursive = T, showWarnings = F)
+    file_path = fs::path(target, s3_relative_path)
+    fs::dir_create(dirname(file_path))
     obj = s3$get_object(Bucket = bucket_name, Key = obj_sum)
     write_bin(obj$Body, file_path)
   }
 }
 
 #' @title Create a tar file containing all the source_files
-#' @param source_files: (List[str]): List of file paths that will be contained in the tar file
-#' @param target :
+#' @param source_files (str): vector of file paths that will be contained in the tar file
+#' @param target (str):
 #' @keywords internal
 #' @return (str): path to created tar file
 #' @export
-create_tar_file = function(source_files, target=NULL){
-  if (!is.null(target))
+create_tar_file <- function(source_files, target=NULL){
+  if (!is.null(target)){
     filename = target
-  else filename = tempfile(fileext = ".tar.gz")
+  } else {
+    filename = tempfile(fileext = ".tar.gz")
+  }
+  # ensure target directory is created
+  fs::dir_create(dirname(filename))
+  # get the absolute path from filename
+  filename=file.path(fs::path_abs(dirname(filename)), basename(filename))
 
-  source_dir = unique(dirname(source_files))
-  tar_subdir(filename, source_dir)
+  tar_subdir(filename, src=source_files)
   return(filename)
 }
 
@@ -362,6 +366,31 @@ repack_model <- function(inference_script,
 
   # save model
   .save_model(repacked_model_uri, tmp_model_path, sagemaker_session, kms_key=kms_key)
+}
+
+# tar function to use system tar
+tar_subdir <- function(tarfile, src, compress = "gzip", ...){
+  if(any(fs::is_file(src))){
+    src_dir = unique(dirname(src))
+    src_file = basename(src)
+  } else if(any(fs::is_dir(src))){
+    src_dir = unique(src)
+    src_file = "."
+  }
+  if(!dir.exists(src_dir)){
+    ValueError$new(
+      sprintf("Directory '%s' doesn't exist, please check directory location and try again.",
+              src_dir)
+    )
+  }
+  current_dir = getwd()
+  setwd(src_dir)
+  on.exit(setwd(current_dir))
+
+  tar_path = Sys.getenv("tar")
+  if(!nzchar(tar_path)) tar_path = Sys.getenv("TAR")
+
+  utils::tar(tarfile= tarfile, files=src_file, compression=compress, tar = tar_path, ...)
 }
 
 .create_or_update_code_dir <- function(model_dir,
@@ -440,18 +469,6 @@ repack_model <- function(inference_script,
   } else {
     file.copy(tmp_model_path,
               gsub("file://", "", repacked_model_uri), recursive = T)}
-}
-
-# tar function to use system tar
-tar_subdir <- function(tarfile, srdir, compress = "gzip", ...){
-  if(!dir.exists(srdir))
-    ValueError$new(
-      sprintf("Directory '%s' doesn't exist, please check directory location and try again.",
-              srdir))
-  current_dir = getwd()
-  setwd(srdir)
-  on.exit(setwd(current_dir))
-  tar(tarfile= tarfile, files=".", compression=compress, tar = Sys.getenv("TAR") , ...)
 }
 
 #' @title Download a Single File from S3 into a local path

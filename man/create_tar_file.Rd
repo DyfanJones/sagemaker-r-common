@@ -7,9 +7,9 @@
 create_tar_file(source_files, target = NULL)
 }
 \arguments{
-\item{target}{:}
+\item{source_files}{(str): vector of file paths that will be contained in the tar file}
 
-\item{source_files:}{(List[str]): List of file paths that will be contained in the tar file}
+\item{target}{(str):}
 }
 \value{
 (str): path to created tar file
