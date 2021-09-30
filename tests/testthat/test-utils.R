@@ -21,7 +21,7 @@ test_that("test get config value",{
 
 test_that("test get short version", {
   expect_equal(get_short_version("1.13.1"), "1.13")
-  expect_equal(get_short_version("1.13") == "1.13")
+  expect_equal(get_short_version("1.13"), "1.13")
 })
 
 test_that("test name from image", {
@@ -159,65 +159,105 @@ test_that("test download folder", {
   paws_mock$call_args("client")
   session = Session$new(paws_session=paws_mock, sagemaker_client=Mock$new())
   s3_mock = Mock$new("s3")
-  s3_mock$call_args("get_object", rawToChar("dummy"))
+  s3_mock$call_args("get_object", list(Body = charToRaw("dummy")))
+  s3_mock$call_args("list_objects_v2", list(
+      Contents = list(
+        list(Key = "prefix/train/train_data.csv"),
+        list(Key = "prefix/train/validation_data.csv")
+      ),
+      ContinuationToken = character(0)
+    )
+  )
   session$s3 = s3_mock
 
+  download_folder(BUCKET_NAME, "/prefix","/tmp", session)
 
+  expect_true(file.exists(file.path("/tmp", "prefix")))
+
+  download_folder(BUCKET_NAME, "/prefix/","/tmp", session)
+
+  expect_true(file.exists(file.path("/tmp", "train", "train_data.csv")))
+  expect_true(file.exists(file.path("/tmp", "train", "validation_data.csv")))
+
+  fs::file_delete(c(
+    file.path("/tmp", "prefix"),
+    file.path("/tmp", "train","train_data.csv"),
+    file.path("/tmp", "train","validation_data.csv")
+    )
+  )
 })
 
+test_that("test download folder points to single file", {
+  paws_mock = Mock$new("PawsSession", region_name = "us-east-1")
+  paws_mock$call_args("client")
+  session = Session$new(paws_session=paws_mock, sagemaker_client=Mock$new())
+  s3_mock = Mock$new("s3")
+  s3_mock$call_args("get_object", list(Body = charToRaw("dummy")))
+  session$s3 = s3_mock
 
+  download_folder(BUCKET_NAME, "/prefix/train/train_data.csv","/tmp", session)
 
+  expect_true(file.exists(file.path("/tmp", "train_data.csv")))
 
-@patch("os.makedirs")
-def test_download_folder(makedirs):
-  boto_mock = MagicMock(name="boto_session")
-  session = sagemaker.Session(boto_session=boto_mock, sagemaker_client=MagicMock())
-s3_mock = boto_mock.resource("s3")
+  fs::file_delete(file.path("/tmp", "train_data.csv"))
+})
 
-obj_mock = Mock()
-s3_mock.Object.return_value = obj_mock
+test_that("test download file", {
+  paws_mock = Mock$new("PawsSession", region_name = "us-east-1")
+  paws_mock$call_args("client")
+  session = Session$new(paws_session=paws_mock, sagemaker_client=Mock$new())
+  s3_mock = Mock$new("s3")
+  s3_mock$call_args("get_object", list(Body = charToRaw("dummy")))
+  session$s3 = s3_mock
 
-def obj_mock_download(path):
-  # Mock the S3 object to raise an error when the input to download_file
-  # is a "folder"
-  if path in ("/tmp/", os.path.join("/tmp", "prefix")):
-  raise botocore.exceptions.ClientError(
-    error_response={"Error": {"Code": "404", "Message": "Not Found"}},
-    operation_name="HeadObject",
+  download_file(
+    BUCKET_NAME, "/prefix/path/file.tar.gz", "/tmp/file.tar.gz", session
   )
-else:
-  return Mock()
 
-obj_mock.download_file.side_effect = obj_mock_download
+  expect_true(file.exists(file.path("/tmp", "file.tar.gz")))
 
-train_data = Mock()
-validation_data = Mock()
+  fs::file_delete(file.path("/tmp", "file.tar.gz"))
+})
 
-train_data.bucket_name.return_value = BUCKET_NAME
-train_data.key = "prefix/train/train_data.csv"
-validation_data.bucket_name.return_value = BUCKET_NAME
-validation_data.key = "prefix/train/validation_data.csv"
+test_that("test create tar file with provided path", {
+  temp_dir = "dummy"
+  dir.create(temp_dir)
+  writeLines("dummy", file.path(temp_dir, "file_a"))
+  writeLines("dummy", file.path(temp_dir, "file_b"))
+  writeLines("dummy", file.path(temp_dir, "file_c"))
 
-s3_files = [train_data, validation_data]
-s3_mock.Bucket(BUCKET_NAME).objects.filter.return_value = s3_files
+  file_list = c(file.path(temp_dir, "file_a"), file.path(temp_dir, "file_b"))
 
-# all the S3 mocks are set, the test itself begins now.
-sagemaker.utils.download_folder(BUCKET_NAME, "/prefix", "/tmp", session)
+  out = create_tar_file(file_list, target="my/custom/path.tar.gz")
 
-obj_mock.download_file.assert_called()
-calls = [
-  call(os.path.join("/tmp", "train", "train_data.csv")),
-  call(os.path.join("/tmp", "train", "validation_data.csv")),
-]
-obj_mock.download_file.assert_has_calls(calls)
-assert s3_mock.Object.call_count == 3
+  expect_true(file.exists("my/custom/path.tar.gz"))
 
-s3_mock.reset_mock()
-obj_mock.reset_mock()
+  untar(out, exdir = "temp")
 
-# Test with a trailing slash for the prefix.
-sagemaker.utils.download_folder(BUCKET_NAME, "/prefix/", "/tmp", session)
-obj_mock.download_file.assert_called()
-obj_mock.download_file.assert_has_calls(calls)
-assert s3_mock.Object.call_count == 2
+  expect_equal(list.files("temp"), basename(file_list))
 
+  fs::file_delete(out)
+  fs::dir_delete("temp")
+  fs::dir_delete("dummy")
+})
+
+test_that("test create tar file with provided path", {
+  temp_dir = "dummy"
+  dir.create(temp_dir)
+  writeLines("dummy", file.path(temp_dir, "file_a"))
+  writeLines("dummy", file.path(temp_dir, "file_b"))
+
+  file_list = c(file.path(temp_dir, "file_a"), file.path(temp_dir, "file_b"))
+
+  out = create_tar_file(file_list)
+
+  expect_true(file.exists(out))
+
+  untar(out, exdir = "temp")
+
+  expect_equal(list.files("temp"), basename(file_list))
+
+  fs::file_delete(out)
+  fs::dir_delete("temp")
+  fs::dir_delete("dummy")
+})
