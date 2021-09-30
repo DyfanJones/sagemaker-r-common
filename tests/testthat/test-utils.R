@@ -232,16 +232,13 @@ test_that("test create tar file with provided path", {
 
   expect_true(file.exists("my/custom/path.tar.gz"))
 
-  untar(out, exdir = "temp")
+  expect_equal(untar(out, list = T), basename(file_list))
 
-  expect_equal(list.files("temp"), basename(file_list))
-
-  fs::file_delete(out)
-  fs::dir_delete("temp")
+  fs::file_delete(file.path(getwd(), "my"))
   fs::dir_delete("dummy")
 })
 
-test_that("test create tar file with provided path", {
+test_that("test create tar file with auto generated path", {
   temp_dir = "dummy"
   dir.create(temp_dir)
   writeLines("dummy", file.path(temp_dir, "file_a"))
@@ -253,11 +250,86 @@ test_that("test create tar file with provided path", {
 
   expect_true(file.exists(out))
 
-  untar(out, exdir = "temp")
-
-  expect_equal(list.files("temp"), basename(file_list))
+  expect_equal(untar(out, list = T), basename(file_list))
 
   fs::file_delete(out)
-  fs::dir_delete("temp")
   fs::dir_delete("dummy")
 })
+
+create_file_tree <- function(tmp, tree){
+  file_path = fs::path(tmp, tree)
+  fs::dir_create(dirname(file_path))
+  fs::file_touch(file_path)
+}
+
+tar_and_raw = function(File, tar_file=file.path("tmp", "file.tar.gz")){
+  create_tar_file(File, target=tar_file)
+  readBin(tar_file, "raw", n = file.size(tar_file))
+}
+
+test_that("test repack model without source dir", {
+  tmp = file.path(getwd(), "temp")
+
+  create_file_tree(
+    tmp,
+    c(
+      "model-dir/model",
+      "dependencies/a",
+      "dependencies/some/dir/b",
+      "aa",
+      "bb",
+      "source-dir/inference.py",
+      "source-dir/this-file-should-not-be-included.py"
+    )
+  )
+
+  obj = list(Body = tar_and_raw(file.path(tmp, "model-dir")))
+  paws_mock = Mock$new("PawsSession", region_name = "us-east-1")
+  paws_mock$call_args("client")
+  session = Session$new(paws_session=paws_mock, sagemaker_client=Mock$new())
+  s3_mock = Mock$new("s3")
+  s3_mock$call_args("get_object", obj)
+  s3_mock$call_args("list_objects_v2", list(
+      Contents = list(
+        list(Key = "prefix/train/train_data.csv"),
+        list(Key = "prefix/train/validation_data.csv")
+      ),
+      ContinuationToken = character(0)
+    )
+  )
+  s3_mock$call_args("put_object")
+  session$s3 = s3_mock
+
+  session$s3$put_object()
+
+  repack_model(
+    inference_script=file.path(tmp, "source-dir/inference.py"),
+    source_directory=NULL,
+    dependencies=c(
+      file.path(tmp, "dependencies/a"),
+      file.path(tmp, "dependencies/some/dir"),
+      file.path(tmp, "aa"),
+      file.path(tmp, "bb")
+    ),
+    model_uri="s3://fake/location",
+    repacked_model_uri="s3://destination-bucket/model.tar.gz",
+    sagemaker_session=session
+  )
+
+  obj = sagemaker_session$s3$put_object()
+
+  writeBin(obj$Body,"tmp/temp.tar.gz")
+
+  file_list = untar("tmp/temp.tar.gz", list = T)
+
+  expect_equal(
+    sort(file_list[!grepl("/$", file_list)]),
+    c("./code/inference.py", "./code/lib/a", "./code/lib/aa", "./code/lib/bb",
+      "./code/lib/dir/b", "./model")
+  )
+
+  fs::dir_delete("temp")
+  fs::dir_delete("tmp")
+})
+
+
