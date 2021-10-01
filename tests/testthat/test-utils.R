@@ -234,8 +234,7 @@ test_that("test create tar file with provided path", {
 
   expect_equal(untar(out, list = T), basename(file_list))
 
-  fs::file_delete(file.path(getwd(), "my"))
-  fs::dir_delete("dummy")
+  fs::dir_delete(c(file.path(getwd(), "my"), "dummy"))
 })
 
 test_that("test create tar file with auto generated path", {
@@ -252,8 +251,8 @@ test_that("test create tar file with auto generated path", {
 
   expect_equal(untar(out, list = T), basename(file_list))
 
-  fs::file_delete(out)
   fs::dir_delete("dummy")
+  fs::file_delete(out)
 })
 
 create_file_tree <- function(tmp, tree){
@@ -267,9 +266,32 @@ tar_and_raw = function(File, tar_file=file.path("tmp", "file.tar.gz")){
   readBin(tar_file, "raw", n = file.size(tar_file))
 }
 
-test_that("test repack model without source dir", {
-  tmp = file.path(getwd(), "temp")
+tmp = file.path(getwd(), "temp")
 
+fake_s3_session <- function(tar=T, model_dir = file.path(tmp, "model-dir")){
+  paws_mock = Mock$new("PawsSession", region_name = "us-east-1")
+  paws_mock$call_args("client")
+  session = Session$new(paws_session=paws_mock, sagemaker_client=Mock$new())
+  s3_mock = Mock$new("s3")
+  if(tar){
+    obj = list(Body = tar_and_raw(model_dir))
+    s3_mock$call_args("get_object", obj)
+  }
+  s3_mock$call_args("list_objects_v2", list(
+      Contents = list(
+        list(Key = "prefix/train/train_data.csv"),
+        list(Key = "prefix/train/validation_data.csv")
+      ),
+      ContinuationToken = character(0)
+    )
+  )
+  s3_mock$call_args("put_object")
+
+  session$s3 = s3_mock
+  return(session)
+}
+
+test_that("test repack model without source dir", {
   create_file_tree(
     tmp,
     c(
@@ -282,26 +304,7 @@ test_that("test repack model without source dir", {
       "source-dir/this-file-should-not-be-included.py"
     )
   )
-
-  obj = list(Body = tar_and_raw(file.path(tmp, "model-dir")))
-  paws_mock = Mock$new("PawsSession", region_name = "us-east-1")
-  paws_mock$call_args("client")
-  session = Session$new(paws_session=paws_mock, sagemaker_client=Mock$new())
-  s3_mock = Mock$new("s3")
-  s3_mock$call_args("get_object", obj)
-  s3_mock$call_args("list_objects_v2", list(
-      Contents = list(
-        list(Key = "prefix/train/train_data.csv"),
-        list(Key = "prefix/train/validation_data.csv")
-      ),
-      ContinuationToken = character(0)
-    )
-  )
-  s3_mock$call_args("put_object")
-  session$s3 = s3_mock
-
-  session$s3$put_object()
-
+  session = fake_s3_session()
   repack_model(
     inference_script=file.path(tmp, "source-dir/inference.py"),
     source_directory=NULL,
@@ -316,8 +319,7 @@ test_that("test repack model without source dir", {
     sagemaker_session=session
   )
 
-  obj = sagemaker_session$s3$put_object()
-
+  obj = session$s3$put_object()
   writeBin(obj$Body,"tmp/temp.tar.gz")
 
   file_list = untar("tmp/temp.tar.gz", list = T)
@@ -327,9 +329,276 @@ test_that("test repack model without source dir", {
     c("./code/inference.py", "./code/lib/a", "./code/lib/aa", "./code/lib/bb",
       "./code/lib/dir/b", "./model")
   )
-
-  fs::dir_delete("temp")
-  fs::dir_delete("tmp")
+  fs::dir_delete(c("temp","tmp"))
 })
 
+test_that("test repack model with entry point without path without source dir", {
+  create_file_tree(
+    tmp,
+    c(
+      "model-dir/model",
+      "source-dir/inference.py",
+      "source-dir/this-file-should-not-be-included.py"
+    )
+  )
+  session = fake_s3_session()
 
+  cwd = getwd()
+  setwd(file.path(tmp, "source-dir"))
+
+  repack_model(
+    "inference.py",
+    NULL,
+    NULL,
+    "s3://fake/location",
+    "s3://destination-bucket/model.tar.gz",
+    session
+  )
+
+  setwd(cwd)
+
+  obj = session$s3$put_object()
+  writeBin(obj$Body,"tmp/temp.tar.gz")
+
+  file_list = untar("tmp/temp.tar.gz", list = T)
+
+  expect_equal(
+    sort(file_list[!grepl("/$", file_list)]),
+    c("./code/inference.py", "./model")
+  )
+  fs::dir_delete(c("temp","tmp"))
+})
+
+test_that("test repack model with entry point without path without source dir", {
+  create_file_tree(
+    tmp,
+    c(
+      "model-dir/model",
+      "source-dir/inference.py",
+      "source-dir/this-file-should-be-included.py"
+    )
+  )
+  session = fake_s3_session()
+
+  repack_model(
+    "inference.py",
+    file.path(tmp, "source-dir"),
+    NULL,
+    "s3://fake/location",
+    "s3://destination-bucket/model.tar.gz",
+    session
+  )
+
+  obj = session$s3$put_object()
+  writeBin(obj$Body,"tmp/temp.tar.gz")
+
+  file_list = untar("tmp/temp.tar.gz", list = T)
+
+  expect_equal(
+    sort(file_list[!grepl("/$", file_list)]),
+    c("./code/inference.py", "./code/this-file-should-be-included.py", "./model")
+  )
+  fs::dir_delete(c("temp","tmp"))
+})
+
+test_that("test repack model from s3 to s3", {
+  create_file_tree(
+    tmp,
+    c(
+      "model-dir/model",
+      "source-dir/inference.py",
+      "source-dir/this-file-should-be-included.py"
+    )
+  )
+  session = fake_s3_session()
+
+  repack_model(
+    "inference.py",
+    file.path(tmp, "source-dir"),
+    NULL,
+    "s3://fake/location",
+    "s3://destination-bucket/model.tar.gz",
+    session
+  )
+
+  obj = session$s3$put_object()
+  writeBin(obj$Body,"tmp/temp.tar.gz")
+
+  file_list = untar("tmp/temp.tar.gz", list = T)
+
+  expect_equal(
+    sort(file_list[!grepl("/$", file_list)]),
+    c("./code/inference.py", "./code/this-file-should-be-included.py", "./model")
+  )
+  fs::dir_delete(c("temp","tmp"))
+})
+
+test_that("test repack model from file to file", {
+  create_file_tree(tmp, c("model", "dependencies/a", "source-dir/inference.py"))
+
+  model_tar_path = file.path(getwd(), "tmp", "model.tar.gz")
+  create_tar_file(file.path(tmp, "model"), model_tar_path)
+
+  session = fake_s3_session(F)
+
+  file_mode_path = sprintf("file://%s", model_tar_path)
+  destination_path = sprintf("file://%s", file.path("tmp", "repacked-model.tar.gz"))
+
+  repack_model(
+    "inference.py",
+    file.path(tmp, "source-dir"),
+    file.path(tmp, "dependencies/a"),
+    file_mode_path,
+    destination_path,
+    session
+  )
+
+  file_list = untar(gsub("file://", "",destination_path), list = T)
+
+  expect_equal(
+    sort(file_list[!grepl("/$", file_list)]),
+    c("./code/inference.py", "./code/lib/a", "./model")
+  )
+  fs::dir_delete(c("temp","tmp"))
+})
+
+test_that("test repack mode _with inference code should replace the code", {
+  create_file_tree(
+    tmp, c("model-dir/model", "source-dir/new-inference.py", "model-dir/code/old-inference.py")
+  )
+
+  session = fake_s3_session()
+
+  repack_model(
+    "inference.py",
+    file.path(tmp, "source-dir"),
+    NULL,
+    "s3://fake/location",
+    "s3://destination-bucket/repacked-model",
+    session
+  )
+
+  obj = session$s3$put_object()
+  writeBin(obj$Body,"tmp/temp.tar.gz")
+
+  file_list = untar("tmp/temp.tar.gz", list = T)
+
+  expect_equal(
+    sort(file_list[!grepl("/$", file_list)]),
+    c("./code/new-inference.py", "./model" )
+  )
+  fs::dir_delete(c("temp","tmp"))
+})
+
+test_that("test repack model from file to folder", {
+  create_file_tree(tmp, c("model", "source-dir/inference.py"))
+  session = fake_s3_session(F)
+
+  model_tar_path = file.path(tmp, "model.tar.gz")
+  create_tar_file(file.path(tmp, "model"), model_tar_path)
+
+  file_mode_path = sprintf("file://%s", model_tar_path)
+
+
+  repack_model(
+    "inference.py",
+    file.path(tmp, "source-dir"),
+    list(),
+    file_mode_path,
+    sprintf("file://%s/repacked-model.tar.gz", tmp),
+    session
+  )
+
+  file_list = untar(sprintf("%s/repacked-model.tar.gz", tmp), list = T)
+
+  expect_equal(
+    sort(file_list[!grepl("/$", file_list)]),
+    c("./code/inference.py", "./model")
+  )
+  fs::dir_delete(c("temp"))
+})
+
+test_that("test repack model with inference code and requirements", {
+  create_file_tree(
+    tmp,
+    c(
+      "new-inference.py",
+      "model-dir/model",
+      "model-dir/code/old-inference.py",
+      "model-dir/code/requirements.txt"
+    )
+  )
+  session = fake_s3_session()
+
+  repack_model(
+    file.path(tmp, "new-inference.py"),
+    NULL,
+    NULL,
+    "s3://fake/location",
+    "s3://destination-bucket/repacked-model",
+    session
+  )
+
+  obj = session$s3$put_object()
+  writeBin(obj$Body,"tmp/temp.tar.gz")
+
+  file_list = untar("tmp/temp.tar.gz", list = T)
+
+  expect_equal(
+    sort(file_list[!grepl("/$", file_list)]),
+    c("./code/new-inference.py",
+      "./code/old-inference.py",
+      "./code/requirements.txt",
+      "./model")
+  )
+  fs::dir_delete(c("temp", "tmp"))
+})
+
+test_that("test repack model with same inference file name", {
+  create_file_tree(
+    tmp,
+    c(
+      "inference.py",
+      "model-dir/model",
+      "model-dir/code/inference.py",
+      "model-dir/code/requirements.txt"
+    )
+  )
+  session = fake_s3_session()
+
+  repack_model(
+    file.path(tmp, "inference.py"),
+    NULL,
+    NULL,
+    "s3://fake/location",
+    "s3://destination-bucket/repacked-model",
+    session
+  )
+
+  obj = session$s3$put_object()
+  writeBin(obj$Body,"tmp/temp.tar.gz")
+
+  file_list = untar("tmp/temp.tar.gz", list = T)
+
+  expect_equal(
+    sort(file_list[!grepl("/$", file_list)]),
+    c("./code/inference.py", "./code/requirements.txt", "./model")
+  )
+  fs::dir_delete(c("temp", "tmp"))
+})
+
+test_that("test sts regional endpoint", {
+  endpoint = sts_regional_endpoint("us-west-2")
+  expect_equal(endpoint, "https://sts.us-west-2.amazonaws.com")
+
+  endpoint = sts_regional_endpoint("us-iso-east-1")
+  expect_equal(endpoint, "https://sts.us-iso-east-1.c2s.ic.gov")
+})
+
+test_that("test partition by region", {
+  expect_equal(.aws_partition("us-west-2"), "aws")
+  expect_equal(.aws_partition("cn-north-1"), "aws-cn")
+  expect_equal(.aws_partition("us-gov-east-1"), "aws-us-gov")
+  expect_equal(.aws_partition("us-iso-east-1"), "aws-iso")
+  expect_equal(.aws_partition("us-isob-east-1"), "aws-iso-b")
+})
