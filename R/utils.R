@@ -359,7 +359,7 @@ repack_model <- function(inference_script,
   )
 
   # repackage model_dir
-  tmp_model_path = file.path(tmp, "temp-model.tar.gz")
+  tmp_model_path = fs::path(tmp, "temp-model.tar.gz")
   tar_subdir(tmp_model_path, model_dir)
 
   # remove temp directory/tar.gz
@@ -400,46 +400,52 @@ tar_subdir <- function(tarfile, src, compress = "gzip", ...){
                                        dependencies=NULL,
                                        sagemaker_session=NULL,
                                        tmp=NULL) {
-  code_dir = file.path(model_dir, "code")
+  code_dir = fs::path(model_dir, "code")
   if (!is.null(source_directory) &&
       startsWith(tolower(source_directory), "s3://")) {
-    local_code_path = file.path(tmp, "local_code.tar.gz")
+    local_code_path = fs::path(tmp, "local_code.tar.gz")
     download_file_from_url(source_directory, local_code_path, sagemaker_session)
     utils::untar(local_code_path, exdir = code_dir)
     on.exit(unlink(local_code_path, recursive = T))
   } else if (!is.null(source_directory)) {
     if (file.exists(code_dir)) {
       unlink(code_dir, recursive = TRUE)}
-    fs::file_copy(source_directory, source_directory)
+    fs::dir_copy(source_directory, code_dir)
   } else {
-    if (!file.exists(code_dir)) {
-      fs::dir_create(code_dir)
-      fs::file_copy(inference_script, code_dir)
-    }
+    if (!file.exists(code_dir)){
+      fs::dir_create(code_dir)}
+    tryCatch({
+      fs::file_copy(inference_script, code_dir, overwrite=TRUE)
+    },
+    error = function(e){
+      if (file.exists(fs::path(code_dir, inference_script)))
+        return(invisible(NULL))
+      else
+        stop(e)
+    })
   }
 
-  lib_dir = file.path(code_dir, "lib")
+  lib_dir = fs::path(code_dir, "lib")
   fs::dir_create(lib_dir)
   for (dependency in dependencies) {
     if (fs::is_dir(dependency)) {
-      fs::dir_copy(dependency, file.path(lib_dir, basename(dependency)))
+      fs::dir_copy(dependency, fs::path(lib_dir, basename(dependency)))
     } else {
-      fs::file_copy(dependency, lib_dir)
+      fs::file_copy(dependency, lib_dir, overwrite = TRUE)
     }
   }
 }
 
 .extract_model <- function(model_uri, sagemaker_session, tmp){
-  tmp_model_dir = file.path(tmp, "model")
+  tmp_model_dir = fs::path(tmp, "model")
   fs::dir_create(tmp_model_dir)
   if(startsWith(tolower(model_uri), "s3://")){
-    local_model_path = file.path(tmp, "tar_file")
+    local_model_path = fs::path(tmp, "tar_file")
     download_file_from_url(model_uri, local_model_path, sagemaker_session)
   } else{
     local_model_path = gsub("file://", "", model_uri)
   }
   utils::untar(local_model_path, exdir = tmp_model_dir)
-  unlink(local_model_path)
   return(tmp_model_dir)
 }
 
@@ -461,6 +467,7 @@ tar_subdir <- function(tarfile, src, compress = "gzip", ...){
   } else {
     fs::file_copy(tmp_model_path,gsub("file://", "", repacked_model_uri))
   }
+  return(invisible(NULL))
 }
 
 #' @title Download a Single File from S3 into a local path
