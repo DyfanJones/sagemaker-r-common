@@ -62,7 +62,6 @@ test_that("test git clone repo branch not exist", {
   source_dir = "source_dir"
   dependencies = list("foo", "bar")
   expect_error(git_clone_repo(git_config, entry_point, source_dir, dependencies))
-  fs::dir_delete(REPO_DIR)
 })
 
 test_that("test git clone repo commit not exist", {
@@ -72,7 +71,6 @@ test_that("test git clone repo commit not exist", {
   source_dir = "source_dir"
   dependencies = list("foo", "bar")
   expect_error(git_clone_repo(git_config, entry_point, source_dir, dependencies))
-  fs::dir_delete(REPO_DIR)
 })
 
 test_that("test git clone repo entry point not exist", {
@@ -88,7 +86,6 @@ test_that("test git clone repo entry point not exist", {
     git_clone_repo(git_config, entry_point, source_dir, dependencies),
     "Entry point does not exist in the repo."
   )
-  fs::dir_delete(REPO_DIR)
 })
 
 test_that("test git clone repo source dir not exist", {
@@ -104,7 +101,6 @@ test_that("test git clone repo source dir not exist", {
     git_clone_repo(git_config, entry_point, source_dir, dependencies),
     "Source directory does not exist in the repo."
   )
-  fs::dir_delete(REPO_DIR)
 })
 
 test_that("test git clone repo dependencies not exist", {
@@ -116,5 +112,4 @@ test_that("test git clone repo dependencies not exist", {
     git_clone_repo(git_config, entry_point, source_dir, dependencies),
     "does not exist in the repo."
   )
-  fs::dir_delete(REPO_DIR)
 })
