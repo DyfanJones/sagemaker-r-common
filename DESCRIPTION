@@ -9,6 +9,7 @@ Imports:
     lgr,
     processx,
     paws,
+    paws.common (>=0.3.13),
     R6,
     fs,
     data.table,
