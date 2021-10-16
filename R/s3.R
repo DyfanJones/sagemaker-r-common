@@ -18,6 +18,7 @@ is.s3_uri <- function(x) {
 
 #' @title split s3 uri
 #' @param uri (str): s3 uri to split into bucket and key
+#' @name parse_s3
 #' @export
 split_s3_uri <- function(uri) {
   stopifnot(is.s3_uri(uri))
@@ -27,6 +28,10 @@ split_s3_uri <- function(uri) {
     key = parsed_s3$path)
   )
 }
+
+#' @rdname parse_s3
+#' @export
+parse_s3_url <- split_s3_uri
 
 #' @title Creates S3 uri paths
 #' @description Returns the arguments joined by a slash ("/"), similarly to ``file.path()`` (on Unix).
@@ -43,7 +48,7 @@ s3_path_join = function(...){
     return(gsub("s3:/", "s3://", path))
   }
 
-  return(trimws(fs::path_join(args), "left", "/"))
+  return(trimws(fs::path_join(as.character(args)), "left", "/"))
 }
 
 #' @title S3Uploader Class
