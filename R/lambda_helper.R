@@ -78,13 +78,13 @@ Lambda = R6Class("Lambda",
         ValueError$new("Either function_arn or function_name must be provided.")
 
       if (!is.null(function_name)){
-        if (!is.null(execution_role_arn))
+        if (is.null(self$execution_role_arn))
           ValueError$new("execution_role_arn must be provided.")
-        if (!is.null(zipped_code_dir) && is.null(script))
+        if (is.null(self$zipped_code_dir) && is.null(self$script))
           ValueError$new("Either zipped_code_dir or script must be provided.")
-        if (!is.null(zipped_code_dir) && !is.null(script))
+        if (!is.null(self$zipped_code_dir) && !is.null(self$script))
           ValueError$new("Provide either script or zipped_code_dir, not both.")
-        if (is.null(handler))
+        if (is.null(self$handler))
           ValueError$new("Lambda handler must be provided.")
       }
     },
@@ -109,7 +109,7 @@ Lambda = R6Class("Lambda",
         code = list("S3Bucket"=bucket, "S3Key"=key)
       }
 
-      tryCatch(
+      tryCatch({
         response = lambda_client$create_function(
           FunctionName=self$function_name,
           Runtime=self$runtime,
@@ -118,7 +118,9 @@ Lambda = R6Class("Lambda",
           Code=code,
           Timeout=self$timeout,
           MemorySize=self$memory_size
-        ),
+        )
+        return(response)
+        },
         error = function(e){
           ValueError$new(e$message)
         }
@@ -146,7 +148,8 @@ Lambda = R6Class("Lambda",
             S3Key=private$.upload_to_s3(
               function_name=self$function_name,
               zipped_code_dir=self$zipped_code_dir,
-              s3_bucket=self$s3_bucket)
+              s3_bucket=self$s3_bucket
+              )
           )
           return(response)
         }, error = function(e){
@@ -160,13 +163,32 @@ Lambda = R6Class("Lambda",
     invoke = function(){
       lambda_client = self$session$lambda_client %||% self$session$paws_session$client("lambda")
       tryCatch({
-        response = lambda_client$delete_function(
-          FunctionName=self$function_name %||% self$function_arn
+        response = lambda_client$invoke(
+          FunctionName=(self$function_name %||% self$function_arn)
         )
         return(response)
       }, error = function(e){
         ValueError$new(e$message)
       })
+    },
+
+    #' @description Method to delete a lambda function.
+    #' @return  paws response from Lambda's delete_function method.
+    delete = function(){
+      lambda_client = self$session$lambda_client %||% self$session$paws_session$client("lambda")
+      tryCatch({
+        response = lambda_client$delete_function(
+          FunctionName=(self$function_name %||% self$function_arn)
+        )
+        return(response)
+      }, error = function(e){
+        ValueError$new(e$message)
+      })
+    },
+
+    #' @description foramt class
+    format = function(){
+      format_class(self)
     }
   ),
   private = list(
@@ -192,5 +214,6 @@ Lambda = R6Class("Lambda",
       zip::zip(temp_file, script)
       return(readBin(temp_file, "raw", n = fs::file_size(temp_file)))
     }
-  )
+  ),
+  lock_objects=F
 )
