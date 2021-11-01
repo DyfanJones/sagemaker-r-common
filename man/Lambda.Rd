@@ -13,6 +13,8 @@ Contains lambda boto3 wrappers to Create, Update, Delete and Invoke Lambda funct
 \item \href{#method-create}{\code{Lambda$create()}}
 \item \href{#method-update}{\code{Lambda$update()}}
 \item \href{#method-invoke}{\code{Lambda$invoke()}}
+\item \href{#method-delete}{\code{Lambda$delete()}}
+\item \href{#method-format}{\code{Lambda$format()}}
 \item \href{#method-clone}{\code{Lambda$clone()}}
 }
 }
@@ -117,6 +119,29 @@ Method to invoke a lambda function.
 \subsection{Returns}{
 paws response from Lambda's invoke method.
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-delete"></a>}}
+\if{latex}{\out{\hypertarget{method-delete}{}}}
+\subsection{Method \code{delete()}}{
+Method to delete a lambda function.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Lambda$delete()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+paws response from Lambda's delete_function method.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-format"></a>}}
+\if{latex}{\out{\hypertarget{method-format}{}}}
+\subsection{Method \code{format()}}{
+foramt class
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Lambda$format()}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
