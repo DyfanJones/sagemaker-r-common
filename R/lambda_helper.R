@@ -164,7 +164,8 @@ Lambda = R6Class("Lambda",
       lambda_client = self$session$lambda_client %||% self$session$paws_session$client("lambda")
       tryCatch({
         response = lambda_client$invoke(
-          FunctionName=(self$function_name %||% self$function_arn)
+          FunctionName=(self$function_name %||% self$function_arn),
+          InvocationType="RequestResponse"
         )
         return(response)
       }, error = function(e){
