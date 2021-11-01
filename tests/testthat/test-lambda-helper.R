@@ -40,6 +40,8 @@ sagemaker_session$s3 = s3_client
 lambda_client =  Mock$new(region_name = sagemaker_session$paws_region_name)
 lambda_client$call_args("create_function")
 lambda_client$call_args("update_function_code")
+lambda_client$call_args("invoke")
+lambda_client$call_args("delete_function")
 sagemaker_session$lambda_client = lambda_client
 
 test_that("test lambda object with arn happycase", {
@@ -306,15 +308,72 @@ test_that("test update lambda happycase2",{
   fs::file_delete(c(SCRIPT, ZIPPED_CODE_DIR))
 })
 
-test_that("test invoke lambda happycase",{
-  lambda_obj = Lambda$new(function_arn=LAMBDA_ARN, session=sagemaker_session)
+test_that("test update lambda client error",{
+  zip::zip(ZIPPED_CODE_DIR, fs::file_touch(SCRIPT))
+  lambda_obj = Lambda$new(
+    function_name=FUNCTION_NAME,
+    execution_role_arn=EXECUTION_ROLE,
+    script=SCRIPT,
+    handler=HANDLER,
+    session=sagemaker_session
+  )
 
-  lambda_obj$invoke()
+  sagemaker_session$lambda_client$update_function_code = Mock$new()$side_effect(
+    function(...) stop(structure(list(message = "Cannot update code"), class = c("error", "condition")))
+  )
 
   expect_error(
     lambda_obj$update(),
     "Cannot update code"
   )
 
-  fs::file_delete(SCRIPT)
+  fs::file_delete(c(SCRIPT, ZIPPED_CODE_DIR))
+})
+
+test_that("test invoke lambda happycase",{
+  lambda_obj = Lambda$new(function_arn=LAMBDA_ARN, session=sagemaker_session)
+
+  lambda_obj$invoke()
+
+  expect_equal(
+    sagemaker_session$lambda_client$invoke(),
+    list(
+      FunctionName = LAMBDA_ARN,
+      InvocationType = "RequestResponse"
+    )
+  )
+})
+
+test_that("test invoke lambda client error",{
+  lambda_obj = Lambda$new(function_arn=LAMBDA_ARN, session=sagemaker_session)
+
+  sagemaker_session$lambda_client$invoke = Mock$new()$side_effect(
+    function(...) stop(structure(list(message = "invoke failed"), class = c("error", "condition")))
+  )
+
+  expect_error(
+    lambda_obj$invoke(),
+    "invoke failed"
+  )
+})
+
+test_that("test delete lambda happycase",{
+  lambda_obj = Lambda$new(function_arn=LAMBDA_ARN, session=sagemaker_session)
+  lambda_obj$delete()
+  expect_equal(
+    sagemaker_session$lambda_client$delete_function(), list(FunctionName=LAMBDA_ARN)
+  )
+})
+
+test_that("test delete lambda client error",{
+  lambda_obj = Lambda$new(function_arn=LAMBDA_ARN, session=sagemaker_session)
+
+  sagemaker_session$lambda_client$delete_function = Mock$new()$side_effect(
+    function(...) stop(structure(list(message = "Delete failed"), class = c("error", "condition")))
+  )
+
+  expect_error(
+    lambda_obj$delete(),
+    "Delete failed"
+  )
 })
