@@ -1752,12 +1752,13 @@ Estimator = R6Class("Estimator",
       removed_kwargs("accept", kwargs)
 
       if(is.null(predictor_cls)){
+        # Due to the nature of R6 needing to call `new` method
+        # Removing wrapper
 
-        predict_wrapper = function(endpoint, session){
-          return(Predictor$new(endpoint, session))
-        }
-
-        predictor_cls = predict_wrapper
+        # predict_wrapper = function(endpoint, session){
+        #   return(Predictor$new(endpoint, session))
+        # }
+        predictor_cls = Predictor
       }
 
       args = list(
