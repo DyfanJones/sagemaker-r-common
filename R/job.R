@@ -181,7 +181,7 @@
           target_attribute_name=target_attribute_name)
         return(s3_input_result)
       }
-      if (is.charcter(uri_input) && validate_uri && startsWith(uri_input,"file://")){
+      if (is.character(uri_input) && validate_uri && startsWith(uri_input,"file://")){
         return (R6sagemaker.local:::file_input(uri_input))
       }
       if (inherits(uri_input, "character") && validate_uri)
