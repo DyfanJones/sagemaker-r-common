@@ -132,18 +132,17 @@
         input_dict[["training"]] = inputs
       } else if (inherits(inputs, "file_input")){
         input_dict[["training"]] = inputs
-      } else if (inherits(inputs, "list")){
+      } else if (is_list_named(inputs)){
         for (v in 1:length(inputs)){
-        input_dict[[names(inputs)[v]]] = private$.format_string_uri_input(inputs[[v]], validate_uri)
+          input_dict[[names(inputs)[v]]] = private$.format_string_uri_input(inputs[[v]], validate_uri)
         }
-      # TODO: need to check how viable this is in R!!!!!!
-      # } else if (inherits(inputs, "list")){
-      #   input_dict = private$.format_record_set_list_input(inputs)
+      } else if (is.list(inputs)){
+        input_dict = private$.format_record_set_list_input(inputs)
       } else if (inherits(inputs, "FileSystemInput")) {
         input_dict[["training"]] = inputs
       } else{
         msg = "Cannot format input %s. Expecting one of str, dict, TrainingInput or FileSystemInput"
-        stop(sprintf(msg,inputs), call. = F)
+        ValueError$new(sprintf(msg,inputs))
       }
 
       channels = lapply(1:length(input_dict), function(x) {private$.convert_input_to_channel(names(input_dict)[x], input_dict[[x]])})
@@ -166,39 +165,45 @@
       return(config)
     },
 
-    .format_string_uri_input = function(uri_input,
-                                        validate_uri=TRUE,
-                                        content_type=NULL,
-                                        input_mode=NULL,
-                                        compression=NULL,
-                                        target_attribute_name=NULL){
-      if (inherits(uri_input, "character") && validate_uri && startsWith(uri_input,"s3://")){
-        s3_input_result = TrainingInput$new(uri_input,
-                                   content_type=content_type,
-                                   input_mode=input_mode,
-                                   compression=compression,
-                                   target_attribute_name=target_attribute_name)
+    .format_string_uri_input = function(
+      uri_input,
+      validate_uri=TRUE,
+      content_type=NULL,
+      input_mode=NULL,
+      compression=NULL,
+      target_attribute_name=NULL){
+      if (is.character(uri_input) && validate_uri && startsWith(uri_input,"s3://")){
+        s3_input_result = TrainingInput$new(
+          uri_input,
+          content_type=content_type,
+          input_mode=input_mode,
+          compression=compression,
+          target_attribute_name=target_attribute_name)
         return(s3_input_result)
       }
-      if (inherits(uri_input, "character") && validate_uri && startsWith(uri_input,"file://")){
-        stop("local session is currently not supported") # TODO: create local session functionality.
-        return (file_input(uri_input))}
+      if (is.charcter(uri_input) && validate_uri && startsWith(uri_input,"file://")){
+        return (R6sagemaker.local:::file_input(uri_input))
+      }
       if (inherits(uri_input, "character") && validate_uri)
-        stop(sprintf('URI input %s must be a valid S3 or FILE URI: must start with "s3://" or "file://"',uri_input),
-             call. = F)
+        ValueError$new(sprintf(
+          'URI input %s must be a valid S3 or FILE URI: must start with "s3://" or "file://"',
+          uri_input)
+        )
       if (inherits(uri_input, "character")){
-          s3_input_result = TrainingInput$new(uri_input,
-                                    content_type=content_type,
-                                    input_mode=input_mode,
-                                    compression=compression,
-                                    target_attribute_name=target_attribute_name)
+          s3_input_result = TrainingInput$new(
+            uri_input,
+            content_type=content_type,
+            input_mode=input_mode,
+            compression=compression,
+            target_attribute_name=target_attribute_name)
         return(s3_input_result)}
       if (inherits(uri_input, c("TrainingInput", "file_input", "FileSystemInput")))
           return(uri_input)
 
-
-      stop(sprintf("Cannot format input %s. Expecting one of str, TrainingInput, file_input or FileSystemInput", uri_input),
-           call. = F)
+      ValueError$new(sprintf(
+        "Cannot format input %s. Expecting one of str, TrainingInput, file_input or FileSystemInput",
+        uri_input)
+      )
     },
 
     .prepare_channel = function(input_config,
