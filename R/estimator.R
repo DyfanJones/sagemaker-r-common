@@ -1262,8 +1262,8 @@ EstimatorBase = R6Class("EstimatorBase",
       if (self$enable_network_isolation())
         train_args$enable_network_isolation = TRUE
 
-      if (!is.null(estimator$max_retry_attempts))
-        train_args[["retry_strategy"]] = list("MaximumRetryAttempts"=estimator$max_retry_attempts)
+      if (!is.null(self$max_retry_attempts))
+        train_args[["retry_strategy"]] = list("MaximumRetryAttempts"=self$max_retry_attempts)
       else
         train_args[["retry_strategy"]] = NULL
 
