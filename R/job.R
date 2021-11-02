@@ -49,17 +49,17 @@
     #'              about the started job.
     start_new = function(estimator,
                          inputs){
-      stop("I'm an abstract interface method", call. = F)
+      NotImplementedError$new("I'm an abstract interface method")
     },
 
     #' @description Wait for the Amazon SageMaker job to finish.
-    wait = function(){stop("I'm an abstract interface method", call. = F)},
+    wait = function(){NotImplementedError$new("I'm an abstract interface method")},
 
     #' @description Describe the job.
-    describe = function(){stop("I'm an abstract interface method", call. = F)},
+    describe = function(){NotImplementedError$new("I'm an abstract interface method")},
 
     #' @description Stop the job.
-    stop = function(){stop("I'm an abstract interface method", call. = F)},
+    stop = function(){NotImplementedError$new("I'm an abstract interface method")},
 
     #' @description format class
     format = function(){
@@ -215,12 +215,14 @@
       if (is.null(channel_uri))
         return(NULL)
       if (is.null(channel_name))
-        stop(sprintf("Expected a channel name if a channel URI %s is specified",channel_uri))
+        ValueError$new(sprintf(
+          "Expected a channel name if a channel URI %s is specified",channel_uri)
+        )
 
       if (!is.null(input_config) || length(input_config) > 0){
         for (existing_channel in input_config){
           if (existing_channel[["ChannelName"]] == channel_name)
-            stop(sprintf("Duplicate channel %s not allowed.",channel_name))
+            ValueError$new(sprintf("Duplicate channel %s not allowed.",channel_name))
         }
       }
 
@@ -237,10 +239,10 @@
       input_dict = list()
       for (record in inputs){
         if (!inherits(record, c("RecordSet", "FileSystemRecordSet")))
-          stop("List compatible only with RecordSets or FileSystemRecordSets.", call. = F)
+          ValueError$new("List compatible only with RecordSets or FileSystemRecordSets.")
 
         if (record$channel %in% names(input_dict))
-          stop("Duplicate channels not allowed.", call. = F)
+          ValueError$new("Duplicate channels not allowed.")
         if (inherits(record, "RecordSet"))
           input_dict[[record$channel]] = record$records_s3_input()
         if (inherits(record, "FileSystemRecordSet"))
