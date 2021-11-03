@@ -1258,18 +1258,22 @@ Session = R6Class("Session",
     #' @param data_processing (dict): A dictionary describing config for combining the input data and
     #'              transformed data. For more, see
     #'              https://docs.aws.amazon.com/sagemaker/latest/dg/API_Tag.html.
-    transform = function(job_name = NULL,
-                         model_name = NULL,
-                         strategy = NULL,
-                         max_concurrent_transforms = NULL,
-                         max_payload = NULL,
-                         env = NULL,
-                         input_config = NULL,
-                         output_config = NULL,
-                         resource_config = NULL,
-                         experiment_config = NULL,
-                         tags = NULL,
-                         data_processing = NULL){
+    #' @param model_client_config (dict): A dictionary describing the model configuration for the
+    #'             job. Dictionary contains two optional keys,
+    #'             'InvocationsTimeoutInSeconds', and 'InvocationsMaxRetries'.
+    transform = function(job_name=NULL,
+                         model_name=NULL,
+                         strategy=NULL,
+                         max_concurrent_transforms=NULL,
+                         max_payload=NULL,
+                         env=NULL,
+                         input_config=NULL,
+                         output_config=NULL,
+                         resource_config=NULL,
+                         experiment_config=NULL,
+                         tags=NULL,
+                         data_processing=NULL,
+                         model_client_config=NULL){
       tags = .append_project_tags(tags)
       request_list = private$.get_transform_request(
         job_name=job_name,
