@@ -1227,7 +1227,7 @@ Session = R6Class("Session",
         self$sagemaker$stop_hyper_parameter_tuning_job(HyperParameterTuningJobName=name)
         },
         error = function(e) {
-          error_code = e$error_response$code
+          error_code = e$error_response$Code
           if(error_code == "ValidationException") {
             LOGGER$info("Tuning job: %s is alread stopped or not running.", name)
           } else {
@@ -2407,8 +2407,8 @@ Session = R6Class("Session",
             CreateBucketConfiguration = list(LocationConstraint = region))
           LOGGER$info("Created S3 bucket: %s", bucket_name)},
           error = function(e) {
-            code = attributes(e)$error_response$Code
-            message = attributes(e)$error_response$Message
+            error_code = e$error_response$Code
+            message = e$message
             if (error_code == "BucketAlreadyOwnedByYou") {
               invisible(NULL)
             } else if (error_code == "OperationAborted" &&
@@ -2417,7 +2417,7 @@ Session = R6Class("Session",
               # it again.
               invisible(NULL)
             } else
-              stop(e$message, call. = F)
+              stop(e)
           }
         )
       }
@@ -3319,10 +3319,11 @@ production_variant <- function(model_name,
 .deployment_entity_exists <- function(describe_fn){
   tryCatch(eval.parent(substitute(expr)),
            error = function(e){
-             error_code = attributes(e)$error_response$`__type`
+             error_code = e$error_response$Code
              if(error_code != "ValidationException"
                 && grepl("Could not find", e$message)) {
-             stop(e$message, call. = F)}
+               stop(e)
+              }
            })
   return (FALSE)
 }
@@ -3391,9 +3392,9 @@ get_execution_role <- function(sagemaker_session = NULL){
       error = function(e){
         # On the very first training job run on an account, there's no log group until
         # the container starts logging, so ignore any errors thrown about that
-        error_code = attributes(e)$error_response$`__type`
+        error_code = e$error_response$Code
         if (error_code != "ResourceNotFoundException")
-          stop(e$message, call. = F)
+          stop(e)
         })
 
     stream_names = lapply(streams$logStreams, function(s) s$logStreamName)
@@ -3407,9 +3408,9 @@ get_execution_role <- function(sagemaker_session = NULL){
         error = function(e){
           # On the very first training job run on an account, there's no log group until
           # the container starts logging, so ignore any errors thrown about that
-          error_code = attributes(e)$error_response$`__type`
+          error_code = e$error_response$Code
           if (error_code != "ResourceNotFoundException")
-            stop(e$message, call. = F)
+            stop(e)
         })
       stream_names = c(stream_names, lapply(streams$logStreams, function(s) s$logStreamName))
     }
