@@ -190,9 +190,8 @@ Transformer = R6Class("Transformer",
         experiment_config,
         model_client_config
       )
+      if(wait) self$wait(logs=logs)
 
-      if(wait)
-        self$wait(self$latest_transform_job, logs=logs)
       return(invisible(NULL))
     },
 
@@ -205,19 +204,19 @@ Transformer = R6Class("Transformer",
     #' @param logs return logs
     wait = function(logs=TRUE){
       private$.ensure_last_transform_job()
-      if (logs)
+      if (logs) {
         self$sagemaker_session$logs_for_transform_job(self$latest_transform_job, wait=TRUE)
-      else
+      } else {
         self$sagemaker_session$wait_for_transform_job(self$latest_transform_job)
+      }
     },
 
     #' @description Stop latest running batch transform job.
     #' @param wait wait for transform job
     stop_transform_job = function(wait=TRUE){
-      self$.ensure_last_transform_job()
+      private$.ensure_last_transform_job()
       self$sagemaker_session$stop_transform_job(name=self$latest_transform)
-      if(wait)
-        self$wait()
+      if(wait) self$wait()
     },
 
     #' @description Attach an existing transform job to a new Transformer instance
@@ -255,9 +254,9 @@ Transformer = R6Class("Transformer",
     .retrieve_base_name = function(){
       image_name = private$.retrieve_image_name()
 
-      if (!is.null(image_name))
+      if (!is.null(image_name)){
         return(base_name_from_image(image_name))
-
+      }
       return(self$model_name)
     },
 
@@ -284,7 +283,7 @@ Transformer = R6Class("Transformer",
 
     .ensure_last_transform_job = function(){
       if (is.null(self$latest_transform_job))
-        stop("No transform job available", call. = F)
+        ValueError$new("No transform job available")
     },
 
     # Convert the transform job description to init params that can be
