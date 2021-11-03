@@ -983,7 +983,7 @@ Session = R6Class("Session",
           description = self$sagemaker_client$describe_auto_ml_job(AutoMLJobName=job_name)
           last_describe_job_call = Sys.time()
 
-          status = description$ProcessingJobStatus
+          status = description$AutoMLJobStatus
 
           if (status %in% c("Completed", "Failed", "Stopped")) {
             writeLines("")
@@ -2130,8 +2130,9 @@ Session = R6Class("Session",
 
           status = description$TrainingJobStatus
 
-          if (status %in% c("Completed", "Failed", "Stopped")) state = LogState$JOB_COMPLETE
-
+          if (status %in% c("Completed", "Failed", "Stopped")){
+            state = LogState$JOB_COMPLETE
+          }
           debug_rule_statuses = description$DebugRuleEvaluationStatuses
           if(!islistempty(debug_rule_statuses)
              && .debug_rule_statuses_changed(debug_rule_statuses, last_debug_rule_statuses)
@@ -2182,7 +2183,7 @@ Session = R6Class("Session",
                                        wait=FALSE,
                                        poll=10){
 
-      description = self$sagemaker$describe_training_job(TrainingJobName=job_name)
+      description = self$sagemaker$describe_processing_job(ProcessingJobName=job_name)
       cloudwatchlogs = self$paws_session$client("cloudwatchlogs")
 
       init_log = .log_init(description, "Processing")
@@ -2206,12 +2207,14 @@ Session = R6Class("Session",
           writeLines("\n")
           state = LogState$COMPLETE
         } else if(Sys.time() - last_describe_job_call >= 30){
-          description = self$sagemaker$describe_training_job(TrainingJobName=job_name)
+          description = self$sagemaker$describe_processing_job(ProcessingJobName=job_name)
           last_describe_job_call = Sys.time()
 
           status = description$ProcessingJobStatus
 
-          if (status %in% c("Completed", "Failed", "Stopped")) state = LogState$JOB_COMPLETE
+          if (status %in% c("Completed", "Failed", "Stopped")){
+            state = LogState$JOB_COMPLETE
+          }
         }
       }
 
@@ -2255,7 +2258,7 @@ Session = R6Class("Session",
           writeLines("\n")
           state = LogState$COMPLETE
         } else if(Sys.time() - last_describe_job_call >= 30){
-          description = self$sagemaker$describe_training_job(TrainingJobName=job_name)
+          description = self$sagemaker$describe_transform_job(TransformJobName=job_name)
           last_describe_job_call = Sys.time()
 
           status = description$TransformJobStatus
