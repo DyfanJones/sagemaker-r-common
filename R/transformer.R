@@ -154,7 +154,7 @@ Transformer = R6Class("Transformer",
                          output_filter=NULL,
                          join_source=NULL,
                          experiment_config=NULL,
-                         model_client_config=None,
+                         model_client_config=NULL,
                          wait=TRUE,
                          logs=TRUE,
                          ...){
@@ -187,7 +187,8 @@ Transformer = R6Class("Transformer",
         input_filter,
         output_filter,
         join_source,
-        experiment_config
+        experiment_config,
+        model_client_config
       )
 
       if(wait)
@@ -334,11 +335,8 @@ Transformer = R6Class("Transformer",
         experiment_config,
         model_client_config
       )
-
-      # start transform job
       do.call(self$sagemaker_session$transform, transform_args)
 
-      # return current_job name
       return(self$.current_job_name)
     },
 
