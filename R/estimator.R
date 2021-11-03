@@ -357,7 +357,7 @@ EstimatorBase = R6Class("EstimatorBase",
       private$.ensure_latest_training_job(
         error_message=paste("Cannot get the profiling output artifacts path.",
         "The Estimator is not associated with a training job."))
-      if (!is.null(self.profiler_config)){
+      if (!is.null(self$profiler_config)){
         return(file.path(
           self$profiler_config$s3_output_path,
           self$latest_training_job,
@@ -839,7 +839,7 @@ EstimatorBase = R6Class("EstimatorBase",
 
         model = self$create_model(
           vpc_config_override=vpc_config_override,
-          model_kms_key=self.output_kms_key,
+          model_kms_key=self$output_kms_key,
           enable_network_isolation=enable_network_isolation)
 
           # not all create_model() implementations have the same kwargs
