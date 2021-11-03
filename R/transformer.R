@@ -139,9 +139,10 @@ Transformer = R6Class("Transformer",
     #'              'ExperimentName', 'TrialName', and 'TrialComponentDisplayName'.
     #'              (default: ``None``).
     #' @param wait (bool): Whether the call should wait until the job completes
-    #'              (default: False).
+    #'              (default: TRUE).
     #' @param logs (bool): Whether to show the logs produced by the job.
-    #'              Only meaningful when wait is True (default: False).
+    #'              Only meaningful when wait is True (default: TRUE).
+    #' @param ... Other parameters (currently not used)
     #' @return NULL invisible
     transform = function(data,
                          data_type="S3Prefix",
@@ -153,15 +154,14 @@ Transformer = R6Class("Transformer",
                          output_filter=NULL,
                          join_source=NULL,
                          experiment_config=NULL,
-                         wait=FALSE,
-                         logs=FALSE){
-
-      # TODO: sagemaker local mode
-      # local_mode = self$sagemaker_session$local_mode
-      if (#is.null(local_mode) &&
-          !startsWith(data, "s3://"))
-        stop(sprintf("Invalid S3 URI: %s",data), call. = F)
-
+                         model_client_config=None,
+                         wait=TRUE,
+                         logs=TRUE,
+                         ...){
+      local_mode = self$sagemaker_session$local_mode
+      if(!local_mode && !grepl("^s3://", data)){
+        ValueError$new(sprintf("Invalid S3 URI: %s", data))
+      }
       if (!is.null(job_name)) {
         self$.current_job_name = job_name
       } else {
@@ -169,28 +169,29 @@ Transformer = R6Class("Transformer",
 
         if (is.null(base_name)){
           base_name = private$.retrieve_base_name()
-
-          self$.current_job_name = name_from_base(base_name)}
+        }
+        self$.current_job_name = name_from_base(base_name)
       }
-
-      if (is.null(self$output_path) %||% self$.reset_output_path){
+      if (is.null(self$output_path) || self$.reset_output_path){
         self$output_path = sprintf("s3://%s/%s",
-                                   self$sagemaker_session$default_bucket(),
-                                   self$.current_job_name)
-        self$.reset_output_path = TRUE}
+          self$sagemaker_session$default_bucket(), self$.current_job_name
+        )
+        self$.reset_output_path = TRUE
+      }
+      self$latest_transform_job = private$.start_new(
+        data,
+        data_type,
+        content_type,
+        compression_type,
+        split_type,
+        input_filter,
+        output_filter,
+        join_source,
+        experiment_config
+      )
 
-
-      self$latest_transform_job = private$.start_new(data,
-                                                     data_type,
-                                                     content_type,
-                                                     compression_type,
-                                                     split_type,
-                                                     input_filter,
-                                                     output_filter,
-                                                     join_source,
-                                                     experiment_config)
-
-      if(wait) self$wait(self$latest_transform_job, logs=logs)
+      if(wait)
+        self$wait(self$latest_transform_job, logs=logs)
       return(invisible(NULL))
     },
 
@@ -201,7 +202,7 @@ Transformer = R6Class("Transformer",
 
     #' @description Wait for latest running batch transform job
     #' @param logs return logs
-    wait = function(logs = TRUE){
+    wait = function(logs=TRUE){
       private$.ensure_last_transform_job()
       if (logs)
         self$sagemaker_session$logs_for_transform_job(self$latest_transform_job, wait=TRUE)
@@ -214,7 +215,6 @@ Transformer = R6Class("Transformer",
     stop_transform_job = function(wait=TRUE){
       self$.ensure_last_transform_job()
       self$sagemaker_session$stop_transform_job(name=self$latest_transform)
-      self$stop(self$latest_transform)
       if(wait)
         self$wait()
     },
@@ -232,28 +232,14 @@ Transformer = R6Class("Transformer",
       sagemaker_session = sagemaker_session %||% Session$new()
 
       job_details = sagemaker_session$sagemaker$describe_transform_job(
-                                TransformJobName=transform_job_name)
-
+        TransformJobName=transform_job_name
+      )
       init_params = private$.prepare_init_params_from_job_description(job_details)
 
       # clone current class
       transfomer = self$clone()
-
-      # update transformer class variables
-      transformer$model_name = init_params$model_name
-      transformer$strategy = init_params$strategy
-      transformer$output_path = init_params$output_path
-      transformer$output_kms_key = init_params$output_kms_key
-      transformer$accept = init_params$accept
-      transformer$assemble_with = init_params$assemble_with
-      transformer$instance_count = init_params$instance_count
-      transformer$instance_type = init_params$instance_type
-      transformer$volume_kms_key = init_params$volume_kms_key
-      transformer$max_concurrent_transforms = init_params$max_concurrent_transforms
-      transformer$max_payload = init_params$max_payload
-      transformer$base_transform_job_name = init_params$base_transform_job_name
-      transformer$latest_transform_job = init_params$base_transform_job_name
-      transformer$sagemaker_session = sagemaker_session
+      init_params$sagemaker_session = sagemaker_session
+      do.call(transformer$initialize, init_params)
       transformer$latest_transform_job = init_params$base_transform_job_name
 
       return(transformer)
