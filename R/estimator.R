@@ -826,34 +826,31 @@ EstimatorBase = R6Class("EstimatorBase",
                            vpc_config_override="VPC_CONFIG_DEFAULT",
                            enable_network_isolation=NULL,
                            model_name=NULL){
-      role = role %||% self$role
       tags = tags %||% self$tags
       model_name = private$.get_or_create_name(model_name)
 
-      if (!is.null(self$latest_training_job)){
-        if (is.null(enable_network_isolation)){
-          enable_network_isolation = self$enable_network_isolation()
-        }
-        model = self$create_model(
-          role=role,
-          model_server_workers=model_server_workers,
-          entry_point=entry_point,
-          vpc_config_override=vpc_config_override,
-          model_kms_key=self$output_kms_key,
-          enable_network_isolation=enable_network_isolation,
-          name=model_name
-        )
-        model$.create_sagemaker_model(instance_type, tags=tags)
-        transform_env = model$env
-        if (!islistempty(env)){
-          transform_env = modifyList(transform_env, env)
-        }
-      } else {
+      if (is.null(self$latest_training_job)){
         LOGGER$warn(paste(
           "No finished training job found associated with this estimator. Please make sure",
           "this estimator is only used for building workflow config")
         )
-        transform_env = env %||% list()
+      } else {
+        if (is.null(enable_network_isolation)){
+          enable_network_isolation = self$enable_network_isolation()
+        }
+
+        model = self$create_model(
+          vpc_config_override=vpc_config_override,
+          model_kms_key=self$output_kms_key,
+          enable_network_isolation=enable_network_isolation
+        )
+
+        # not all create_model() implementations have the same kwargs
+        model$name = model_name
+        if (!is.null(role)){
+          model$role = role
+        }
+        model$.create_sagemaker_model(instance_type, tags=tags)
       }
 
       return(Transformer$new(
@@ -867,7 +864,7 @@ EstimatorBase = R6Class("EstimatorBase",
         accept=accept,
         max_concurrent_transforms=max_concurrent_transforms,
         max_payload=max_payload,
-        env=transform_env,
+        env=env,
         tags=tags,
         base_transform_job_name=self$base_job_name,
         volume_kms_key=volume_kms_key,
@@ -2224,18 +2221,18 @@ Framework = R6Class("Framework",
           vpc_config_override=vpc_config_override,
           model_kms_key=self$output_kms_key,
           enable_network_isolation=enable_network_isolation,
-          name=model_name)
+          name=model_name
+        )
         model$.create_sagemaker_model(instance_type, tags=tags)
-
         transform_env = model$env
-        if (!islistempty(env)) {
-          transform_env = c(transform_env, env)
+        if (!islistempty(env)){
+          transform_env = modifyList(transform_env, env)
         }
       } else {
         LOGGER$warn(paste(
           "No finished training job found associated with this estimator. Please make sure",
-          "this estimator is only used for building workflow config"))
-        model_name = model_name %||% self$.current_job_name
+          "this estimator is only used for building workflow config")
+        )
         transform_env = env %||% list()
       }
 
