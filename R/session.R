@@ -1227,7 +1227,7 @@ Session = R6Class("Session",
         self$sagemaker$stop_hyper_parameter_tuning_job(HyperParameterTuningJobName=name)
         },
         error = function(e) {
-          error_code = e$error_response[["__type"]]
+          error_code = paws_error_code(e)
           if(identical(error_code, "ValidationException")) {
             LOGGER$info("Tuning job: %s is alread stopped or not running.", name)
           } else {
@@ -1351,7 +1351,7 @@ Session = R6Class("Session",
         return(do.call(self$sagemaker$create_model, create_model_request))
         },
         error=function(e){
-          error_code = e$error_response[["__type"]]
+          error_code = paws_error_code(e)
           if (identical(error_code, "ValidationException")
               && grepl("Cannot create already existing model", e$error_response$Message)){
             LOGGER$warn("Using already existing model: %s", name)
@@ -1423,7 +1423,7 @@ Session = R6Class("Session",
           ModelPackageDescription = description,
           SourceAlgorithmSpecification= SourceAlgorithmSpecification),
         error = function(e) {
-          error_code = e$error_response[["__type"]]
+          error_code = paws_error_code(e)
           if (identical(error_code, "ValidationException")
               && grepl("ModelPackage already exists", e$error_response$Message)) {
             LOGGER$warn("Using already existing model package: %s", name)
@@ -1791,7 +1791,7 @@ Session = R6Class("Session",
         self$sagemaker$stop_transform_job(TransformJobName=name)
         },
         error = function(e){
-          error_code = e$error_response[["__type"]]
+          error_code = paws_error_code(e)
            # allow to pass if the job already stopped
            if (identictal(error_code, "ValidationException")){
              LOGGER$info("Transform job: %s is already stopped or not running.", name)
@@ -2407,7 +2407,7 @@ Session = R6Class("Session",
             CreateBucketConfiguration = list(LocationConstraint = region))
           LOGGER$info("Created S3 bucket: %s", bucket_name)},
           error = function(e) {
-            error_code = e$error_response$Code
+            error_code = paws_error_code(e)
             message = e$error_response$Message
             if (identical(error_code, "BucketAlreadyOwnedByYou")) {
               invisible(NULL)
@@ -3319,7 +3319,7 @@ production_variant <- function(model_name,
 .deployment_entity_exists <- function(describe_fn){
   tryCatch(eval.parent(substitute(expr)),
            error = function(e){
-             error_code = e$error_response[["__type"]]
+             error_code = paws_error_code(e)
              if(!identical(error_code, "ValidationException")
                 && grepl("Could not find", e$error_response$Message)) {
                stop(e)
@@ -3393,7 +3393,7 @@ get_execution_role <- function(sagemaker_session = NULL){
     error = function(e){
       # On the very first training job run on an account, there's no log group until
       # the container starts logging, so ignore any errors thrown about that
-      error_code = e$error_response[["__type"]]
+      error_code = paws_error_code(e)
       if (!identical(error_code, "ResourceNotFoundException"))
         stop(e)
     })
@@ -3409,7 +3409,7 @@ get_execution_role <- function(sagemaker_session = NULL){
         error = function(e){
           # On the very first training job run on an account, there's no log group until
           # the container starts logging, so ignore any errors thrown about that
-          error_code = e$error_response[["__type"]]
+          error_code = paws_error_code(e)
           if (!identical(error_code, "ResourceNotFoundException"))
             stop(e)
         })

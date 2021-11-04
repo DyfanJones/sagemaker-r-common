@@ -188,3 +188,7 @@ rsplit <- function(str, separator="\\.", maxsplit) {
 is_list_named = function(x){
   inherits(x, "list") && length(names(x)) > 0
 }
+
+paws_error_code <- function(error){
+  return(error[["error_response"]][["__type"]] %||% error[["error_response"]][["Code"]])
+}
