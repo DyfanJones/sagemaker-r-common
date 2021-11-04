@@ -1227,8 +1227,8 @@ Session = R6Class("Session",
         self$sagemaker$stop_hyper_parameter_tuning_job(HyperParameterTuningJobName=name)
         },
         error = function(e) {
-          error_code = e$error_response$Code
-          if(error_code == "ValidationException") {
+          error_code = e$error_response[["__type"]]
+          if(identical(error_code, "ValidationException")) {
             LOGGER$info("Tuning job: %s is alread stopped or not running.", name)
           } else {
             LOGGER$error("Error occurred while attempting to stop tuning job: %s. Please try again.", name)
@@ -1351,9 +1351,9 @@ Session = R6Class("Session",
         return(do.call(self$sagemaker$create_model, create_model_request))
         },
         error=function(e){
-          error_code = e$error_response$Code
-          if (error_code == "ValidationException"
-              && grepl("Cannot create already existing model", e$message)){
+          error_code = e$error_response[["__type"]]
+          if (identical(error_code, "ValidationException")
+              && grepl("Cannot create already existing model", e$error_response$Message)){
             LOGGER$warn("Using already existing model: %s", name)
           } else {stop(e)}
       })
@@ -1423,9 +1423,9 @@ Session = R6Class("Session",
           ModelPackageDescription = description,
           SourceAlgorithmSpecification= SourceAlgorithmSpecification),
         error = function(e) {
-          error_code = e$error_response$Code
-          if (error_code == "ValidationException"
-              && grepl("ModelPackage already exists", e$message)) {
+          error_code = e$error_response[["__type"]]
+          if (identical(error_code, "ValidationException")
+              && grepl("ModelPackage already exists", e$error_response$Message)) {
             LOGGER$warn("Using already existing model package: %s", name)
           } else {stop(e$message, call. = F)}
         })
@@ -1791,9 +1791,9 @@ Session = R6Class("Session",
         self$sagemaker$stop_transform_job(TransformJobName=name)
         },
         error = function(e){
-          error_code = e$error_response$Code
+          error_code = e$error_response[["__type"]]
            # allow to pass if the job already stopped
-           if (error_code == "ValidationException"){
+           if (identictal(error_code, "ValidationException")){
              LOGGER$info("Transform job: %s is already stopped or not running.", name)
            } else{
              LOGGER$error("Error occurred while attempting to stop transform job: %s", name)
@@ -2408,10 +2408,10 @@ Session = R6Class("Session",
           LOGGER$info("Created S3 bucket: %s", bucket_name)},
           error = function(e) {
             error_code = e$error_response$Code
-            message = e$message
-            if (error_code == "BucketAlreadyOwnedByYou") {
+            message = e$error_response$Message
+            if (identical(error_code, "BucketAlreadyOwnedByYou")) {
               invisible(NULL)
-            } else if (error_code == "OperationAborted" &&
+            } else if (identical(error_code, "OperationAborted") &&
                      grepl("conflicting conditional operation", message)) {
               # If this bucket is already being concurrently created, we don't need to create
               # it again.
@@ -3319,9 +3319,9 @@ production_variant <- function(model_name,
 .deployment_entity_exists <- function(describe_fn){
   tryCatch(eval.parent(substitute(expr)),
            error = function(e){
-             error_code = e$error_response$Code
-             if(error_code != "ValidationException"
-                && grepl("Could not find", e$message)) {
+             error_code = e$error_response[["__type"]]
+             if(!identical(error_code, "ValidationException")
+                && grepl("Could not find", e$error_response$Message)) {
                stop(e)
               }
            })
@@ -3388,14 +3388,15 @@ get_execution_role <- function(sagemaker_session = NULL){
       logGroupName=log_group,
       logStreamNamePrefix=paste0(job_name, "/"),
       orderBy="LogStreamName",
-      limit=min(instance_count, 50))},
-      error = function(e){
-        # On the very first training job run on an account, there's no log group until
-        # the container starts logging, so ignore any errors thrown about that
-        error_code = e$error_response$Code
-        if (error_code != "ResourceNotFoundException")
-          stop(e)
-        })
+      limit=min(instance_count, 50))
+    },
+    error = function(e){
+      # On the very first training job run on an account, there's no log group until
+      # the container starts logging, so ignore any errors thrown about that
+      error_code = e$error_response[["__type"]]
+      if (!identical(error_code, "ResourceNotFoundException"))
+        stop(e)
+    })
 
     stream_names = lapply(streams$logStreams, function(s) s$logStreamName)
 
@@ -3408,8 +3409,8 @@ get_execution_role <- function(sagemaker_session = NULL){
         error = function(e){
           # On the very first training job run on an account, there's no log group until
           # the container starts logging, so ignore any errors thrown about that
-          error_code = e$error_response$Code
-          if (error_code != "ResourceNotFoundException")
+          error_code = e$error_response[["__type"]]
+          if (!identical(error_code, "ResourceNotFoundException"))
             stop(e)
         })
       stream_names = c(stream_names, lapply(streams$logStreams, function(s) s$logStreamName))
