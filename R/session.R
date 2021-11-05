@@ -3404,7 +3404,7 @@ get_execution_role <- function(sagemaker_session = NULL){
         logGroupName=log_group,
         logStreamNamePrefix=paste0(job_name, "/"),
         orderBy="LogStreamName",
-        limit=min(instance_count, 50))
+        limit=50)
       }, error = function(e){
         # On the very first training job run on an account, there's no log group until
         # the container starts logging, so ignore any errors thrown about that
