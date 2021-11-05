@@ -383,18 +383,20 @@ Transformer = R6Class("Transformer",
        input_config = private$.format_inputs_to_input_config(
          data, data_type, content_type, compression_type, split_type)
 
-       output_config = private$.prepare_output_config(self$output_path,
-                                                      self$output_kms_key,
-                                                      self$assemble_with,
-                                                      self$accept)
-
+       output_config = private$.prepare_output_config(
+         self$output_path,
+         self$output_kms_key,
+         self$assemble_with,
+         self$accept
+       )
        resource_config = private$.prepare_resource_config(
          self$instance_count, self$instance_type, self$volume_kms_key
        )
-
-       return (list("input_config"= input_config,
-                   "output_config"= output_config,
-                   "resource_config"= resource_config))
+       return (list(
+         "input_config"= input_config,
+         "output_config"= output_config,
+         "resource_config"= resource_config)
+      )
     },
 
     .format_inputs_to_input_config = function(data,
@@ -402,7 +404,7 @@ Transformer = R6Class("Transformer",
                                               content_type = NULL,
                                               compression_type = NULL,
                                               split_type = NULL){
-      config = list("DataSource" = list("S3DataSource" = list("S3DataType"= data_type, "S3Uri"= data)))
+      config = list("DataSource"=list("S3DataSource"=list("S3DataType"= data_type, "S3Uri"= data)))
 
       if (!is.null(content_type))
         config[["ContentType"]] = content_type
@@ -422,14 +424,14 @@ Transformer = R6Class("Transformer",
                                       accept = NULL){
       config = list("S3OutputPath"= s3_path)
       if (!is.null(kms_key_id))
-        config["KmsKeyId"] = kms_key_id
+        config[["KmsKeyId"]] = kms_key_id
 
 
       if (!is.null(assemble_with))
-        config["AssembleWith"] = assemble_with
+        config[["AssembleWith"]] = assemble_with
 
       if (!is.null(accept))
-        config["Accept"] = accept
+        config[["Accept"]] = accept
 
       return(config)
     },
@@ -440,7 +442,7 @@ Transformer = R6Class("Transformer",
       config = list("InstanceCount"= instance_count, "InstanceType"= instance_type)
 
       if (!is.null(volume_kms_key))
-        config["VolumeKmsKeyId"] = volume_kms_key
+        config[["VolumeKmsKeyId"]] = volume_kms_key
 
         return(config)
     },
@@ -451,13 +453,13 @@ Transformer = R6Class("Transformer",
       config = list()
 
       if (!is.null(input_filter))
-        config["InputFilter"] = input_filter
+        config[["InputFilter"]] = input_filter
 
       if (!is.null(output_filter))
-        config["OutputFilter"] = output_filter
+        config[["OutputFilter"]] = output_filter
 
       if (!is.null(join_source))
-        config["JoinSource"] = join_source
+        config[["JoinSource"]] = join_source
 
       if (length(config))
         return(NULL)
