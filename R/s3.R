@@ -73,7 +73,7 @@ S3Uploader = R6Class("S3Uploader",
                       sagemaker_session=NULL){
 
       sagemaker_session = sagemaker_session %||% Session$new()
-      s3_parts = split_s3_uri(desired_s3_uri)
+      s3_parts = parse_s3_url(desired_s3_uri)
       params = list(
         path=local_path,
         bucket=s3_parts$bucket,
@@ -99,7 +99,7 @@ S3Uploader = R6Class("S3Uploader",
                                           kms_key=NULL,
                                           sagemaker_session=NULL){
       sagemaker_session = sagemaker_session %||% Session$new()
-      s3_parts = split_s3_uri(desired_s3_uri)
+      s3_parts = parse_s3_url(desired_s3_uri)
 
       sagemaker_session$upload_string_as_file_body(
         body=body, bucket=s3_parts$bucket, key=s3_parts$key, kms_key=kms_key)
@@ -134,7 +134,7 @@ S3Downloader = R6Class("S3Downloader",
                         sagemaker_session=NULL){
 
       sagemaker_session = sagemaker_session %||% Session$new()
-      s3_parts = split_s3_uri(s3_uri)
+      s3_parts = parse_s3_url(s3_uri)
       params = list(
         path = local_path,
         bucket = s3_parts$bucket,
@@ -153,7 +153,7 @@ S3Downloader = R6Class("S3Downloader",
                          sagemaker_session=NULL){
 
       sagemaker_session = sagemaker_session %||% Session$new()
-      s3_parts = split_s3_uri(desired_s3_uri)
+      s3_parts = parse_s3_url(s3_uri)
 
       return(sagemaker_session$read_s3_file(bucket=s3_parts$bucket, key_prefix=s3_parts$key))
     },
@@ -166,7 +166,7 @@ S3Downloader = R6Class("S3Downloader",
     list = function(s3_uri,
                     sagemaker_session = NULL){
       sagemaker_session = sagemaker_session %||% Session$new()
-      s3_parts = split_s3_uri(desired_s3_uri)
+      s3_parts = parse_s3_url(s3_uri)
 
       file_keys = sagemaker_session$list_s3_files(bucket=s3_parts$bucket, key_prefix=s3_parts$key)
       return(lapply(file_keys, function(file_key) s3_path_join("s3://", s3_parts$bucket, file_key)))
