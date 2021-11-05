@@ -252,7 +252,7 @@ Transformer = R6Class("Transformer",
   ),
   private = list(
     .retrieve_base_name = function(){
-      image_name = private$.retrieve_image_name()
+      image_name = private$.retrieve_image_uri()
 
       if (!is.null(image_name)){
         return(base_name_from_image(image_name))
@@ -260,16 +260,17 @@ Transformer = R6Class("Transformer",
       return(self$model_name)
     },
 
-    .retrieve_image_name = function(){
+    .retrieve_image_uri = function(){
 
-      tryCatch({model_desc = self$sagemaker_session$sagemaker$describe_model(
-                          ModelName=self$model_name)},
-               error = function(e){
-                 stop(sprintf(
-                   "Failed to fetch model information for %s. ", self$model_name),
-                   "Please ensure that the model exists. ",
-                   "Local instance types require locally created models.")}
-               )
+      tryCatch({
+        model_desc = self$sagemaker_session$sagemaker$describe_model(
+          ModelName=self$model_name)
+        }, error = function(e){
+          ValueError$new(sprintf(
+            "Failed to fetch model information for %s. ", self$model_name),
+            "Please ensure that the model exists. ",
+            "Local instance types require locally created models.")
+      })
       primary_container = model_desc$PrimaryContainer
       if (!is.null(primary_container) || length(primary_container) > 0)
         return(primary_container$Image)
