@@ -2057,13 +2057,13 @@ Session = R6Class("Session",
         # Guessing this conditional's purpose was to handle lack of IAM permissions
         # https://github.com/aws/sagemaker-python-sdk/issues/2089#issuecomment-791802713
         if (grepl("AmazonSageMaker-ExecutionRole", assumed_role)){
-          LOGGER$warn(
-            "Assuming role was created in SageMaker AWS console, ",
-            "as the name contains `AmazonSageMaker-ExecutionRole`. ",
-            "Defaulting to Role ARN with service-role in path. ",
-            "If this Role ARN is incorrect, please add ",
-            "IAM read permissions to your role or supply the ",
-            "Role Arn directly."
+          LOGGER$warn(paste(
+            "Assuming role was created in SageMaker AWS console,",
+            "as the name contains `AmazonSageMaker-ExecutionRole`.",
+            "Defaulting to Role ARN with service-role in path.",
+            "If this Role ARN is incorrect, please add",
+            "IAM read permissions to your role or supply the",
+            "Role Arn directly.")
           )
           role = gsub(
             "^(.+)sts::(\\d+):assumed-role/(.+?)/.*$",
