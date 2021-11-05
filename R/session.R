@@ -1417,12 +1417,12 @@ Session = R6Class("Session",
 
       LOGGER$info("Creating model package with name: %s", name)
 
-      tryCatch(
+      tryCatch({
         self$sagemaker$create_model_package(
           ModelPackageName = name,
           ModelPackageDescription = description,
-          SourceAlgorithmSpecification= SourceAlgorithmSpecification),
-        error = function(e) {
+          SourceAlgorithmSpecification= SourceAlgorithmSpecification)
+        }, error = function(e) {
           error_code = paws_error_code(e)
           if (identical(error_code, "ValidationException")
               && grepl("ModelPackage already exists", e$error_response$Message)) {
@@ -1789,8 +1789,7 @@ Session = R6Class("Session",
       LOGGER$info("Stopping transform job: %s", name)
       tryCatch({
         self$sagemaker$stop_transform_job(TransformJobName=name)
-        },
-        error = function(e){
+        }, error = function(e){
           error_code = paws_error_code(e)
            # allow to pass if the job already stopped
            if (identictal(error_code, "ValidationException")){
@@ -2029,8 +2028,7 @@ Session = R6Class("Session",
           # If not found, fallback to the domain
           domain_desc = self$sagemaker$describe_domain(DomainId=domain_id)
           return(domain_desc[["DefaultUserSettings"]][["ExecutionRole"]])
-          },
-          error=function(e) {
+          }, error=function(e) {
             LOGGER$debug(
               "Couldn't call 'describe_notebook_instance' to get the Role \nARN of the instance %s.",
               instance_name)
@@ -2397,7 +2395,7 @@ Session = R6Class("Session",
     #   bucket_name (str): Name of the S3 bucket to be created.
     #   region (str): The region in which to create the bucket.
     .create_s3_bucket_if_it_does_not_exist = function(bucket_name, region){
-      resp <- tryCatch(self$s3$head_bucket(Bucket = bucket_name), error = function(e) e)
+      resp <- tryCatch({self$s3$head_bucket(Bucket = bucket_name)}, error = function(e) e)
 
       # check if bucket exists: HTTP 404 bucket not found
       if(inherits(resp, "http_404")){
@@ -2405,8 +2403,8 @@ Session = R6Class("Session",
           self$s3$create_bucket(
             Bucket = bucket_name,
             CreateBucketConfiguration = list(LocationConstraint = region))
-          LOGGER$info("Created S3 bucket: %s", bucket_name)},
-          error = function(e) {
+          LOGGER$info("Created S3 bucket: %s", bucket_name)
+          }, error = function(e) {
             error_code = paws_error_code(e)
             message = e$error_response$Message
             if (identical(error_code, "BucketAlreadyOwnedByYou")) {
@@ -3317,14 +3315,15 @@ production_variant <- function(model_name,
 }
 
 .deployment_entity_exists <- function(describe_fn){
-  tryCatch(eval.parent(substitute(expr)),
-           error = function(e){
-             error_code = paws_error_code(e)
-             if(!identical(error_code, "ValidationException")
-                && grepl("Could not find", e$error_response$Message)) {
-               stop(e)
-              }
-           })
+  tryCatch({
+    eval.parent(substitute(describe_fn))
+    }, error = function(e){
+      error_code = paws_error_code(e)
+      if(!identical(error_code, "ValidationException")
+         && grepl("Could not find", e$error_response$Message)) {
+        stop(e)
+        }
+  })
   return (FALSE)
 }
 
@@ -3401,18 +3400,18 @@ get_execution_role <- function(sagemaker_session = NULL){
     stream_names = lapply(streams$logStreams, function(s) s$logStreamName)
 
     while (length(streams$nextToken) > 0){
-      tryCatch(streams = cloudwatchlogs$describe_log_streams(
+      tryCatch({streams = cloudwatchlogs$describe_log_streams(
         logGroupName=log_group,
         logStreamNamePrefix=paste0(job_name, "/"),
         orderBy="LogStreamName",
-        limit=min(instance_count, 50)),
-        error = function(e){
-          # On the very first training job run on an account, there's no log group until
-          # the container starts logging, so ignore any errors thrown about that
-          error_code = paws_error_code(e)
-          if (!identical(error_code, "ResourceNotFoundException"))
-            stop(e)
-        })
+        limit=min(instance_count, 50))
+      }, error = function(e){
+        # On the very first training job run on an account, there's no log group until
+        # the container starts logging, so ignore any errors thrown about that
+        error_code = paws_error_code(e)
+        if (!identical(error_code, "ResourceNotFoundException"))
+          stop(e)
+      })
       stream_names = c(stream_names, lapply(streams$logStreams, function(s) s$logStreamName))
     }
   }
