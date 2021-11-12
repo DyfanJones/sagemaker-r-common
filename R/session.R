@@ -1427,7 +1427,7 @@ Session = R6Class("Session",
           if (identical(error_code, "ValidationException")
               && grepl("ModelPackage already exists", e$error_response$Message)) {
             LOGGER$warn("Using already existing model package: %s", name)
-          } else {stop(e$message, call. = F)}
+          } else {stop(e)}
         })
     },
 
@@ -1639,8 +1639,10 @@ Session = R6Class("Session",
                                endpoint_config_name,
                                wait=TRUE){
       if (!.deployment_entity_exists(self$sagemaker$describe_endpoint(EndpointName=endpoint_name)))
-        stop(sprintf("Endpoint with name '%s' does not exist; please use an existing endpoint name",
-                     endpoint_name), call. = F)
+        ValueError$new(
+          sprintf("Endpoint with name '%s' does not exist; please use an existing endpoint name",
+                  endpoint_name)
+        )
 
       self$sagemaker$update_endpoint(EndpointName=endpoint_name,
                                      EndpointConfigName=endpoint_config_name)
@@ -1937,9 +1939,10 @@ Session = R6Class("Session",
       model_vpc_config = vpc_sanitize(model_vpc_config)
 
       if (.deployment_entity_exists(self$sagemaker$describe_endpoint(EndpointName=name))){
-        stop(sprintf('Endpoint with name "%s" already exists; please pick a different name.',name), call. = F)
+        ValueError$new(
+          sprintf('Endpoint with name "%s" already exists; please pick a different name.',name)
+        )
       }
-
       if (!.deployment_entity_exists(self$sagemaker$describe_model(ModelName=name))){
         primary_container = container_def(image_uri=deployment_image, model_data_url=model_s3_location, env=model_environment_vars)
       self$create_model(name=name, role=role, container_defs=primary_container, vpc_config=model_vpc_config)}
@@ -2290,7 +2293,7 @@ Session = R6Class("Session",
           EncryptionConfiguration=list(EncryptionOption="SSE_KMS", KmsKey=kms_key))
         )
       kwargs = modifyList(kwargs, list(ResultConfiguration=result_config))
-      athena_client = self$paws_sesssion$client("athena")
+      athena_client = self$paws_session$client("athena")
       return(athena_client$start_query_execution(
         QueryString = kwargs$QueryString,
         QueryExecutionContext = kwargs$QueryExecutionContext,
@@ -2302,7 +2305,7 @@ Session = R6Class("Session",
     #' @description Get execution status of the Athena query.
     #' @param query_execution_id (str): execution ID of the Athena query.
     get_query_execution = function(query_execution_id){
-      athena_client = self$paws_sesssion$client("athena")
+      athena_client = self$paws_session$client("athena")
       return(athena_client$get_query_execution(QueryExecutionId=query_execution_id))
     },
 
@@ -2619,9 +2622,12 @@ Session = R6Class("Session",
       if (!islistempty(experiment_config))
         train_request$ExperimentConfig = experiment_config
 
-      train_request$EnableNetworkIsolation = enable_network_isolation
-      train_request$EnableInterContainerTrafficEncryption = encrypt_inter_container_traffic
-      train_request$EnableManagedSpotTraining = use_spot_instances
+      if (isTRUE(enable_network_isolation))
+        train_request$EnableNetworkIsolation = enable_network_isolation
+      if (isTRUE(encrypt_inter_container_traffic))
+        train_request$EnableInterContainerTrafficEncryption = encrypt_inter_container_traffic
+      if (isTRUE(use_spot_instances))
+        train_request$EnableManagedSpotTraining = use_spot_instances
 
       if (!is.null(checkpoint_s3_uri)){
         checkpoint_config = list("S3Uri"= checkpoint_s3_uri)
@@ -3126,9 +3132,10 @@ Session = R6Class("Session",
                                                  approval_status="PendingManualApproval",
                                                  description=NULL){
       if (!is.null(model_package_name) && !is.null(model_package_group_name))
-        stop("model_package_name and model_package_group_name cannot be present at the ",
-             "same time.", call. = F)
-
+        ValueError$new(
+          "model_package_name and model_package_group_name cannot be present at the ",
+          "same time."
+        )
       request_dict = list()
       request_dict$ModelPackageName = model_package_name
       request_dict$ModelPackageGroupName = model_package_group_name
@@ -3137,11 +3144,12 @@ Session = R6Class("Session",
       request_dict$MetadataProperties = metadata_properties
       if (!is.null(containers)){
         if (!(!is.null(content_types) && !is.null(response_types) &&
-              !is.null(inference_instances) && !is.null(transform_instances)))
-          stop(
+              !is.null(inference_instances) && !is.null(transform_instances))){
+          ValueError$new(
             "content_types, response_types, inference_inferences and transform_instances ",
-            "must be provided if containers is present.", call. = F
-            )
+            "must be provided if containers is present."
+          )
+        }
         inference_specification = list(
           "Containers"= containers,
           "SupportedContentTypes"= content_types,
@@ -3150,7 +3158,6 @@ Session = R6Class("Session",
           "SupportedTransformInstanceTypes"= transform_instances)
         request_dict$InferenceSpecification = inference_specification
       }
-
       request_dict$CertifyForMarketplace = marketplace_cert
       request_dict$ModelApprovalStatus = approval_status
 
@@ -3339,8 +3346,8 @@ get_execution_role <- function(sagemaker_session = NULL){
   if (grepl(":role/", arn)) {
     return(arn)
   } else {
-    message <- sprintf("The current AWS identity is not a role: %s, therefore it cannot be used as a \nSageMaker execution role", arn)
-    stop(message, call.= F)
+    message <- sprintf("The current AWS identity is not a role: %s, therefore it cannot be used as a SageMaker execution role", arn)
+    ValueError$new(message)
   }
 }
 
