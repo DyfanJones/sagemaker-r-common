@@ -8,46 +8,22 @@ Mock <- R6::R6Class("Mock",
       # dynamically assign public methods
       sapply(names(args), function(i) self[[i]] = args[[i]])
     },
-    return_value = function(value, .min_var = 1){
-      if(is.function(value))
-        stop("`value` is a function, please use `side_effect`.", call. = FALSE)
-      private$.value = value
-      private$.min_var = .min_var
-      return(private$.return)
-    },
-
-    side_effect = function(effect){
-      private$.effect = effect
-      return(private$.effect)
-    },
-
-    call_args = function(name, return_value=NULL){
-      self[[name]] = function(...){
+    .call_args = function(name, return_value=NULL, side_effect = NULL){
+      self[[name]] = function(..., ..return_value = FALSE){
         args = list(...)
-        if(length(args) != 0){
-          private[[paste0(".",name)]] = args
-          return(return_value)
-        }
-        return(private[[paste0(".",name)]])
+        if(..return_value)
+          return(private[[paste0(".",name)]])
+
+        private[[paste0(".",name)]] = args
+
+        if(!is.null(side_effect))
+          return(side_effect(...))
+        return(return_value)
       }
     }
   ),
   private = list(
-    .value = NULL,
-    .effect = NULL,
-    .min_var = NULL,
-    .return = function(...){
-      args = list(...)
-
-      # capture arguments
-      if(length(args) > 0)
-        self$.call_args = args
-
-      if(private$.min_var >= 1 && length(args) == 0)
-        return(self)
-
-      return(private$.value)
-    }
+    .value=NULL
   ),
   lock_objects = F
 )
