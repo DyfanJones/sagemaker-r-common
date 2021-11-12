@@ -11,6 +11,7 @@ Mock <- R6::R6Class("Mock",
     .call_args = function(name, return_value=NULL, side_effect = NULL){
       self[[name]] = function(..., ..return_value = FALSE){
         args = list(...)
+
         if(..return_value)
           return(private[[paste0(".",name)]])
 
@@ -18,6 +19,7 @@ Mock <- R6::R6Class("Mock",
 
         if(!is.null(side_effect))
           return(side_effect(...))
+
         return(return_value)
       }
     }
