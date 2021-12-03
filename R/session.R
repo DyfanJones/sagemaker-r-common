@@ -2108,7 +2108,6 @@ Session = R6Class("Session",
       last_describe_job_call = Sys.time()
       last_description = description
       last_debug_rule_statuses = NULL
-
       while(TRUE){
         .flush_log_streams(init_log$stream_names,
                            init_log$instance_count,
@@ -2119,7 +2118,6 @@ Session = R6Class("Session",
         if(state == LogState$COMPLETE) {break}
 
         Sys.sleep(poll)
-
         if(state == LogState$JOB_COMPLETE) {
           writeLines("\n")
           state = LogState$COMPLETE
@@ -2154,9 +2152,7 @@ Session = R6Class("Session",
             writeLines(paste0(rep("*", 40), collapse = ""))
             last_debug_rule_statuses = debug_rule_statuses
           }
-
         }
-
       }
 
       if (wait) {
@@ -3388,7 +3384,12 @@ get_execution_role <- function(sagemaker_session = NULL){
 
   # reset position pkg environmental variable
   sm_env$positions = NULL
-  return(list("client" = client, "stream_names" = stream_names, "log_group" = log_group, "instance_count"= instance_count))
+  return(list(
+    "client" = client,
+    "stream_names" = stream_names,
+    "log_group" = log_group,
+    "instance_count"= instance_count)
+  )
 }
 
 .flush_log_streams <- function(stream_names,
@@ -3397,7 +3398,6 @@ get_execution_role <- function(sagemaker_session = NULL){
                               log_group,
                               job_name,
                               positions = sm_env$positions){
-
   if (length(stream_names) < instance_count){
     tryCatch({streams = cloudwatchlogs$describe_log_streams(
       logGroupName=log_group,
