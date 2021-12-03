@@ -322,7 +322,8 @@ Create an Amazon SageMaker training job. Train the learner on a set of observati
   enable_sagemaker_metrics = NULL,
   profiler_rule_configs = NULL,
   profiler_config = NULL,
-  environment = NULL
+  environment = NULL,
+  retry_strategy = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -426,6 +427,10 @@ with SageMaker Profiler. (default: ``None``).}
 
 \item{\code{environment}}{(dict[str, str]) : Environment variables to be set for
 use during training job (default: ``None``)}
+
+\item{\code{retry_strategy}}{(dict): Defines RetryStrategy for InternalServerFailures.
+* max_retry_attsmpts (int): Number of times a job should be retried.
+The key in RetryStrategy is 'MaxRetryAttempts'.}
 }
 \if{html}{\out{</div>}}
 }
@@ -1397,7 +1402,8 @@ Create an Amazon SageMaker transform job.
   resource_config = NULL,
   experiment_config = NULL,
   tags = NULL,
-  data_processing = NULL
+  data_processing = NULL,
+  model_client_config = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -1435,6 +1441,10 @@ job. Dictionary contains three optional keys,
 \item{\code{data_processing}}{(dict): A dictionary describing config for combining the input data and
 transformed data. For more, see
 https://docs.aws.amazon.com/sagemaker/latest/dg/API_Tag.html.}
+
+\item{\code{model_client_config}}{(dict): A dictionary describing the model configuration for the
+job. Dictionary contains two optional keys,
+'InvocationsTimeoutInSeconds', and 'InvocationsMaxRetries'.}
 }
 \if{html}{\out{</div>}}
 }
