@@ -329,6 +329,9 @@ Session = R6Class("Session",
     #'              with SageMaker Profiler. (default: ``None``).
     #' @param environment (dict[str, str]) : Environment variables to be set for
     #'              use during training job (default: ``None``)
+    #' @param retry_strategy (dict): Defines RetryStrategy for InternalServerFailures.
+    #'              * max_retry_attsmpts (int): Number of times a job should be retried.
+    #'              The key in RetryStrategy is 'MaxRetryAttempts'.
     #' @return
     #' str: ARN of the training job, if it is created.
     train = function(input_mode,
@@ -356,7 +359,8 @@ Session = R6Class("Session",
                      enable_sagemaker_metrics=NULL,
                      profiler_rule_configs=NULL,
                      profiler_config=NULL,
-                     environment=NULL){
+                     environment=NULL,
+                     retry_strategy=NULL){
 
       tags = .append_project_tags(tags)
       train_request = private$.get_train_request(
@@ -385,7 +389,9 @@ Session = R6Class("Session",
         enable_sagemaker_metrics=enable_sagemaker_metrics,
         profiler_rule_configs=profiler_rule_configs,
         profiler_config=profiler_config,
-        environment=enviornment)
+        environment=enviornment,
+        retry_strategy=retry_strategy
+      )
 
       LOGGER$info("Creating training-job with name: %s", job_name)
       LOGGER$debug("train request: %s", toJSON(train_request, pretty = T, auto_unbox = T))
@@ -959,7 +965,7 @@ Session = R6Class("Session",
 
       description = self$sagemaker$describe_auto_ml_job(AutoMLJobName=job_name)
 
-      init_log = .log_init(description, "AutoML")
+      init_log = .log_init(self, description, "AutoML")
 
       state = .get_initial_job_state(description, "AutoMLJobStatus", wait)
 
@@ -967,7 +973,7 @@ Session = R6Class("Session",
       while(TRUE){
         .flush_log_streams(init_log$stream_names,
                            init_log$instance_count,
-                           cloudwatchlogs,
+                           init_log$client,
                            init_log$log_group,
                            job_name,
                            sm_env$positions)
@@ -1232,8 +1238,8 @@ Session = R6Class("Session",
             LOGGER$info("Tuning job: %s is alread stopped or not running.", name)
           } else {
             LOGGER$error("Error occurred while attempting to stop tuning job: %s. Please try again.", name)
+            stop(e)
           }
-          stop(e)
       })
     },
 
@@ -2093,13 +2099,11 @@ Session = R6Class("Session",
                             log_type="All"){
 
       description = self$sagemaker$describe_training_job(TrainingJobName=job_name)
-      cloudwatchlogs = self$paws_session$client("cloudwatchlogs")
       writeLines(secondary_training_status_message(description, NULL), sep = "")
 
-      init_log = .log_init(description, "Training")
+      init_log = .log_init(self, description, "Training")
 
       state = .get_initial_job_state(description, "TrainingJobStatus", wait)
-
 
       last_describe_job_call = Sys.time()
       last_description = description
@@ -2108,7 +2112,7 @@ Session = R6Class("Session",
       while(TRUE){
         .flush_log_streams(init_log$stream_names,
                            init_log$instance_count,
-                           cloudwatchlogs,
+                           init_log$client,
                            init_log$log_group,
                            job_name,
                            sm_env$positions)
@@ -2162,15 +2166,14 @@ Session = R6Class("Session",
 
         training_time = description$TrainingTimeInSeconds
         billable_time = description$BillableTimeInSeconds
-        if (!is.null(training_time) || legnth(training_time) == 0)
+        if (!is.null(training_time) || length(training_time) == 0)
           writeLines(sprintf("Training seconds: %s", training_time * init_log$instance_count))
-        if (!is.null(billable_time) || legnth(billable_time) == 0)
+        if (!is.null(billable_time) || length(billable_time) == 0)
           writeLines(sprintf("Billable seconds: %s", billable_time * init_log$instance_count))
-        if (!is.null(spot_training) || legnth(spot_training) == 0){
+        if (!is.null(spot_training) || length(spot_training) == 0){
           saving = (1 - as.numeric(billable_time) / training_time) * 100
           writeLines(sprintf("Managed Spot Training savings: %s", saving))}
       }
-
     },
 
     #' @description Display the logs for a given processing job, optionally tailing them until the
@@ -2185,9 +2188,8 @@ Session = R6Class("Session",
                                        poll=10){
 
       description = self$sagemaker$describe_processing_job(ProcessingJobName=job_name)
-      cloudwatchlogs = self$paws_session$client("cloudwatchlogs")
 
-      init_log = .log_init(description, "Processing")
+      init_log = .log_init(self, description, "Processing")
 
       state = .get_initial_job_state(description, "ProcessingJobStatus", wait)
 
@@ -2195,7 +2197,7 @@ Session = R6Class("Session",
       while(TRUE){
         .flush_log_streams(init_log$stream_names,
                            init_log$instance_count,
-                           cloudwatchlogs,
+                           init_log$client,
                            init_log$log_group,
                            job_name,
                            sm_env$positions)
@@ -2236,9 +2238,8 @@ Session = R6Class("Session",
                                       poll=10){
 
       description = self$sagemaker$describe_transform_job(TransformJobName=job_name)
-      cloudwatchlogs = self$paws_session$client("cloudwatchlogs")
 
-      init_log = .log_init(description, "Transform")
+      init_log = .log_init(self, description, "Transform")
 
       state = .get_initial_job_state(description, "TransformJobStatus", wait)
 
@@ -2246,7 +2247,7 @@ Session = R6Class("Session",
       while(TRUE){
         .flush_log_streams(init_log$stream_names,
                            init_log$instance_count,
-                           cloudwatchlogs,
+                           init_log$client,
                            init_log$log_group,
                            job_name,
                            sm_env$positions)
@@ -2562,6 +2563,9 @@ Session = R6Class("Session",
     # SageMaker Profiler. (default: ``None``).
     # environment (dict[str, str]) : Environment variables to be set for
     # use during training job (default: ``None``)
+    # retry_strategy(dict): Defines RetryStrategy for InternalServerFailures.
+    # * max_retry_attsmpts (int): Number of times a job should be retried.
+    # The key in RetryStrategy is 'MaxRetryAttempts'.
     # Returns:
     #   Dict: a training request dict
     .get_train_request = function(input_mode,
@@ -2589,7 +2593,8 @@ Session = R6Class("Session",
                                   enable_sagemaker_metrics=NULL,
                                   profiler_rule_configs=NULL,
                                   profiler_config=NULL,
-                                  environment=NULL){
+                                  environment=NULL,
+                                  retry_strategy=NULL){
       train_request = list(
         "AlgorithmSpecification"=list("TrainingInputMode"= input_mode),
         "OutputDataConfig"= output_config,
@@ -2616,6 +2621,7 @@ Session = R6Class("Session",
 
       # Paws currently doesn't support
       # train_request$Environment = environment
+      LOGGER$info("Paws currently doesn't support `environment`")
       train_request$Tags = tags
       train_request$VpcConfig = vpc_config
 
@@ -2639,6 +2645,10 @@ Session = R6Class("Session",
       train_request$TensorBoardOutputConfig = tensorboard_output_config
       train_request$ProfilerRuleConfigurations = profiler_rule_configs
       train_request$ProfilerConfig = profiler_config
+      # Paws currently doesn't support Retry Strategory
+      # train_request$RetryStrategy = retry_strategy
+      LOGGER$info("Paws currently doesn't support `retry_strategy`")
+
       return(train_request)
     },
 
@@ -2715,11 +2725,7 @@ Session = R6Class("Session",
       transform_request[["BatchStrategy"]] = strategy
       transform_request[["MaxConcurrentTransforms"]] = max_concurrent_transforms
       transform_request[["MaxPayloadInMB"]] = max_payload
-
-      if (!is.null(env)){
-        LOGGER$error("Currently doesn't support Envionement")
-        # transform_request[["Environment"]] = env
-      }
+      transform_request[["Environment"]] = env
       transform_request[["Tags"]] = tags
       transform_request[["DataProcessing"]] = data_processing
 
@@ -3368,7 +3374,7 @@ get_execution_role <- function(sagemaker_session = NULL){
   return(FALSE)
 }
 
-.log_init <- function(description, job){
+.log_init <- function(sagemaker_session, description, job){
   switch(job,
          "Training" = {instance_count = description$ResourceConfig$InstanceCount},
          "Transform" = {instance_count = description$TransformResources$InstanceCount},
@@ -3377,9 +3383,12 @@ get_execution_role <- function(sagemaker_session = NULL){
   stream_names = list()
   log_group = sprintf("/aws/sagemaker/%sJobs",job)
 
+  # Increase retries allowed, to be interrupted by a transient exception.
+  client = sagemaker_session$paws_session$client("cloudwatchlogs", config = list(max_retries = 15))
+
   # reset position pkg environmental variable
   sm_env$positions = NULL
-  return(list("stream_names" = stream_names, "log_group" = log_group, "instance_count"= instance_count))
+  return(list("client" = client, "stream_names" = stream_names, "log_group" = log_group, "instance_count"= instance_count))
 }
 
 .flush_log_streams <- function(stream_names,
