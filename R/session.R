@@ -2869,9 +2869,10 @@ Session = R6Class("Session",
     .vpc_config_from_training_job = function(training_job_desc,
                                              vpc_config_override="VPC_CONFIG_DEFAULT"){
 
-      if (vpc_config_override == "VPC_CONFIG_DEFAULT"){return(training_job_desc$VpcConfig)}
+      if (identical(vpc_config_override, "VPC_CONFIG_DEFAULT")){
+        return(training_job_desc$VpcConfig)
+      }
       return(vpc_sanitize(vpc_config_override))
-
     },
 
     .wait_until = function(expr,
