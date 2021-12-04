@@ -1375,11 +1375,12 @@ Session = R6Class("Session",
     #' @param role (str): The ``ExecutionRoleArn`` IAM Role ARN for the ``Model``, specified either
     #'              by an IAM role name or role ARN. If None, the ``RoleArn`` from the SageMaker
     #'              Training Job will be used.
-    #' @param primary_container_image (str): The Docker image reference (default: None). If None, it
+    #' @param image_uri (str): The Docker image reference (default: None). If None, it
     #'              defaults to the Training Image in ``training_job_name``.
     #' @param model_data_url (str): S3 location of the model data (default: None). If None, defaults
     #'              to the ``ModelS3Artifacts`` of ``training_job_name``.
     #' @param env (dict[string,string]): Model environment variables (default: {}).
+    #' @param enable_network_isolation (bool): Whether the model requires network isolation or not.
     #' @param vpc_config_override (dict[str, list[str]]): Optional override for VpcConfig set on the
     #'              model. Default: use VpcConfig from training job.
     #'              \itemize{
@@ -1391,24 +1392,32 @@ Session = R6Class("Session",
     create_model_from_job = function(training_job_name,
                                      name=NULL,
                                      role=NULL,
-                                     primary_container_image=NULL,
+                                     image_uri=NULL,
                                      model_data_url=NULL,
                                      env=NULL,
+                                     enable_network_isolation=FALSE,
                                      vpc_config_override= "VPC_CONFIG_DEFAULT",
                                      tags=NULL){
 
       training_job = self$sagemaker$describe_training_job(TrainingJobName=training_job_name)
-
       name = name %||% training_job_name
       role = role %||% training_job$RoleArn
-      primary_container = list(ContainerHostname = primary_container_image %||% training_job$AlgorithmSpecification$TrainingImage,
-                               ModelDataUrl=model_data_url %||% training_job$ModelArtifacts$S3ModelArtifacts,
-                               Environment = env %||% list())
-
+      env = env %||% list()
+      primary_container = container_def(
+        image_uri %||% training_job$AlgorithmSpecification$TrainingImage,
+        model_data_url=model_data_url %||% training_job$ModelArtifacts$S3ModelArtifacts,
+        env=env
+      )
       vpc_config = private$.vpc_config_from_training_job(training_job, vpc_config_override)
-
-      return (self$create_model(name, role, primary_container,
-                                vpc_config = vpc_config, tags=tags))
+      return (self$create_model(
+        name,
+        role,
+        primary_container,
+        enable_network_isolation=enable_network_isolation,
+        vpc_config=vpc_config,
+        tags=tags
+        )
+      )
     },
 
     #' @description Create a SageMaker Model Package from the results of training with an Algorithm Package
@@ -3269,7 +3278,6 @@ container_def <- function(image_uri,
                           image_config=NULL){
   if(is.null(env)) env = list()
   c_def = list("Image" = image_uri, "Environment"= env)
-
   c_def$ModelDataUrl = model_data_url
   c_def$Mode = container_mode
   c_def$ImageConfig = image_config
