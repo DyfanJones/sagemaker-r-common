@@ -1354,14 +1354,16 @@ Session = R6Class("Session",
       LOGGER$debug("CreateModel request: %s", toJSON(create_model_request, pretty = T, auto_unbox = T))
 
       tryCatch({
-        return(do.call(self$sagemaker$create_model, create_model_request))
+        do.call(self$sagemaker$create_model, create_model_request)
         },
         error=function(e){
           error_code = paws_error_code(e)
           if (identical(error_code, "ValidationException")
               && grepl("Cannot create already existing model", e$error_response$Message)){
             LOGGER$warn("Using already existing model: %s", name)
-          } else {stop(e)}
+          } else {
+            stop(e)
+          }
       })
       return(name)
     },
@@ -2751,6 +2753,8 @@ Session = R6Class("Session",
         warning(msg)
         container_defs = primary_container
       }
+
+      role = self$expand_role(role)
 
       if (!is_list_named(container_defs)){
         container_definition = container_defs
