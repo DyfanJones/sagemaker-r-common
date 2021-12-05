@@ -1563,18 +1563,26 @@ Session = R6Class("Session",
                                       data_capture_config_dict=NULL){
       LOGGER$info("Creating endpoint-config with name %s", name)
 
-      ProductionVariants = list(production_variant(
-        model_name,
-        instance_type,
-        initial_instance_count,
-        accelerator_type=accelerator_type))
+      tags = tags %||% list()
 
-      self$sagemaker$create_endpoint_config(
-        EndpointConfigName = name,
-        ProductionVariants = ProductionVariants,
-        DataCaptureConfig = data_capture_config_dict,
-        Tags = tags,
-        KmsKeyId = kms_key)
+      request = list(
+        "EndpointConfigName"=name,
+        "ProductionVariants"=list(
+          production_variant(
+            model_name,
+            instance_type,
+            initial_instance_count,
+            accelerator_type=accelerator_type
+          )
+        )
+      )
+
+      tags = .append_project_tags(tags)
+      request[["Tags"]] = tags
+      request[["KmsKeyId"]] = kms_key
+      request[["DataCaptureConfig"]] = data_capture_config_dict
+
+      do.call(self$sagemaker$create_endpoint_config, request)
       return(name)
     },
 
@@ -1594,16 +1602,20 @@ Session = R6Class("Session",
     #' @param new_kms_key (str): The KMS key that is used to encrypt the data on the storage volume
     #'              attached to the instance hosting the endpoint (default: None). If not specified,
     #'              the KMS key of the existing endpoint configuration is used.
-    #' @param new_data_capture_config_dict (dict): Specifies configuration related to Endpoint data
+    #' @param new_data_capture_config_list (dict): Specifies configuration related to Endpoint data
     #'              capture for use with Amazon SageMaker Model Monitoring (default: None).
     #'              If not specified, the data capture configuration of the existing
     #'              endpoint configuration is used.
+    #' @param new_production_variants (list[dict]): The configuration for which model(s) to host and
+    #'              the resources to deploy for hosting the model(s). If not specified,
+    #'              the ``ProductionVariants`` of the existing endpoint configuration is used.
     #' @return str: Name of the endpoint point configuration created.
     create_endpoint_config_from_existing = function(existing_config_name,
                                                     new_config_name,
                                                     new_tags=NULL,
                                                     new_kms_key=NULL,
-                                                    new_data_capture_config_dict=NULL){
+                                                    new_data_capture_config_list=NULL,
+                                                    new_production_variants=NULL){
 
       LOGGER$info("Creating endpoint-config with name ", new_config_name)
 
@@ -1611,14 +1623,25 @@ Session = R6Class("Session",
         EndpointConfigName=existing_config_name
       )
 
-      request_tags = new_tags %||% self$list_tags(existing_endpoint_config_desc$EndpointConfigArn)
+      request = list("EndpointConfigName"=new_config_name)
+      request[["ProductionVariants"]] = (
+        new_production_variants %||% existing_endpoint_config_desc[["ProductionVariants"]]
+      )
 
-      return(self$sagemaker$create_endpoint_config(
-        EndpointConfigName = new_config_name,
-        ProductionVariants = existing_endpoint_config_desc$ProductionVariants,
-        DataCaptureConfig = new_data_capture_config_dict %||% existing_endpoint_config_desc$DataCaptureConfig,
-        Tags = request_tags,
-        KmsKeyId = new_kms_key %||% existing_endpoint_config_desc[["KmsKeyId"]]))
+      request_tags = new_tags %||% self$list_tags(existing_endpoint_config_desc$EndpointConfigArn)
+      request_tags = .append_project_tags(request_tags)
+      request[["Tags"]] = request_tags
+
+      if (!is.null(new_kms_key) || !is.null(existing_endpoint_config_desc[["KmsKeyId"]]))
+        request[["KmsKeyId"]] = new_kms_key %||% existing_endpoint_config_desc[["KmsKeyId"]]
+
+      request_data_capture_config_list = (
+        new_data_capture_config_list %||% existing_endpoint_config_desc[["DataCaptureConfig"]]
+      )
+
+      request[["DataCaptureConfig"]] = request_data_capture_config_dict
+
+      return(do.call(self$sagemaker$create_endpoint_config, request))
     },
 
     #' @description Create an Amazon SageMaker ``Endpoint`` according to the endpoint configuration
