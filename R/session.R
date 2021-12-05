@@ -1635,13 +1635,16 @@ Session = R6Class("Session",
                                config_name,
                                tags=NULL,
                                wait=TRUE){
-
       LOGGER$info("Creating endpoint with name %s", endpoint_name)
 
-      self$sagemaker$create_endpoint(EndpointName=endpoint_name,
-                                     EndpointConfigName=config_name,
-                                     Tags=tags)
-      if (wait) self$wait_for_endpoint(endpoint_name)
+      tags = tags %||% list()
+      tags = .append_project_tags(tags)
+
+      self$sagemaker$create_endpoint(
+        EndpointName=endpoint_name, EndpointConfigName=config_name, Tags=tags
+      )
+      if (wait)
+        self$wait_for_endpoint(endpoint_name)
       return(endpoint_name)
     },
 
@@ -3110,8 +3113,10 @@ Session = R6Class("Session",
       writeLines(msg, sep = "")
       flush(stdout())
 
-      if (status %in% in_progress_statuses) return(NULL)
+      if (status %in% in_progress_statuses)
+        return(NULL)
 
+      writeLines("")
       return (desc)
     },
 
@@ -3341,12 +3346,12 @@ production_variant <- function(model_name,
 .deployment_entity_exists <- function(describe_fn){
   tryCatch({
     eval.parent(substitute(describe_fn))
-    }, error = function(e){
-      error_code = paws_error_code(e)
-      if(!identical(error_code, "ValidationException")
-         && grepl("Could not find", e$error_response$Message)) {
-        stop(e)
-        }
+  }, error = function(e){
+    error_code = paws_error_code(e)
+    if(!(identical(error_code, "ValidationException")
+         && grepl("Could not find", e$error_response$Message))) {
+      stop(e)
+    }
   })
   return (FALSE)
 }
