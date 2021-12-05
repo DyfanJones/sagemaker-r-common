@@ -1523,9 +1523,10 @@ Create an Amazon SageMaker ``Model`` from a SageMaker Training Job.
   training_job_name,
   name = NULL,
   role = NULL,
-  primary_container_image = NULL,
+  image_uri = NULL,
   model_data_url = NULL,
   env = NULL,
+  enable_network_isolation = FALSE,
   vpc_config_override = "VPC_CONFIG_DEFAULT",
   tags = NULL
 )}\if{html}{\out{</div>}}
@@ -1543,13 +1544,15 @@ If not specified, the training job name is used.}
 by an IAM role name or role ARN. If None, the ``RoleArn`` from the SageMaker
 Training Job will be used.}
 
-\item{\code{primary_container_image}}{(str): The Docker image reference (default: None). If None, it
+\item{\code{image_uri}}{(str): The Docker image reference (default: None). If None, it
 defaults to the Training Image in ``training_job_name``.}
 
 \item{\code{model_data_url}}{(str): S3 location of the model data (default: None). If None, defaults
 to the ``ModelS3Artifacts`` of ``training_job_name``.}
 
 \item{\code{env}}{(dict[string,string]): Model environment variables (default: {}).}
+
+\item{\code{enable_network_isolation}}{(bool): Whether the model requires network isolation or not.}
 
 \item{\code{vpc_config_override}}{(dict[str, list[str]]): Optional override for VpcConfig set on the
 model. Default: use VpcConfig from training job.
@@ -1748,7 +1751,8 @@ Create an Amazon SageMaker endpoint configuration from an existing one. Updating
   new_config_name,
   new_tags = NULL,
   new_kms_key = NULL,
-  new_data_capture_config_dict = NULL
+  new_data_capture_config_list = NULL,
+  new_production_variants = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -1769,10 +1773,14 @@ they are not carried over to the new endpoint configuration.}
 attached to the instance hosting the endpoint (default: None). If not specified,
 the KMS key of the existing endpoint configuration is used.}
 
-\item{\code{new_data_capture_config_dict}}{(dict): Specifies configuration related to Endpoint data
+\item{\code{new_data_capture_config_list}}{(dict): Specifies configuration related to Endpoint data
 capture for use with Amazon SageMaker Model Monitoring (default: None).
 If not specified, the data capture configuration of the existing
 endpoint configuration is used.}
+
+\item{\code{new_production_variants}}{(list[dict]): The configuration for which model(s) to host and
+the resources to deploy for hosting the model(s). If not specified,
+the ``ProductionVariants`` of the existing endpoint configuration is used.}
 }
 \if{html}{\out{</div>}}
 }
@@ -2254,7 +2262,7 @@ Create an SageMaker ``Endpoint`` from a list of production variants.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Session$endpoint_from_production_variants(
   name,
-  production_variants = NULL,
+  production_variants,
   tags = NULL,
   kms_key = NULL,
   wait = TRUE,
