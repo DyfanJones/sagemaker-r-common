@@ -19,7 +19,8 @@ get_model_package_args(
   approval_status = NULL,
   description = NULL,
   tags = NULL,
-  container_def_list = NULL
+  container_def_list = NULL,
+  drift_check_baselines = NULL
 )
 }
 \arguments{
@@ -60,6 +61,8 @@ or "PendingManualApproval" (default: "PendingManualApproval").}
 \item{tags}{: Placeholder}
 
 \item{container_def_list}{(list): A list of container defintiions.}
+
+\item{drift_check_baselines}{(DriftCheckBaselines): DriftCheckBaselines object (default: None).}
 }
 \value{
 list: A dictionary of method argument names and values.

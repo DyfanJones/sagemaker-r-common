@@ -61,6 +61,7 @@ Manage interactions with the Amazon SageMaker APIs and any other AWS services ne
 \item \href{#method-create_model_package_from_algorithm}{\code{Session$create_model_package_from_algorithm()}}
 \item \href{#method-create_model_package_from_containers}{\code{Session$create_model_package_from_containers()}}
 \item \href{#method-wait_for_model_package}{\code{Session$wait_for_model_package()}}
+\item \href{#method-describe_model}{\code{Session$describe_model()}}
 \item \href{#method-create_endpoint_config}{\code{Session$create_endpoint_config()}}
 \item \href{#method-create_endpoint_config_from_existing}{\code{Session$create_endpoint_config_from_existing()}}
 \item \href{#method-create_endpoint}{\code{Session$create_endpoint()}}
@@ -86,6 +87,9 @@ Manage interactions with the Amazon SageMaker APIs and any other AWS services ne
 \item \href{#method-logs_for_job}{\code{Session$logs_for_job()}}
 \item \href{#method-logs_for_processing_job}{\code{Session$logs_for_processing_job()}}
 \item \href{#method-logs_for_transform_job}{\code{Session$logs_for_transform_job()}}
+\item \href{#method-delete_feature_group}{\code{Session$delete_feature_group()}}
+\item \href{#method-create_feature_group}{\code{Session$create_feature_group()}}
+\item \href{#method-describe_feature_group}{\code{Session$describe_feature_group()}}
 \item \href{#method-start_query_execution}{\code{Session$start_query_execution()}}
 \item \href{#method-get_query_execution}{\code{Session$get_query_execution()}}
 \item \href{#method-wait_for_athena_query}{\code{Session$wait_for_athena_query()}}
@@ -702,9 +706,6 @@ jobs.}
 Amazon SageMaker can assume to perform tasks on your behalf.}
 
 \item{\code{pre-processes}}{the dataset (only applicable to first-party images).}
-
-\item{\code{tags}}{([dict[str,str]]): A list of dictionaries containing key-value
-pairs.}
 }
 \if{html}{\out{</div>}}
 }
@@ -1615,7 +1616,8 @@ Get request dictionary for CreateModelPackage API.
   metadata_properties = NULL,
   marketplace_cert = FALSE,
   approval_status = "PendingManualApproval",
-  description = NULL
+  description = NULL,
+  drift_check_baselines = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -1653,6 +1655,8 @@ for AWS Marketplace (default: False).}
 or "PendingManualApproval" (default: "PendingManualApproval").}
 
 \item{\code{description}}{(str): Model Package description (default: None).}
+
+\item{\code{drift_check_baselines}}{(DriftCheckBaselines): DriftCheckBaselines object (default: None).}
 }
 \if{html}{\out{</div>}}
 }
@@ -1677,6 +1681,26 @@ Wait for an Amazon SageMaker endpoint deployment to complete.
 }
 \subsection{Returns}{
 dict: Return value from the ``DescribeEndpoint`` API.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-describe_model"></a>}}
+\if{latex}{\out{\hypertarget{method-describe_model}{}}}
+\subsection{Method \code{describe_model()}}{
+Calls the DescribeModel API for the given model name.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Session$describe_model(name)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{name}}{(str): The name of the SageMaker model.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+dict: A dictionary response with the model description.
 }
 }
 \if{html}{\out{<hr>}}
@@ -2404,6 +2428,94 @@ Display the logs for a given transform job, optionally tailing them until the
 completion (Default: 10).}
 }
 \if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-delete_feature_group"></a>}}
+\if{latex}{\out{\hypertarget{method-delete_feature_group}{}}}
+\subsection{Method \code{delete_feature_group()}}{
+Deletes a FeatureGroup in the FeatureStore service.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Session$delete_feature_group(feature_group_name)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{feature_group_name}}{(str): name of the feature group to be deleted.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-create_feature_group"></a>}}
+\if{latex}{\out{\hypertarget{method-create_feature_group}{}}}
+\subsection{Method \code{create_feature_group()}}{
+Creates a FeatureGroup in the FeatureStore service.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Session$create_feature_group(
+  feature_group_name,
+  record_identifier_name,
+  event_time_feature_name,
+  feature_definitions,
+  role_arn,
+  online_store_config = NULL,
+  offline_store_config = NULL,
+  description = NULL,
+  tags = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{feature_group_name}}{(str): name of the FeatureGroup.}
+
+\item{\code{record_identifier_name}}{(str): name of the record identifier feature.}
+
+\item{\code{event_time_feature_name}}{(str): name of the event time feature.}
+
+\item{\code{feature_definitions}}{(Sequence[Dict[str, str]]): list of feature definitions.}
+
+\item{\code{role_arn}}{(str): ARN of the role will be used to execute the api.}
+
+\item{\code{online_store_config}}{(Dict[str, str]): dict contains configuration of the}
+
+\item{\code{offline_store_config}}{(Dict[str, str]): dict contains configuration of the
+feature offline store.}
+
+\item{\code{description}}{(str): description of the FeatureGroup.}
+
+\item{\code{tags}}{(List[Dict[str, str]]): list of tags for labeling a FeatureGroup.}
+
+\item{\code{feature}}{online store.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Response dict from service.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-describe_feature_group"></a>}}
+\if{latex}{\out{\hypertarget{method-describe_feature_group}{}}}
+\subsection{Method \code{describe_feature_group()}}{
+Describe a FeatureGroup by name in FeatureStore service.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Session$describe_feature_group(feature_group_name, next_token = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{feature_group_name}}{(str): name of the FeatureGroup to descibe.}
+
+\item{\code{next_token}}{(str): next_token to get next page of features.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Response dict from service.
 }
 }
 \if{html}{\out{<hr>}}
