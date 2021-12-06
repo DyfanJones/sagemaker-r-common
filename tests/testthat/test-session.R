@@ -19,6 +19,7 @@ paws_session = Mock$new(
 sts = Mock$new(region_name = REGION)
 iam = Mock$new(region_name = REGION)
 s3_client = Mock$new(region_name = REGION)
+s3_client$.call_args("get_object")
 lambda_client = Mock$new(region_name = REGION)
 cloudwatchlogs = Mock$new(region_name = REGION)
 
@@ -31,9 +32,23 @@ sagemaker_client$.call_args("create_training_job")
 sagemaker_client$.call_args("create_hyper_parameter_tuning_job")
 sagemaker_client$.call_args("stop_hyper_parameter_tuning_job")
 sagemaker_client$.call_args("create_transform_job")
+sagemaker_client$.call_args("create_model")
+sagemaker_client$.call_args("create_endpoint_config")
+sagemaker_client$.call_args("create_endpoint")
+sagemaker_client$.call_args("update_endpoint")
+sagemaker_client$.call_args("create_auto_ml_job")
+sagemaker_client$.call_args("list_candidates_for_auto_ml_job")
+sagemaker_client$.call_args("describe_hyper_parameter_tuning_job")
+sagemaker_client$.call_args("describe_model")
+sagemaker_client$.call_args("create_model_package")
+sagemaker_client$.call_args("create_feature_group")
+sagemaker_client$.call_args("delete_feature_group")
+sagemaker_client$.call_args("describe_feature_group")
 
 sagemakerruntime_client = Mock$new(region_name = REGION)
 athena_client = Mock$new(region_name = REGION)
+athena_client$.call_args("start_query_execution")
+athena_client$.call_args("get_query_execution")
 
 paws_session$.call_args("client", side_effect = function(obj, ...){
   switch(obj,
@@ -447,6 +462,7 @@ IN_PROGRESS_DESCRIBE_TRANSFORM_JOB_RESULT = modifyList(IN_PROGRESS_DESCRIBE_TRAN
 
 sts = Mock$new(region_name = REGION, endpoint_url=STS_ENDPOINT)
 sts$.call_args("get_caller_identity", return_value = list(Account="123"))
+iam$.call_args("get_role", return_value = list(Role = list(Arn = EXPANDED_ROLE)))
 
 paws_session$client = function(obj, ...){
   switch(obj,
@@ -1194,20 +1210,15 @@ sagemaker_session_ready_lifecycle <- function(){
 
   sm = Mock$new(region_name = REGION)
   sm$.call_args("describe_training_job", side_effect = iter(
-      list(
-        IN_PROGRESS_DESCRIBE_JOB_RESULT,
-        IN_PROGRESS_DESCRIBE_JOB_RESULT,
-        COMPLETED_DESCRIBE_JOB_RESULT
-      )
+      IN_PROGRESS_DESCRIBE_JOB_RESULT,
+      IN_PROGRESS_DESCRIBE_JOB_RESULT,
+      COMPLETED_DESCRIBE_JOB_RESULT
     )
   )
-
   sm$.call_args("describe_transform_job", side_effect = iter(
-      list(
-        IN_PROGRESS_DESCRIBE_TRANSFORM_JOB_RESULT,
-        IN_PROGRESS_DESCRIBE_TRANSFORM_JOB_RESULT,
-        COMPLETED_DESCRIBE_TRANSFORM_JOB_RESULT
-      )
+      IN_PROGRESS_DESCRIBE_TRANSFORM_JOB_RESULT,
+      IN_PROGRESS_DESCRIBE_TRANSFORM_JOB_RESULT,
+      COMPLETED_DESCRIBE_TRANSFORM_JOB_RESULT
     )
   )
 
@@ -1238,20 +1249,16 @@ sagemaker_session_full_lifecycle <- function(){
 
   sm = Mock$new(region_name = REGION)
   sm$.call_args("describe_training_job", side_effect = iter(
-      list(
-        IN_PROGRESS_DESCRIBE_JOB_RESULT,
-        IN_PROGRESS_DESCRIBE_JOB_RESULT,
-        COMPLETED_DESCRIBE_JOB_RESULT
-      )
+      IN_PROGRESS_DESCRIBE_JOB_RESULT,
+      IN_PROGRESS_DESCRIBE_JOB_RESULT,
+      COMPLETED_DESCRIBE_JOB_RESULT
     )
   )
 
   sm$.call_args("describe_transform_job", side_effect = iter(
-      list(
-        IN_PROGRESS_DESCRIBE_TRANSFORM_JOB_RESULT,
-        IN_PROGRESS_DESCRIBE_TRANSFORM_JOB_RESULT,
-        COMPLETED_DESCRIBE_TRANSFORM_JOB_RESULT
-      )
+      IN_PROGRESS_DESCRIBE_TRANSFORM_JOB_RESULT,
+      IN_PROGRESS_DESCRIBE_TRANSFORM_JOB_RESULT,
+      COMPLETED_DESCRIBE_TRANSFORM_JOB_RESULT
     )
   )
 
@@ -1328,7 +1335,7 @@ test_that("test logs for job full lifecycle", {
   ims = Session$new(sagemaker_session_ready_lifecycle())
 
   # stub Sys.time within logs_for_job method
-  assign("Sys.time", iter(list(0, 30, 60, 90, 120, 150, 180)), envir = environment(ims$logs_for_job))
+  assign("Sys.time", iter(0, 30, 60, 90, 120, 150, 180), envir = environment(ims$logs_for_job))
 
   ims$logs_for_job(JOB_NAME, wait=TRUE, poll = 0)
   expect_equal(
@@ -1339,3 +1346,930 @@ test_that("test logs for job full lifecycle", {
   )
 })
 
+test_that("test logs for transform job no wait", {
+  ims = Session$new(sagemaker_session_complete())
+  ims$logs_for_job(JOB_NAME, poll = 0)
+  expect_equal(
+    ims$sagemaker$describe_training_job(..return_value = T),
+    list(
+      TrainingJobName=JOB_NAME
+    )
+  )
+})
+
+test_that("test logs for transform job no wait stopped job", {
+  ims = Session$new(sagemaker_session_stopped())
+  ims$logs_for_transform_job(JOB_NAME)
+  expect_equal(
+    ims$sagemaker$describe_transform_job(..return_value = T),
+    list(
+      TransformJobName=JOB_NAME
+    )
+  )
+})
+
+test_that("test logs for transform job wait on completed", {
+  ims = Session$new(sagemaker_session_complete())
+  ims$logs_for_transform_job(JOB_NAME, wait=TRUE, poll=0)
+  expect_equal(
+    ims$sagemaker$describe_transform_job(..return_value = T),
+    list(
+      TransformJobName=JOB_NAME
+    )
+  )
+})
+
+test_that("test logs for transform job wait on stopped", {
+  ims = Session$new(sagemaker_session_stopped())
+  ims$logs_for_transform_job(JOB_NAME, wait=TRUE, poll=0)
+  expect_equal(
+    ims$sagemaker$describe_transform_job(..return_value = T),
+    list(
+      TransformJobName=JOB_NAME
+    )
+  )
+})
+
+test_that("test logs for transform job no wait on running", {
+  ims = Session$new(sagemaker_session_ready_lifecycle())
+  ims$logs_for_transform_job(JOB_NAME)
+  expect_equal(
+    ims$sagemaker$describe_transform_job(..return_value = T),
+    list(
+      TransformJobName=JOB_NAME
+    )
+  )
+})
+
+test_that("test logs for transform job full lifecycle", {
+  ims = Session$new(sagemaker_session_ready_lifecycle())
+
+  # stub Sys.time within logs_for_transform_job method
+  assign("Sys.time", iter(0, 30, 60, 90, 120, 150, 180), envir = environment(ims$logs_for_transform_job))
+
+  ims$logs_for_transform_job(JOB_NAME, wait=TRUE, poll=0)
+  expect_equal(
+    ims$sagemaker$describe_transform_job(..return_value = T),
+    list(
+      TransformJobName=JOB_NAME
+    )
+  )
+})
+
+MODEL_NAME = "some-model"
+PRIMARY_CONTAINER = list(
+  "Environment"=list(),
+  "Image"=IMAGE,
+  "ModelDataUrl"="s3://sagemaker-123/output/jobname/model/model.tar.gz"
+)
+
+test_that("test create model", {
+  sagemaker_session = Session$new(paws_session)
+  model = sagemaker_session$create_model(MODEL_NAME, ROLE, PRIMARY_CONTAINER)
+
+  expect_equal(model, MODEL_NAME)
+  expect_equal(
+    sagemaker_session$sagemaker$create_model(..return_value = TRUE),
+    list(
+      ModelName=MODEL_NAME, ExecutionRoleArn=EXPANDED_ROLE,  PrimaryContainer=PRIMARY_CONTAINER
+    )
+  )
+})
+
+test_that("test create model with tags", {
+  tags = list(list("Key"="TagtestKey", "Value"="TagtestValue"))
+  sagemaker_session = Session$new(paws_session)
+  model = sagemaker_session$create_model(MODEL_NAME, ROLE, PRIMARY_CONTAINER, tags=tags)
+
+  expect_equal(model, MODEL_NAME)
+  expect_equal(
+    sagemaker_session$sagemaker$create_model(..return_value = TRUE),
+    list(
+      ModelName=MODEL_NAME,
+      ExecutionRoleArn=EXPANDED_ROLE,
+      PrimaryContainer=PRIMARY_CONTAINER,
+      Tags=tags
+    )
+  )
+})
+
+test_that("test create model with primary container", {
+  sagemaker_session = Session$new(paws_session)
+  model = sagemaker_session$create_model(MODEL_NAME, ROLE, container_defs=PRIMARY_CONTAINER)
+
+  expect_equal(model, MODEL_NAME)
+  expect_equal(
+    sagemaker_session$sagemaker$create_model(..return_value = TRUE),
+    list(
+      ModelName=MODEL_NAME, ExecutionRoleArn=EXPANDED_ROLE, PrimaryContainer=PRIMARY_CONTAINER
+    )
+  )
+})
+
+test_that("test create model with both", {
+  sagemaker_session = Session$new(paws_session)
+  expect_error(
+    sagemaker_session$create_model(
+      MODEL_NAME, ROLE, container_defs=PRIMARY_CONTAINER, primary_container=PRIMARY_CONTAINER
+    ),
+    class = "ValueError"
+  )
+})
+
+CONTAINERS = list(
+  list(
+    "Environment"=list("SAGEMAKER_DEFAULT_INVOCATIONS_ACCEPT"="application/json"),
+    "Image"="mi-1",
+    "ModelDataUrl"="s3://bucket/model_1.tar.gz"
+  ),
+  list("Environment"=list(), "Image"="mi-2", "ModelDataUrl"="s3://bucket/model_2.tar.gz")
+)
+
+test_that("test create pipeline model", {
+  sagemaker_session = Session$new(paws_session)
+  model = sagemaker_session$create_model(MODEL_NAME, ROLE, container_defs=CONTAINERS)
+
+  expect_equal(model, MODEL_NAME)
+  expect_equal(
+    sagemaker_session$sagemaker$create_model(..return_value = T),
+    list(ModelName=MODEL_NAME, ExecutionRoleArn=EXPANDED_ROLE, Containers=CONTAINERS)
+  )
+})
+
+test_that("test create model vpc config", {
+  sagemaker_session = Session$new(paws_session)
+  model = sagemaker_session$create_model(MODEL_NAME, ROLE, PRIMARY_CONTAINER, VPC_CONFIG)
+
+  expect_equal(model, MODEL_NAME)
+  expect_equal(
+    sagemaker_session$sagemaker$create_model(..return_value = T),
+    list(
+      ModelName=MODEL_NAME,
+      ExecutionRoleArn=EXPANDED_ROLE,
+      PrimaryContainer=PRIMARY_CONTAINER,
+      VpcConfig=VPC_CONFIG
+    )
+  )
+})
+
+test_that("test create pipeline model vpc config", {
+  sagemaker_session = Session$new(paws_session)
+  model = sagemaker_session$create_model(MODEL_NAME, ROLE, CONTAINERS, VPC_CONFIG)
+
+  expect_equal(model, MODEL_NAME)
+  expect_equal(
+    sagemaker_session$sagemaker$create_model(..return_value = T),
+    list(
+      ModelName=MODEL_NAME,
+      ExecutionRoleArn=EXPANDED_ROLE,
+      Containers=CONTAINERS,
+      VpcConfig=VPC_CONFIG
+    )
+  )
+})
+
+test_that("test create model already exists", {
+  sagemaker_session = Session$new(paws_session$clone())
+  sagemaker_session$sagemaker = sagemaker_client$clone()
+  sagemaker_session$sagemaker$create_model = function(...){
+    er_str = structure(
+      list(error_response = list(
+        Code = "ValidationException",
+        Message = "Cannot create already existing model")),
+      class = c("error", "condition")
+    )
+    stop(er_str)
+  }
+
+  model = sagemaker_session$create_model(MODEL_NAME, ROLE, CONTAINERS, VPC_CONFIG)
+
+  expect_equal(model, MODEL_NAME)
+  expect_equal(lg$last_event$msg, sprintf("Using already existing model: %s", MODEL_NAME))
+  expect_equal(lg$last_event$level_name, c("300"="warn"))
+})
+
+test_that("test create model failure", {
+  sagemaker_session = Session$new(paws_session)
+  sagemaker_session$sagemaker = sagemaker_client$clone()
+  error_message = "this is expected"
+  sagemaker_session$sagemaker$create_model = function(...){stop(error_message)}
+
+  expect_error(
+    sagemaker_session$create_model(MODEL_NAME, ROLE, CONTAINERS, VPC_CONFIG),
+    error_message
+  )
+})
+
+test_that("test create model from job", {
+  ims = Session$new(paws_session)
+  ims$sagemaker$.call_args("describe_training_job", return_value = COMPLETED_DESCRIBE_JOB_RESULT)
+  ims$create_model_from_job(JOB_NAME)
+
+  expect_equal(
+    ims$sagemaker$describe_training_job(..return_value = TRUE),
+    list(TrainingJobName=JOB_NAME)
+  )
+  expect_equal(
+    ims$sagemaker$create_model(..return_value = TRUE),
+    list(
+      ModelName=JOB_NAME,
+      ExecutionRoleArn=EXPANDED_ROLE,
+      PrimaryContainer=PRIMARY_CONTAINER[c("Image", "Environment", "ModelDataUrl")],
+      VpcConfig=VPC_CONFIG
+    )
+  )
+})
+
+test_that("test create model from job with tags", {
+  ims = Session$new(paws_session)
+  ims$sagemaker$.call_args("describe_training_job", return_value = COMPLETED_DESCRIBE_JOB_RESULT)
+  ims$create_model_from_job(JOB_NAME, tags=TAGS)
+
+  expect_equal(
+    ims$sagemaker$describe_training_job(..return_value = TRUE),
+    list(TrainingJobName=JOB_NAME)
+  )
+  expect_equal(
+    ims$sagemaker$create_model(..return_value = TRUE),
+    list(
+      ModelName=JOB_NAME,
+      ExecutionRoleArn=EXPANDED_ROLE,
+      PrimaryContainer=PRIMARY_CONTAINER[c("Image", "Environment", "ModelDataUrl")],
+      Tags=TAGS,
+      VpcConfig=VPC_CONFIG
+    )
+  )
+})
+
+test_that("test create model from job with image", {
+  ims = Session$new(paws_session)
+  ims$sagemaker$.call_args("describe_training_job", return_value = COMPLETED_DESCRIBE_JOB_RESULT)
+  ims$create_model_from_job(JOB_NAME, image_uri="some-image")
+
+  expect_equal(
+    ims$sagemaker$create_model(..return_value = TRUE)$PrimaryContainer$Image,
+    "some-image"
+  )
+})
+
+test_that("test create model from job with container def", {
+  ims = Session$new(paws_session)
+  ims$sagemaker$.call_args("describe_training_job", return_value = COMPLETED_DESCRIBE_JOB_RESULT)
+  ims$create_model_from_job(
+    JOB_NAME,
+    image_uri="some-image",
+    model_data_url="some-data",
+    env=list("a"="b")
+  )
+
+  c_def = ims$sagemaker$create_model(..return_value = TRUE)$PrimaryContainer
+  expect_equal(c_def$Image, "some-image")
+  expect_equal(c_def$ModelDataUrl, "some-data")
+  expect_equal(c_def$Environment, list("a"="b"))
+})
+
+test_that("test create model from job with vpc config override", {
+  vpc_config_override = list("Subnets"=list("foo", "bar"), "SecurityGroupIds"=list("baz"))
+  ims = Session$new(paws_session)
+  ims$sagemaker$.call_args("describe_training_job", return_value = COMPLETED_DESCRIBE_JOB_RESULT)
+  ims$create_model_from_job(JOB_NAME, vpc_config_override=vpc_config_override)
+
+  expect_equal(
+    ims$sagemaker$create_model(..return_value = TRUE)$VpcConfig,
+    vpc_config_override
+  )
+
+  ims$create_model_from_job(JOB_NAME, vpc_config_override=NULL)
+  expect_false("VpcConfig" %in% names(ims$sagemaker$create_model(..return_value = TRUE)))
+})
+
+test_that("test endpoint from production variants", {
+  ims = Session$new(paws_session)
+  ims$sagemaker = sagemaker_client$clone()
+  ims$sagemaker$.call_args("describe_endpoint", return_value = list("EndpointStatus"="InService"))
+  pvs = list(
+    production_variant("A", "ml.p2.xlarge"),
+    production_variant("B", "p299.4096xlarge")
+  )
+  ex = structure(list(error_response = list(Code="ValidationException", Message = "Could not find your thing")), class = c("error", "condition"))
+  ims$sagemaker$.call_args("describe_endpoint_config", side_effect = function(...){stop(ex)})
+  ims$endpoint_from_production_variants("some-endpoint", pvs)
+
+  expect_equal(
+    ims$sagemaker$create_endpoint(..return_value = T),
+    list(
+      EndpointName="some-endpoint", EndpointConfigName="some-endpoint", Tags=list()
+    )
+  )
+  expect_equal(
+    ims$sagemaker$create_endpoint_config(..return_value = T),
+    list(
+      EndpointConfigName="some-endpoint", ProductionVariants=pvs
+    )
+  )
+})
+
+test_that("test create endpoint config with tags", {
+  tags = list(list("Key"="TagtestKey", "Value"="TagtestValue"))
+  ims = Session$new(paws_session)
+
+  ims$create_endpoint_config("endpoint-test", "simple-model", 1, "local", tags=tags)
+  prod_variants = list(
+    ModelName = "simple-model",
+    InstanceType = "local",
+    InitialInstanceCount = 1,
+    VariantName = "AllTraffic",
+    InitialVariantWeight = 1
+  )
+  expect_equal(
+    ims$sagemaker$create_endpoint_config(..return_value = T),
+    list(
+      EndpointConfigName="endpoint-test", ProductionVariants=list(prod_variants), Tags=tags
+    )
+  )
+})
+
+test_that("test endpoint from production variants with tags", {
+  ims = Session$new(paws_session)
+  ims$sagemaker = sagemaker_client$clone()
+  ims$sagemaker$.call_args("describe_endpoint", return_value = list("EndpointStatus"="InService"))
+  pvs = list(
+    production_variant("A", "ml.p2.xlarge"),
+    production_variant("B", "p299.4096xlarge")
+  )
+  ex = structure(list(error_response = list(Code="ValidationException", Message = "Could not find your thing")), class = c("error", "condition"))
+  ims$sagemaker$.call_args("describe_endpoint_config", side_effect = function(...){
+    stop(ex)
+  })
+  tags = list(list("ModelName"="TestModel"))
+  ims$endpoint_from_production_variants("some-endpoint", pvs, tags)
+
+  expect_equal(ims$sagemaker$create_endpoint(..return_value = T),
+    list(
+      EndpointName="some-endpoint", EndpointConfigName="some-endpoint", Tags=tags
+    )
+  )
+  expect_equal(ims$sagemaker$create_endpoint_config(..return_value = T),
+    list(
+      EndpointConfigName="some-endpoint", ProductionVariants=pvs, Tags=tags
+    )
+  )
+})
+
+test_that("test endpoint from production variants with accelerator type", {
+  ims = Session$new(paws_session)
+  ims$sagemaker = sagemaker_client$clone()
+  ims$sagemaker$.call_args("describe_endpoint", return_value = list("EndpointStatus"="InService"))
+  pvs = list(
+    production_variant("A", "ml.p2.xlarge",  accelerator_type=ACCELERATOR_TYPE),
+    production_variant("B", "p299.4096xlarge",  accelerator_type=ACCELERATOR_TYPE)
+  )
+  ex = structure(list(error_response = list(Code="ValidationException", Message = "Could not find your thing")), class = c("error", "condition"))
+  ims$sagemaker$.call_args("describe_endpoint_config", side_effect = function(...){
+    stop(ex)
+  })
+  tags = list(list("ModelName"="TestModel"))
+  ims$endpoint_from_production_variants("some-endpoint", pvs, tags)
+
+  expect_equal(ims$sagemaker$create_endpoint(..return_value = T),
+    list(
+      EndpointName="some-endpoint", EndpointConfigName="some-endpoint", Tags=tags
+    )
+  )
+  expect_equal(ims$sagemaker$create_endpoint_config(..return_value = T),
+    list(
+      EndpointConfigName="some-endpoint", ProductionVariants=pvs, Tags=tags
+    )
+  )
+})
+
+test_that("test update endpoint succeed", {
+  ims = Session$new(paws_session)
+  ims$sagemaker = sagemaker_client$clone()
+  ims$sagemaker$.call_args("describe_endpoint", return_value = list("EndpointStatus"="InService"))
+  endpoint_name = "some-endpoint"
+  endpoint_config = "some-endpoint-config"
+  returned_endpoint_name = ims$update_endpoint(endpoint_name, endpoint_config)
+
+  expect_equal(returned_endpoint_name, endpoint_name)
+})
+
+test_that("test update endpoint no wait", {
+  ims = Session$new(paws_session)
+  ims$sagemaker = sagemaker_client$clone()
+  ims$sagemaker$.call_args("describe_endpoint", return_value = list("EndpointStatus"="InService"))
+  endpoint_name = "some-endpoint"
+  endpoint_config = "some-endpoint-config"
+  returned_endpoint_name = ims$update_endpoint(endpoint_name, endpoint_config, wait=FALSE)
+
+  expect_equal(returned_endpoint_name, endpoint_name)
+})
+
+test_that("test update endpoint non existing endpoint", {
+  ims = Session$new(paws_session)
+  ims$sagemaker = sagemaker_client$clone()
+  ex = structure(list(error_response = list(Code="ValidationException", Message = "Could not find entity")), class = c("error", "condition"))
+  ims$sagemaker$.call_args("describe_endpoint", side_effect = function(...){stop(ex)})
+
+  expect_error(
+    ims$update_endpoint("non-existing-endpoint", "non-existing-config"),
+    "Endpoint with name 'non-existing-endpoint' does not exist; please use an existing endpoint name",
+    class = "ValueError"
+  )
+})
+
+test_that("test create endpoint config from existing", {
+  ims = Session$new(paws_session)
+  ims$sagemaker = sagemaker_client$clone()
+  pvs = list(production_variant("A", "ml.m4.xlarge"))
+  tags = list(list("Key"="aws:cloudformation:stackname", "Value"="this-tag-should-be-ignored"))
+  existing_endpoint_arn = "arn:aws:sagemaker:us-west-2:123412341234:endpoint-config/foo"
+  kms_key = "kms"
+  ims$sagemaker$.call_args("describe_endpoint_config", return_value = list(
+    "Tags"=tags,
+    "ProductionVariants"=pvs,
+    "EndpointConfigArn"=existing_endpoint_arn,
+    "KmsKeyId"=kms_key)
+  )
+  ims$sagemaker$.call_args("list_tags", return_value = list("Tags"=tags))
+  existing_endpoint_name = "foo"
+  new_endpoint_name = "new-foo"
+  ims$create_endpoint_config_from_existing(
+    existing_endpoint_name, new_endpoint_name
+  )
+
+  expect_equal(
+    ims$sagemaker$describe_endpoint_config(..return_value = T),
+    list(EndpointConfigName=existing_endpoint_name)
+  )
+  expect_equal(
+    ims$sagemaker$list_tags(..return_value = T),
+    list(ResourceArn=existing_endpoint_arn, MaxResults=50)
+  )
+  expect_equal(
+    ims$sagemaker$create_endpoint_config(..return_value = T),
+    list(EndpointConfigName=new_endpoint_name, ProductionVariants=pvs, KmsKeyId=kms_key)
+  )
+})
+
+test_that("test wait for tuning job", {
+  ims = Session$new(paws_session)
+  ims$sagemaker = sagemaker_client$clone()
+  hyperparameter_tuning_job_desc = list("HyperParameterTuningJobStatus"="Completed")
+  ims$sagemaker$.call_args(
+    "describe_hyper_parameter_tuning_job", return_value = hyperparameter_tuning_job_desc
+  )
+  result = ims$wait_for_tuning_job(JOB_NAME)
+  expect_equal(result[["HyperParameterTuningJobStatus"]], "Completed")
+})
+
+test_that("test tune job status", {
+  ims = Session$new(paws_session)
+  ims$sagemaker = sagemaker_client$clone()
+  hyperparameter_tuning_job_desc = list("HyperParameterTuningJobStatus"="Completed")
+  ims$sagemaker$.call_args(
+    "describe_hyper_parameter_tuning_job", return_value = hyperparameter_tuning_job_desc
+  )
+  result = ims$.__enclos_env__$private$.tuning_job_status(JOB_NAME)
+  expect_equal(result[["HyperParameterTuningJobStatus"]], "Completed")
+})
+
+test_that("test tune job status none", {
+  ims = Session$new(paws_session)
+  ims$sagemaker = sagemaker_client$clone()
+  hyperparameter_tuning_job_desc = list("HyperParameterTuningJobStatus"="InProgress")
+  ims$sagemaker$.call_args(
+    "describe_hyper_parameter_tuning_job", return_value = hyperparameter_tuning_job_desc
+  )
+  result = ims$.__enclos_env__$private$.tuning_job_status(JOB_NAME)
+  expect_null(result)
+})
+
+test_that("test wait for transform job completed", {
+  ims = Session$new(paws_session)
+  ims$sagemaker = sagemaker_client$clone()
+  transform_job_desc = list("TransformJobStatus"="Completed")
+  ims$sagemaker$.call_args(
+    "describe_transform_job", return_value = transform_job_desc
+  )
+  result = ims$wait_for_transform_job(JOB_NAME)
+  expect_equal(result[["TransformJobStatus"]], "Completed")
+})
+
+test_that("test wait for transform job in progress", {
+  ims = Session$new(paws_session)
+  ims$sagemaker = sagemaker_client$clone()
+  transform_job_desc_in_progress = list("TransformJobStatus"="InProgress")
+  transform_job_desc_in_completed = list("TransformJobStatus"="Completed")
+  ims$sagemaker$.call_args(
+    "describe_transform_job",
+    side_effect=iter(transform_job_desc_in_progress, transform_job_desc_in_completed)
+  )
+  result = ims$wait_for_transform_job(JOB_NAME, 0)
+  expect_equal(result[["TransformJobStatus"]], "Completed")
+})
+
+test_that("test transform job status", {
+  ims = Session$new(paws_session)
+  ims$sagemaker = sagemaker_client$clone()
+  transform_job_desc = list("TransformJobStatus"="Completed")
+  ims$sagemaker$.call_args("describe_transform_job", return_value=transform_job_desc)
+  result = ims$.__enclos_env__$private$.transform_job_status(JOB_NAME)
+  expect_equal(result[["TransformJobStatus"]], "Completed")
+})
+
+test_that("test transform job status none", {
+  ims = Session$new(paws_session)
+  ims$sagemaker = sagemaker_client$clone()
+  transform_job_desc = list("TransformJobStatus"="InProgress")
+  ims$sagemaker$.call_args("describe_transform_job",return_value=transform_job_desc)
+  result = ims$.__enclos_env__$private$.transform_job_status(JOB_NAME)
+  expect_null(result)
+})
+
+test_that("test train done completed", {
+  ims = Session$new(paws_session)
+  ims$sagemaker = sagemaker_client$clone()
+  transform_job_desc = list("TrainingJobStatus"="Completed")
+  ims$sagemaker$.call_args("describe_training_job",return_value=transform_job_desc)
+  result = ims$.__enclos_env__$private$.train_done(JOB_NAME)
+  expect_equal(result$job_desc$TrainingJobStatus, "Completed")
+  expect_true(result$status)
+})
+
+test_that("test train done in progress", {
+  ims = Session$new(paws_session)
+  ims$sagemaker = sagemaker_client$clone()
+  transform_job_desc = list("TrainingJobStatus"="InProgress")
+  ims$sagemaker$.call_args("describe_training_job",return_value=transform_job_desc)
+  result = ims$.__enclos_env__$private$.train_done(JOB_NAME)
+  expect_equal(result$job_desc$TrainingJobStatus, "InProgress")
+  expect_false(result$status)
+})
+
+
+DEFAULT_EXPECTED_AUTO_ML_JOB_ARGS = list(
+  "AutoMLJobName"=JOB_NAME,
+  "InputDataConfig"=list(
+    list(
+      "DataSource"=list("S3DataSource"=list("S3DataType"="S3Prefix", "S3Uri"=S3_INPUT_URI)),
+      "TargetAttributeName"="y"
+    )
+  ),
+  "OutputDataConfig"=list("S3OutputPath"=S3_OUTPUT),
+  "AutoMLJobConfig"=list(
+    "CompletionCriteria"=list(
+      "MaxCandidates"=10,
+      "MaxAutoMLJobRuntimeInSeconds"=36000,
+      "MaxRuntimePerTrainingJobInSeconds"=3600 * 2
+    )
+  ),
+  "RoleArn"=EXPANDED_ROLE,
+  "GenerateCandidateDefinitionsOnly"=FALSE
+)
+
+
+COMPLETE_EXPECTED_AUTO_ML_JOB_ARGS = list(
+  "AutoMLJobName"=JOB_NAME,
+  "InputDataConfig"=list(
+    list(
+      "DataSource"=list("S3DataSource"=list("S3DataType"="S3Prefix", "S3Uri"=S3_INPUT_URI)),
+      "CompressionType"="Gzip",
+      "TargetAttributeName"="y"
+    )
+  ),
+  "OutputDataConfig"=list("S3OutputPath"=S3_OUTPUT),
+  "AutoMLJobConfig"=list(
+    "CompletionCriteria"=list(
+      "MaxCandidates"=10,
+      "MaxAutoMLJobRuntimeInSeconds"=36000,
+      "MaxRuntimePerTrainingJobInSeconds"=3600 * 2
+    ),
+    "SecurityConfig"=list(
+      "VolumeKmsKeyId"="volume-kms-key-id-string",
+      "EnableInterContainerTrafficEncryption"=FALSE,
+      "VpcConfig"=list("SecurityGroupIds"=list("security-group-id"), "Subnets"=list("subnet"))
+    )
+  ),
+  "RoleArn"=EXPANDED_ROLE,
+  "GenerateCandidateDefinitionsOnly"=TRUE,
+  "AutoMLJobObjective"=list("Type"="type", "MetricName"="metric-name"),
+  "ProblemType"="Regression",
+  "Tags"=list("tag")
+)
+
+COMPLETE_EXPECTED_LIST_CANDIDATES_ARGS = list(
+  "AutoMLJobName"=JOB_NAME,
+  "StatusEquals"="Completed",
+  "SortOrder"="Descending",
+  "SortBy"="Status",
+  "MaxResults"=10
+)
+
+test_that("test auto ml pack to request", {
+  ims = Session$new(paws_session)
+  ims$sagemaker = sagemaker_client$clone()
+  input_config = list(
+    list(
+      "DataSource"=list("S3DataSource"=list("S3DataType"="S3Prefix", "S3Uri"=S3_INPUT_URI)),
+      "TargetAttributeName"="y"
+    )
+  )
+  output_config = list("S3OutputPath"=S3_OUTPUT)
+  auto_ml_job_config = list(
+    "CompletionCriteria"=list(
+      "MaxCandidates"=10,
+      "MaxAutoMLJobRuntimeInSeconds"=36000,
+      "MaxRuntimePerTrainingJobInSeconds"=3600 * 2
+    )
+  )
+  job_name = JOB_NAME
+  role = EXPANDED_ROLE
+
+  ims$auto_ml(input_config, output_config, auto_ml_job_config, role, job_name)
+
+  expect_equal(
+    ims$sagemaker$create_auto_ml_job(..return_value = T),
+    DEFAULT_EXPECTED_AUTO_ML_JOB_ARGS
+  )
+})
+
+test_that("test auto ml pack to request with optional args", {
+  ims = Session$new(paws_session)
+  ims$sagemaker = sagemaker_client$clone()
+  input_config = list(
+    list(
+      "DataSource"=list("S3DataSource"=list("S3DataType"="S3Prefix", "S3Uri"=S3_INPUT_URI)),
+      "CompressionType"="Gzip",
+      "TargetAttributeName"="y"
+    )
+  )
+  output_config = list("S3OutputPath"=S3_OUTPUT)
+  auto_ml_job_config = list(
+    "CompletionCriteria"=list(
+      "MaxCandidates"=10,
+      "MaxAutoMLJobRuntimeInSeconds"=36000,
+      "MaxRuntimePerTrainingJobInSeconds"=3600 * 2
+    ),
+    "SecurityConfig"=list(
+      "VolumeKmsKeyId"="volume-kms-key-id-string",
+      "EnableInterContainerTrafficEncryption"=FALSE,
+      "VpcConfig"=list("SecurityGroupIds"=list("security-group-id"), "Subnets"=list("subnet"))
+    )
+  )
+  job_name = JOB_NAME
+  role = EXPANDED_ROLE
+  ims$auto_ml(
+    input_config,
+    output_config,
+    auto_ml_job_config,
+    role,
+    job_name,
+    problem_type="Regression",
+    job_objective=list("Type"="type", "MetricName"="metric-name"),
+    generate_candidate_definitions_only=TRUE,
+    tags=list("tag")
+  )
+
+  expect_equal(
+    ims$sagemaker$create_auto_ml_job(..return_value = T),
+    COMPLETE_EXPECTED_AUTO_ML_JOB_ARGS
+  )
+})
+
+test_that("test list candidates for auto ml job default", {
+  ims = Session$new(paws_session)
+  ims$list_candidates(job_name=JOB_NAME)
+
+  expect_equal(
+    ims$sagemaker$list_candidates_for_auto_ml_job(..return_value = T),
+    list(AutoMLJobName=JOB_NAME)
+  )
+})
+
+test_that("test list candidates for auto ml job with optional args", {
+  ims = Session$new(paws_session)
+  ims$list_candidates(
+    job_name=JOB_NAME,
+    status_equals="Completed",
+    sort_order="Descending",
+    sort_by="Status",
+    max_results=10
+  )
+  expect_equal(
+    ims$sagemaker$list_candidates_for_auto_ml_job(..return_value = T),
+    COMPLETE_EXPECTED_LIST_CANDIDATES_ARGS
+  )
+})
+
+test_that("test describe tuning job", {
+  ims = Session$new(paws_session)
+  job_name = "hyper-parameter-tuning"
+  ims$describe_tuning_job(job_name=job_name)
+  expect_equal(
+    ims$sagemaker$describe_hyper_parameter_tuning_job(..return_value = T),
+    list(HyperParameterTuningJobName=job_name)
+  )
+})
+
+test_that("test describe model", {
+  ims = Session$new(paws_session)
+  model_name = "sagemaker-model-name"
+  ims$describe_model(name=model_name)
+  expect_equal(
+  ims$sagemaker$describe_model(..return_value = T),
+    list(ModelName=model_name)
+  )
+})
+
+test_that("test create model package from containers", {
+  ims = Session$new(paws_session)
+  model_package_name = "sagemaker-model-package"
+  ims$create_model_package_from_containers(model_package_name=model_package_name)
+  expect_equal(
+    ims$sagemaker$create_model_package(..return_value = T),
+    list(ModelPackageName=model_package_name, CertifyForMarketplace=FALSE, ModelApprovalStatus="PendingManualApproval")
+  )
+})
+
+test_that("test create model package from containers name conflicts", {
+  ims = Session$new(paws_session)
+  model_package_name = "sagemaker-model-package"
+  model_package_group_name = "sagemaker-model-package-group"
+  expect_error(
+    ims$create_model_package_from_containers(
+      model_package_name=model_package_name,
+      model_package_group_name=model_package_group_name
+    ),
+    "model_package_name and model_package_group_name cannot be present at the same time",
+    class = "ValueError"
+  )
+})
+
+test_that("test create model package from containers incomplete args", {
+  ims = Session$new(paws_session)
+  model_package_name = "sagemaker-model-package"
+  containers = list("dummy-container")
+  expect_error(
+    ims$create_model_package_from_containers(
+      model_package_name=model_package_name,
+      containers=containers
+    ),
+    paste("content_types, response_types, inference_inferences and transform_instances",
+          "must be provided if containers is present."),
+    class = "ValueError"
+  )
+})
+
+test_that("test create model package from containers all args", {
+  ims = Session$new(paws_session)
+  model_package_name = "sagemaker-model-package"
+  containers = list("dummy-container")
+  content_types = list("application/json")
+  response_types = list("application/json")
+  inference_instances = list("ml.m4.xlarge")
+  transform_instances = list("ml.m4.xlarget")
+  model_metrics = list(
+    "Bias"=list(
+      "ContentType"="content-type",
+      "S3Uri"="s3://..."
+    )
+  )
+  metadata_properties = list(
+    "CommitId"="test-commit-id",
+    "Repository"="test-repository",
+    "GeneratedBy"="sagemaker-python-sdk",
+    "ProjectId"="unit-test"
+  )
+  marketplace_cert = TRUE
+  approval_status = "Approved"
+  description = "description"
+  ims$create_model_package_from_containers(
+    containers=containers,
+    content_types=content_types,
+    response_types=response_types,
+    inference_instances=inference_instances,
+    transform_instances=transform_instances,
+    model_package_name=model_package_name,
+    model_metrics=model_metrics,
+    metadata_properties=metadata_properties,
+    marketplace_cert=marketplace_cert,
+    approval_status=approval_status,
+    description=description
+  )
+
+  expected_args = list(
+    "ModelPackageName"=model_package_name,
+    "ModelPackageDescription"=description,
+    "ModelMetrics"=model_metrics,
+    "MetadataProperties"=metadata_properties,
+    "InferenceSpecification"=list(
+      "Containers"=containers,
+      "SupportedContentTypes"=content_types,
+      "SupportedResponseMIMETypes"=response_types,
+      "SupportedRealtimeInferenceInstanceTypes"=inference_instances,
+      "SupportedTransformInstanceTypes"=transform_instances
+    ),
+    "CertifyForMarketplace"=marketplace_cert,
+    "ModelApprovalStatus"=approval_status
+  )
+  expect_equal(
+    ims$sagemaker$create_model_package(..return_value = T),expected_args
+  )
+})
+
+test_that("test feature group create", {
+  feature_group_dummy_definitions = list(list("FeatureName"="feature1", "FeatureType"="String"))
+  ims = Session$new(paws_session)
+  ims$create_feature_group(
+    feature_group_name="MyFeatureGroup",
+    record_identifier_name="feature1",
+    event_time_feature_name="feature2",
+    feature_definitions=feature_group_dummy_definitions,
+    role_arn="dummy_role"
+  )
+  expect_equal(
+    ims$sagemaker$create_feature_group(..return_value = T),
+    list(
+      FeatureGroupName="MyFeatureGroup",
+      RecordIdentifierFeatureName="feature1",
+      EventTimeFeatureName="feature2",
+      FeatureDefinitions=feature_group_dummy_definitions,
+      RoleArn="dummy_role"
+    )
+  )
+})
+
+test_that("test feature group delete", {
+  ims = Session$new(paws_session)
+  ims$delete_feature_group(feature_group_name="MyFeatureGroup")
+  expect_equal(
+    ims$sagemaker$delete_feature_group(..return_value = T),
+    list(FeatureGroupName="MyFeatureGroup")
+  )
+})
+
+test_that("test feature group describe", {
+  ims = Session$new(paws_session)
+  ims$describe_feature_group(feature_group_name="MyFeatureGroup")
+  expect_equal(
+    ims$sagemaker$delete_feature_group(..return_value = T),
+    list(FeatureGroupName="MyFeatureGroup")
+  )
+})
+
+test_that("test start query execution", {
+  ims = Session$new(paws_session)
+  ims$start_query_execution(
+    catalog="catalog",
+    database="database",
+    query_string="query",
+    output_location="s3://results"
+  )
+  expect_equal(
+    athena_client$start_query_execution(..return_value = T),
+    list(
+      QueryString="query",
+      QueryExecutionContext=list("Catalog"="catalog", "Database"="database"),
+      ResultConfiguration=list(OutputLocation="s3://results")
+    )
+  )
+})
+
+test_that("test get query execution", {
+  ims = Session$new(paws_session)
+  ims$get_query_execution(query_execution_id="query_id")
+  expect_equal(
+    athena_client$get_query_execution(..return_value = T),
+    list(QueryExecutionId="query_id")
+  )
+})
+
+test_that("test download athena query result", {
+  ims = Session$new(paws_session)
+  assign("write_bin", function(...){NULL}, envir = environment(ims$download_athena_query_result))
+  ims$download_athena_query_result(
+    bucket="bucket",
+    prefix="prefix",
+    query_execution_id="query_id",
+    filename="filename"
+  )
+  expect_equal(
+    ims$s3$get_object(..return_value = T),
+    list(Bucket="bucket", Key="prefix/query_id.csv")
+  )
+})
+
+test_that("test_wait_for_athena_query", {
+  ims = Session$new(paws_session)
+  athena_client$.call_args("get_query_execution", side_effect = function(...) {
+    return(list("QueryExecution"=list("Status"=list("State"="SUCCEEDED"))))
+  })
+
+  ims$wait_for_athena_query(query_execution_id="query_id")
+
+  expect_equal(
+    athena_client$get_query_execution(..return_value = T),
+    list(QueryExecutionId="query_id")
+  )
+})
