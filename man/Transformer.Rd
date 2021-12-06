@@ -120,8 +120,10 @@ Start a new transform job.
   output_filter = NULL,
   join_source = NULL,
   experiment_config = NULL,
-  wait = FALSE,
-  logs = FALSE
+  model_client_config = NULL,
+  wait = TRUE,
+  logs = TRUE,
+  ...
 )}\if{html}{\out{</div>}}
 }
 
@@ -182,11 +184,18 @@ Dictionary contains three optional keys,
 'ExperimentName', 'TrialName', and 'TrialComponentDisplayName'.
 (default: ``None``).}
 
+\item{\code{model_client_config}}{(dict[str, str]): Model configuration.
+Dictionary contains two optional keys,
+'InvocationsTimeoutInSeconds', and 'InvocationsMaxRetries'.
+(default: ``None``).}
+
 \item{\code{wait}}{(bool): Whether the call should wait until the job completes
-(default: False).}
+(default: TRUE).}
 
 \item{\code{logs}}{(bool): Whether to show the logs produced by the job.
-Only meaningful when wait is True (default: False).}
+Only meaningful when wait is True (default: TRUE).}
+
+\item{\code{...}}{Other parameters (currently not used)}
 }
 \if{html}{\out{</div>}}
 }

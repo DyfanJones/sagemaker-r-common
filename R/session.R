@@ -329,6 +329,9 @@ Session = R6Class("Session",
     #'              with SageMaker Profiler. (default: ``None``).
     #' @param environment (dict[str, str]) : Environment variables to be set for
     #'              use during training job (default: ``None``)
+    #' @param retry_strategy (dict): Defines RetryStrategy for InternalServerFailures.
+    #'              * max_retry_attsmpts (int): Number of times a job should be retried.
+    #'              The key in RetryStrategy is 'MaxRetryAttempts'.
     #' @return
     #' str: ARN of the training job, if it is created.
     train = function(input_mode,
@@ -356,7 +359,8 @@ Session = R6Class("Session",
                      enable_sagemaker_metrics=NULL,
                      profiler_rule_configs=NULL,
                      profiler_config=NULL,
-                     environment=NULL){
+                     environment=NULL,
+                     retry_strategy=NULL){
 
       tags = .append_project_tags(tags)
       train_request = private$.get_train_request(
@@ -385,7 +389,9 @@ Session = R6Class("Session",
         enable_sagemaker_metrics=enable_sagemaker_metrics,
         profiler_rule_configs=profiler_rule_configs,
         profiler_config=profiler_config,
-        environment=enviornment)
+        environment=enviornment,
+        retry_strategy=retry_strategy
+      )
 
       LOGGER$info("Creating training-job with name: %s", job_name)
       LOGGER$debug("train request: %s", toJSON(train_request, pretty = T, auto_unbox = T))
@@ -450,7 +456,7 @@ Session = R6Class("Session",
                        role_arn,
                        tags = NULL,
                        experiment_config=NULL){
-
+      tags = .append_project_tags(tags)
       process_request = private$.get_process_request(
         inputs=inputs,
         output_config=output_config,
@@ -563,7 +569,9 @@ Session = R6Class("Session",
       monitoring_schedule_request$MonitoringScheduleConfig$MonitoringJobDefinition$Environment = environment
       monitoring_schedule_request$MonitoringScheduleConfig$MonitoringJobDefinition$NetworkConfig = network_config
 
-      monitoring_schedule_request$Tags = tags
+      tags = .append_project_tags(tags)
+      if (!islistempty(tags))
+        monitoring_schedule_request[["Tags"]] = tags
 
       LOGGER$info("Creating monitoring schedule name %s", monitoring_schedule_name)
       LOGGER$debug("monitoring_schedule_request= %s", toJSON(monitoring_schedule_request, pretty = T, auto_unbox = T))
@@ -604,8 +612,6 @@ Session = R6Class("Session",
     #'             jobs.
     #' @param role_arn (str): The Amazon Resource Name (ARN) of an IAM role that
     #'             Amazon SageMaker can assume to perform tasks on your behalf.
-    #' @param tags ([dict[str,str]]): A list of dictionaries containing key-value
-    #'             pairs.
     update_monitoring_schedule = function(monitoring_schedule_name,
                                           schedule_expression=NULL,
                                           statistics_s3_uri=NULL,
@@ -881,16 +887,23 @@ Session = R6Class("Session",
                        job_objective=NULL,
                        generate_candidate_definitions_only=FALSE,
                        tags=NULL){
-      self$sagemaker$create_auto_ml_job(AutoMLJobName = job_name,
-                                        InputDataConfig = input_config,
-                                        OutputDataConfig = output_config,
-                                        ProblemType = problem_type,
-                                        AutoMLJobObjective = job_objective,
-                                        AutoMLJobConfig = auto_ml_job_config,
-                                        RoleArn = role,
-                                        GenerateCandidateDefinitionsOnly = generate_candidate_definitions_only,
-                                        Tags = tags)
-      return(invisible(NULL))
+      auto_ml_job_request = list(
+        "AutoMLJobName"=job_name,
+        "InputDataConfig"=input_config,
+        "OutputDataConfig"=output_config,
+        "AutoMLJobConfig"=auto_ml_job_config,
+        "RoleArn"=role,
+        "GenerateCandidateDefinitionsOnly"=generate_candidate_definitions_only
+      )
+      auto_ml_job_request[["AutoMLJobObjective"]] = job_objective
+      auto_ml_job_request[["ProblemType"]] = problem_type
+      tags = .append_project_tags(tags)
+      if (!islistempty(tags))
+        auto_ml_job_request[["Tags"]] = tags
+
+      LOGGER$info("Creating auto-ml-job with name: %s", job_name)
+      LOGGER$debug("auto ml request: %s", jsonlite::toJSON(auto_ml_job_request, pretty = T, auto_unbox = T))
+      return(do.call(self$sagemaker$create_auto_ml_job, auto_ml_job_request))
     },
 
     #' @description Calls the DescribeAutoMLJob API for the given job name
@@ -924,15 +937,15 @@ Session = R6Class("Session",
                                sort_order=NULL,
                                sort_by=NULL,
                                max_results=NULL){
+      list_candidates_args = list("AutoMLJobName"=job_name)
+      list_candidates_args[["StatusEquals"]] = status_equals
+      list_candidates_args[["CandidateNameEquals"]] = candidate_name
+      list_candidates_args[["CandidateArnEquals"]] = candidate_arn
+      list_candidates_args[["SortOrder"]] = sort_order
+      list_candidates_args[["SortBy"]] = sort_by
+      list_candidates_args[["MaxResults"]] = max_results
 
-      return(self$sagemaker$list_candidates_for_auto_ml_job(
-        AutoMLJobName = job_name,
-        StatusEquals = status_equals,
-        CandidateNameEquals = candidate_name,
-        SortOrder = sort_order,
-        SortBy = sort_by,
-        MaxResults = max_results)
-      )
+      return(do.call(self$sagemaker$list_candidates_for_auto_ml_job, list_candidates_args))
     },
 
     #' @description Wait for an Amazon SageMaker AutoML job to complete.
@@ -959,7 +972,7 @@ Session = R6Class("Session",
 
       description = self$sagemaker$describe_auto_ml_job(AutoMLJobName=job_name)
 
-      init_log = .log_init(description, "AutoML")
+      init_log = .log_init(self, description, "AutoML")
 
       state = .get_initial_job_state(description, "AutoMLJobStatus", wait)
 
@@ -967,7 +980,7 @@ Session = R6Class("Session",
       while(TRUE){
         .flush_log_streams(init_log$stream_names,
                            init_log$instance_count,
-                           cloudwatchlogs,
+                           init_log$client,
                            init_log$log_group,
                            job_name,
                            sm_env$positions)
@@ -980,7 +993,7 @@ Session = R6Class("Session",
           writeLines("")
           state = LogState$COMPLETE
         } else if(Sys.time() - last_describe_job_call >= 30){
-          description = self$sagemaker_client$describe_auto_ml_job(AutoMLJobName=job_name)
+          description = self$sagemaker$describe_auto_ml_job(AutoMLJobName=job_name)
           last_describe_job_call = Sys.time()
 
           status = description$AutoMLJobStatus
@@ -1016,14 +1029,19 @@ Session = R6Class("Session",
                              job_name,
                              stop_condition,
                              tags){
+      compilation_job_request = list(
+        "InputConfig"=input_model_config,
+        "OutputConfig"=output_model_config,
+        "RoleArn"=role,
+        "StoppingCondition"=stop_condition,
+        "CompilationJobName"=job_name
+      )
+      tags = .append_project_tags(tags)
+      if (!islistempty(tags))
+        compilation_job_request[["Tags"]] = tags
 
-        LOGGER$info("Creating compilation-job with name: %s", job_name)
-        self$sagemaker$create_compilation_job(
-          CompilationJobName = job_name,
-          RoleArn = role,
-          InputConfig = input_model_config,
-          OutputConfig = output_model_config,
-          StoppingCondition = stop_condition)
+      LOGGER$info("Creating compilation-job with name: %s", job_name)
+      return(do.call(self$sagemaker$create_compilation_job, compilation_job_request))
     },
 
     #' @description Create an Amazon SageMaker hyperparameter tuning job
@@ -1159,13 +1177,13 @@ Session = R6Class("Session",
           checkpoint_local_path=checkpoint_local_path
           )
       )
-
       tune_request$WarmStartConfig = warm_start_config
-      tune_request$Tags = tags
+      tags = .append_project_tags(tags)
+      if (!islistempty(tags))
+        tune_request[["Tags"]] = tags
 
       LOGGER$info("Creating hyperparameter tuning job with name: %s", job_name)
       LOGGER$debug("tune request: %s", toJSON(tune_request, pretty = T, auto_unbox = T))
-
       return(do.call(self$sagemaker$create_hyper_parameter_tuning_job, tune_request))
     },
 
@@ -1232,8 +1250,8 @@ Session = R6Class("Session",
             LOGGER$info("Tuning job: %s is alread stopped or not running.", name)
           } else {
             LOGGER$error("Error occurred while attempting to stop tuning job: %s. Please try again.", name)
+            stop(e)
           }
-          stop(e)
       })
     },
 
@@ -1348,14 +1366,16 @@ Session = R6Class("Session",
       LOGGER$debug("CreateModel request: %s", toJSON(create_model_request, pretty = T, auto_unbox = T))
 
       tryCatch({
-        return(do.call(self$sagemaker$create_model, create_model_request))
+        do.call(self$sagemaker$create_model, create_model_request)
         },
         error=function(e){
           error_code = paws_error_code(e)
           if (identical(error_code, "ValidationException")
               && grepl("Cannot create already existing model", e$error_response$Message)){
             LOGGER$warn("Using already existing model: %s", name)
-          } else {stop(e)}
+          } else {
+            stop(e)
+          }
       })
       return(name)
     },
@@ -1367,11 +1387,12 @@ Session = R6Class("Session",
     #' @param role (str): The ``ExecutionRoleArn`` IAM Role ARN for the ``Model``, specified either
     #'              by an IAM role name or role ARN. If None, the ``RoleArn`` from the SageMaker
     #'              Training Job will be used.
-    #' @param primary_container_image (str): The Docker image reference (default: None). If None, it
+    #' @param image_uri (str): The Docker image reference (default: None). If None, it
     #'              defaults to the Training Image in ``training_job_name``.
     #' @param model_data_url (str): S3 location of the model data (default: None). If None, defaults
     #'              to the ``ModelS3Artifacts`` of ``training_job_name``.
     #' @param env (dict[string,string]): Model environment variables (default: {}).
+    #' @param enable_network_isolation (bool): Whether the model requires network isolation or not.
     #' @param vpc_config_override (dict[str, list[str]]): Optional override for VpcConfig set on the
     #'              model. Default: use VpcConfig from training job.
     #'              \itemize{
@@ -1383,24 +1404,32 @@ Session = R6Class("Session",
     create_model_from_job = function(training_job_name,
                                      name=NULL,
                                      role=NULL,
-                                     primary_container_image=NULL,
+                                     image_uri=NULL,
                                      model_data_url=NULL,
                                      env=NULL,
+                                     enable_network_isolation=FALSE,
                                      vpc_config_override= "VPC_CONFIG_DEFAULT",
                                      tags=NULL){
 
       training_job = self$sagemaker$describe_training_job(TrainingJobName=training_job_name)
-
       name = name %||% training_job_name
       role = role %||% training_job$RoleArn
-      primary_container = list(ContainerHostname = primary_container_image %||% training_job$AlgorithmSpecification$TrainingImage,
-                               ModelDataUrl=model_data_url %||% training_job$ModelArtifacts$S3ModelArtifacts,
-                               Environment = env %||% list())
-
+      env = env %||% list()
+      primary_container = container_def(
+        image_uri %||% training_job$AlgorithmSpecification$TrainingImage,
+        model_data_url=model_data_url %||% training_job$ModelArtifacts$S3ModelArtifacts,
+        env=env
+      )
       vpc_config = private$.vpc_config_from_training_job(training_job, vpc_config_override)
-
-      return (self$create_model(name, role, primary_container,
-                                vpc_config = vpc_config, tags=tags))
+      return (self$create_model(
+        name,
+        role,
+        primary_container,
+        enable_network_isolation=enable_network_isolation,
+        vpc_config=vpc_config,
+        tags=tags
+        )
+      )
     },
 
     #' @description Create a SageMaker Model Package from the results of training with an Algorithm Package
@@ -1412,23 +1441,23 @@ Session = R6Class("Session",
                                                    description = NULL,
                                                    algorithm_arn = NULL,
                                                    model_data = NULL){
-
-      SourceAlgorithmSpecification = list(SourceAlgorithms = list(list(ModelDataUrl = model_data, AlgorithmName = algorithm_arn)))
-
+      request = list(
+        "ModelPackageName"=name,
+        "ModelPackageDescription"=description,
+        "SourceAlgorithmSpecification"=list(
+          "SourceAlgorithms"=list(list("AlgorithmName"=algorithm_arn, "ModelDataUrl"=model_data))
+        )
+      )
       LOGGER$info("Creating model package with name: %s", name)
-
       tryCatch({
-        self$sagemaker$create_model_package(
-          ModelPackageName = name,
-          ModelPackageDescription = description,
-          SourceAlgorithmSpecification= SourceAlgorithmSpecification)
+        do.call(self$sagemaker$create_model_package, request)
         }, error = function(e) {
           error_code = paws_error_code(e)
           if (identical(error_code, "ValidationException")
               && grepl("ModelPackage already exists", e$error_response$Message)) {
             LOGGER$warn("Using already existing model package: %s", name)
-          } else {stop(e$message, call. = F)}
-        })
+          } else {stop(e)}
+      })
     },
 
     #' @description Get request dictionary for CreateModelPackage API.
@@ -1452,6 +1481,7 @@ Session = R6Class("Session",
     #' @param approval_status (str): Model Approval Status, values can be "Approved", "Rejected",
     #'              or "PendingManualApproval" (default: "PendingManualApproval").
     #' @param description (str): Model Package description (default: None).
+    #' @param drift_check_baselines (DriftCheckBaselines): DriftCheckBaselines object (default: None).
     create_model_package_from_containers = function(containers=NULL,
                                                     content_types=NULL,
                                                     response_types=NULL,
@@ -1463,7 +1493,8 @@ Session = R6Class("Session",
                                                     metadata_properties=NULL,
                                                     marketplace_cert=FALSE,
                                                     approval_status="PendingManualApproval",
-                                                    description=NULL){
+                                                    description=NULL,
+                                                    drift_check_baselines=NULL){
       request = private$.get_create_model_package_request(
         model_package_name,
         model_package_group_name,
@@ -1476,19 +1507,10 @@ Session = R6Class("Session",
         metadata_properties,
         marketplace_cert,
         approval_status,
-        description)
-
-      return(self$sagemaker$create_model_package(
-        ModelPackageName = request$ModelPackageName,
-        ModelPackageGroupName = request$ModelPackageGroupName,
-        ModelPackageDescription = request$ModelPackageDescription,
-        InferenceSpecification = request$InferenceSpecification,
-        CertifyForMarketplace = request$CertifyForMarketplace,
-        ModelApprovalStatus = request$ModelApprovalStatus,
-        MetadataProperties = request$MetadataProperties,
-        ModelMetrics = request$ModelMetrics
-        )
+        description,
+        drift_check_baselines
       )
+      return(do.call(self$sagemaker$create_model_package, request))
     },
 
     #' @description Wait for an Amazon SageMaker endpoint deployment to complete.
@@ -1511,6 +1533,13 @@ Session = R6Class("Session",
           actual_status=status)
       }
       return(desc)
+    },
+
+    #' @description Calls the DescribeModel API for the given model name.
+    #' @param name (str): The name of the SageMaker model.
+    #' @return dict: A dictionary response with the model description.
+    describe_model = function(name){
+      return(self$sagemaker$describe_model(ModelName=name))
     },
 
     #' @description Create an Amazon SageMaker endpoint configuration.
@@ -1546,18 +1575,27 @@ Session = R6Class("Session",
                                       data_capture_config_dict=NULL){
       LOGGER$info("Creating endpoint-config with name %s", name)
 
-      ProductionVariants = list(production_variant(
-        model_name,
-        instance_type,
-        initial_instance_count,
-        accelerator_type=accelerator_type))
+      tags = tags %||% list()
 
-      self$sagemaker$create_endpoint_config(
-        EndpointConfigName = name,
-        ProductionVariants = ProductionVariants,
-        DataCaptureConfig = data_capture_config_dict,
-        Tags = tags,
-        KmsKeyId = kms_key)
+      request = list(
+        "EndpointConfigName"=name,
+        "ProductionVariants"=list(
+          production_variant(
+            model_name,
+            instance_type,
+            initial_instance_count,
+            accelerator_type=accelerator_type
+          )
+        )
+      )
+
+      tags = .append_project_tags(tags)
+      if(!islistempty(tags))
+        request[["Tags"]] = tags
+      request[["KmsKeyId"]] = kms_key
+      request[["DataCaptureConfig"]] = data_capture_config_dict
+
+      do.call(self$sagemaker$create_endpoint_config, request)
       return(name)
     },
 
@@ -1577,31 +1615,47 @@ Session = R6Class("Session",
     #' @param new_kms_key (str): The KMS key that is used to encrypt the data on the storage volume
     #'              attached to the instance hosting the endpoint (default: None). If not specified,
     #'              the KMS key of the existing endpoint configuration is used.
-    #' @param new_data_capture_config_dict (dict): Specifies configuration related to Endpoint data
+    #' @param new_data_capture_config_list (dict): Specifies configuration related to Endpoint data
     #'              capture for use with Amazon SageMaker Model Monitoring (default: None).
     #'              If not specified, the data capture configuration of the existing
     #'              endpoint configuration is used.
+    #' @param new_production_variants (list[dict]): The configuration for which model(s) to host and
+    #'              the resources to deploy for hosting the model(s). If not specified,
+    #'              the ``ProductionVariants`` of the existing endpoint configuration is used.
     #' @return str: Name of the endpoint point configuration created.
     create_endpoint_config_from_existing = function(existing_config_name,
                                                     new_config_name,
                                                     new_tags=NULL,
                                                     new_kms_key=NULL,
-                                                    new_data_capture_config_dict=NULL){
+                                                    new_data_capture_config_list=NULL,
+                                                    new_production_variants=NULL){
 
-      LOGGER$info("Creating endpoint-config with name ", new_config_name)
+      LOGGER$info("Creating endpoint-config with name %s", new_config_name)
 
       existing_endpoint_config_desc = self$sagemaker$describe_endpoint_config(
         EndpointConfigName=existing_config_name
       )
 
-      request_tags = new_tags %||% self$list_tags(existing_endpoint_config_desc$EndpointConfigArn)
+      request = list("EndpointConfigName"=new_config_name)
+      request[["ProductionVariants"]] = (
+        new_production_variants %||% existing_endpoint_config_desc[["ProductionVariants"]]
+      )
 
-      return(self$sagemaker$create_endpoint_config(
-        EndpointConfigName = new_config_name,
-        ProductionVariants = existing_endpoint_config_desc$ProductionVariants,
-        DataCaptureConfig = new_data_capture_config_dict %||% existing_endpoint_config_desc$DataCaptureConfig,
-        Tags = request_tags,
-        KmsKeyId = new_kms_key %||% existing_endpoint_config_desc[["KmsKeyId"]]))
+      request_tags = new_tags %||% self$list_tags(existing_endpoint_config_desc[["EndpointConfigArn"]])
+      request_tags = .append_project_tags(request_tags)
+      if(!islistempty(request_tags))
+        request[["Tags"]] = request_tags
+
+      if (!is.null(new_kms_key) || !is.null(existing_endpoint_config_desc[["KmsKeyId"]]))
+        request[["KmsKeyId"]] = new_kms_key %||% existing_endpoint_config_desc[["KmsKeyId"]]
+
+      request_data_capture_config_list = (
+        new_data_capture_config_list %||% existing_endpoint_config_desc[["DataCaptureConfig"]]
+      )
+
+      request[["DataCaptureConfig"]] = new_data_capture_config_list
+
+      return(do.call(self$sagemaker$create_endpoint_config, request))
     },
 
     #' @description Create an Amazon SageMaker ``Endpoint`` according to the endpoint configuration
@@ -1618,13 +1672,16 @@ Session = R6Class("Session",
                                config_name,
                                tags=NULL,
                                wait=TRUE){
-
       LOGGER$info("Creating endpoint with name %s", endpoint_name)
 
-      self$sagemaker$create_endpoint(EndpointName=endpoint_name,
-                                     EndpointConfigName=config_name,
-                                     Tags=tags)
-      if (wait) self$wait_for_endpoint(endpoint_name)
+      tags = tags %||% list()
+      tags = .append_project_tags(tags)
+
+      self$sagemaker$create_endpoint(
+        EndpointName=endpoint_name, EndpointConfigName=config_name, Tags=tags
+      )
+      if (wait)
+        self$wait_for_endpoint(endpoint_name)
       return(endpoint_name)
     },
 
@@ -1638,13 +1695,15 @@ Session = R6Class("Session",
     update_endpoint = function(endpoint_name,
                                endpoint_config_name,
                                wait=TRUE){
-      if (!.deployment_entity_exists(self$sagemaker$describe_endpoint(EndpointName=endpoint_name)))
-        stop(sprintf("Endpoint with name '%s' does not exist; please use an existing endpoint name",
-                     endpoint_name), call. = F)
-
-      self$sagemaker$update_endpoint(EndpointName=endpoint_name,
-                                     EndpointConfigName=endpoint_config_name)
-
+      if (!.deployment_entity_exists(self$sagemaker$describe_endpoint(EndpointName=endpoint_name))){
+        ValueError$new(
+          sprintf("Endpoint with name '%s' does not exist; please use an existing endpoint name",
+                  endpoint_name)
+        )
+      }
+      self$sagemaker$update_endpoint(
+        EndpointName=endpoint_name,EndpointConfigName=endpoint_config_name
+      )
       if (wait) self$wait_for_endpoint(endpoint_name)
       return(endpoint_name)
     },
@@ -1693,7 +1752,7 @@ Session = R6Class("Session",
           next_token = list_tags_response$nextToken
         }
         non_aws_tags = list()
-        for(tag in tag_list){
+        for(tag in tags_list){
           if (!grepl("aws:", tag$Key)){
             non_aws_tags = c(non_aws_tags, tag)}
         }
@@ -1937,13 +1996,23 @@ Session = R6Class("Session",
       model_vpc_config = vpc_sanitize(model_vpc_config)
 
       if (.deployment_entity_exists(self$sagemaker$describe_endpoint(EndpointName=name))){
-        stop(sprintf('Endpoint with name "%s" already exists; please pick a different name.',name), call. = F)
+        ValueError$new(
+          sprintf('Endpoint with name "%s" already exists; please pick a different name.',name)
+        )
       }
-
       if (!.deployment_entity_exists(self$sagemaker$describe_model(ModelName=name))){
-        primary_container = container_def(image_uri=deployment_image, model_data_url=model_s3_location, env=model_environment_vars)
-      self$create_model(name=name, role=role, container_defs=primary_container, vpc_config=model_vpc_config)}
-
+        primary_container = container_def(
+          image_uri=deployment_image,
+          model_data_url=model_s3_location,
+          env=model_environment_vars
+        )
+        self$create_model(
+          name=name,
+          role=role,
+          container_defs=primary_container,
+          vpc_config=model_vpc_config
+        )
+      }
       data_capture_config_list = NULL
       if(!is.null(data_capture_config))
         data_capture_config_list = data_capture_config$new()$to_request_list
@@ -1955,9 +2024,9 @@ Session = R6Class("Session",
           initial_instance_count=initial_instance_count,
           instance_type=instance_type,
           accelerator_type=accelerator_type,
-          data_capture_config_dict=data_capture_config_list)
-        }
-
+          data_capture_config_dict=data_capture_config_list
+          )
+      }
       self$create_endpoint(endpoint_name=name, config_name=name, wait=wait)
       return(name)
     },
@@ -1975,19 +2044,21 @@ Session = R6Class("Session",
     #'              capture for use with Amazon SageMaker Model Monitoring. Default: None.
     #' @return str: The name of the created ``Endpoint``.
     endpoint_from_production_variants = function(name,
-                                                 production_variants = NULL,
+                                                 production_variants,
                                                  tags=NULL,
                                                  kms_key=NULL,
                                                  wait=TRUE,
                                                  data_capture_config_list=NULL){
       if (!.deployment_entity_exists(self$sagemaker$describe_endpoint_config(EndpointConfigName=name))){
-      self$sagemaker$create_endpoint_config(
-        EndpointConfigName = name,
-        ProductionVariants = production_variants,
-        DataCaptureConfig = data_capture_config_list,
-        Tags = tags,
-        KmsKeyId = kms_key)}
+        config_options = list("EndpointConfigName"=name, "ProductionVariants"=production_variants)
+        tags = .append_project_tags(tags)
+        if (!islistempty(tags))
+          config_options[["Tags"]] = tags
+        config_options[["KmsKeyId"]] = kms_key
+        config_options[["DataCaptureConfig"]] = data_capture_config_list
 
+        do.call(self$sagemaker$create_endpoint_config, config_options)
+      }
       return (self$create_endpoint(endpoint_name=name, config_name=name, tags=tags, wait=wait))
     },
 
@@ -2090,29 +2161,25 @@ Session = R6Class("Session",
                             log_type="All"){
 
       description = self$sagemaker$describe_training_job(TrainingJobName=job_name)
-      cloudwatchlogs = self$paws_session$client("cloudwatchlogs")
       writeLines(secondary_training_status_message(description, NULL), sep = "")
 
-      init_log = .log_init(description, "Training")
+      init_log = .log_init(self, description, "Training")
 
       state = .get_initial_job_state(description, "TrainingJobStatus", wait)
-
 
       last_describe_job_call = Sys.time()
       last_description = description
       last_debug_rule_statuses = NULL
-
       while(TRUE){
         .flush_log_streams(init_log$stream_names,
                            init_log$instance_count,
-                           cloudwatchlogs,
+                           init_log$client,
                            init_log$log_group,
                            job_name,
                            sm_env$positions)
         if(state == LogState$COMPLETE) {break}
 
         Sys.sleep(poll)
-
         if(state == LogState$JOB_COMPLETE) {
           writeLines("\n")
           state = LogState$COMPLETE
@@ -2147,9 +2214,7 @@ Session = R6Class("Session",
             writeLines(paste0(rep("*", 40), collapse = ""))
             last_debug_rule_statuses = debug_rule_statuses
           }
-
         }
-
       }
 
       if (wait) {
@@ -2159,15 +2224,14 @@ Session = R6Class("Session",
 
         training_time = description$TrainingTimeInSeconds
         billable_time = description$BillableTimeInSeconds
-        if (!is.null(training_time) || legnth(training_time) == 0)
+        if (!is.null(training_time) || length(training_time) == 0)
           writeLines(sprintf("Training seconds: %s", training_time * init_log$instance_count))
-        if (!is.null(billable_time) || legnth(billable_time) == 0)
+        if (!is.null(billable_time) || length(billable_time) == 0)
           writeLines(sprintf("Billable seconds: %s", billable_time * init_log$instance_count))
-        if (!is.null(spot_training) || legnth(spot_training) == 0){
+        if (!is.null(spot_training) || length(spot_training) == 0){
           saving = (1 - as.numeric(billable_time) / training_time) * 100
           writeLines(sprintf("Managed Spot Training savings: %s", saving))}
       }
-
     },
 
     #' @description Display the logs for a given processing job, optionally tailing them until the
@@ -2182,9 +2246,8 @@ Session = R6Class("Session",
                                        poll=10){
 
       description = self$sagemaker$describe_processing_job(ProcessingJobName=job_name)
-      cloudwatchlogs = self$paws_session$client("cloudwatchlogs")
 
-      init_log = .log_init(description, "Processing")
+      init_log = .log_init(self, description, "Processing")
 
       state = .get_initial_job_state(description, "ProcessingJobStatus", wait)
 
@@ -2192,7 +2255,7 @@ Session = R6Class("Session",
       while(TRUE){
         .flush_log_streams(init_log$stream_names,
                            init_log$instance_count,
-                           cloudwatchlogs,
+                           init_log$client,
                            init_log$log_group,
                            job_name,
                            sm_env$positions)
@@ -2233,9 +2296,8 @@ Session = R6Class("Session",
                                       poll=10){
 
       description = self$sagemaker$describe_transform_job(TransformJobName=job_name)
-      cloudwatchlogs = self$paws_session$client("cloudwatchlogs")
 
-      init_log = .log_init(description, "Transform")
+      init_log = .log_init(self, description, "Transform")
 
       state = .get_initial_job_state(description, "TransformJobStatus", wait)
 
@@ -2243,7 +2305,7 @@ Session = R6Class("Session",
       while(TRUE){
         .flush_log_streams(init_log$stream_names,
                            init_log$instance_count,
-                           cloudwatchlogs,
+                           init_log$client,
                            init_log$log_group,
                            job_name,
                            sm_env$positions)
@@ -2269,6 +2331,64 @@ Session = R6Class("Session",
         private$.check_job_status(job_name, description, "TransformJobStatus")}
     },
 
+    #' @description Deletes a FeatureGroup in the FeatureStore service.
+    #' @param feature_group_name (str): name of the feature group to be deleted.
+    delete_feature_group = function(feature_group_name){
+      return(self$sagemaker$delete_feature_group(FeatureGroupName=feature_group_name))
+    },
+
+    #' @description Creates a FeatureGroup in the FeatureStore service.
+    #' @param feature_group_name (str): name of the FeatureGroup.
+    #' @param record_identifier_name (str): name of the record identifier feature.
+    #' @param event_time_feature_name (str): name of the event time feature.
+    #' @param feature_definitions (Sequence[Dict[str, str]]): list of feature definitions.
+    #' @param role_arn (str): ARN of the role will be used to execute the api.
+    #' @param online_store_config (Dict[str, str]): dict contains configuration of the
+    #' @param feature online store.
+    #' @param offline_store_config (Dict[str, str]): dict contains configuration of the
+    #'              feature offline store.
+    #' @param description (str): description of the FeatureGroup.
+    #' @param tags (List[Dict[str, str]]): list of tags for labeling a FeatureGroup.
+    #' @return Response dict from service.
+    create_feature_group = function(feature_group_name,
+                                    record_identifier_name,
+                                    event_time_feature_name,
+                                    feature_definitions,
+                                    role_arn,
+                                    online_store_config=NULL,
+                                    offline_store_config=NULL,
+                                    description=NULL,
+                                    tags=NULL){
+      tags = .append_project_tags(tags)
+      if(islistempty(tags)) tags = NULL
+      kwargs = list(
+        FeatureGroupName=feature_group_name,
+        RecordIdentifierFeatureName=record_identifier_name,
+        EventTimeFeatureName=event_time_feature_name,
+        FeatureDefinitions=feature_definitions,
+        RoleArn=role_arn
+      )
+      kwargs = update_args(
+        kwargs,
+        OnlineStoreConfig=online_store_config,
+        OfflineStoreConfig=offline_store_config,
+        Description=description,
+        Tags=tags
+      )
+      return(do.call(self$sagemaker$create_feature_group, kwargs))
+    },
+
+    #' @description Describe a FeatureGroup by name in FeatureStore service.
+    #' @param feature_group_name (str): name of the FeatureGroup to descibe.
+    #' @param next_token (str): next_token to get next page of features.
+    #' @return Response dict from service.
+    describe_feature_group = function(feature_group_name,
+                                      next_token=NULL){
+      kwargs = list(FeatureGroupName=feature_group_name)
+      kwargs = update_args(kwargs, NextToken=next_token)
+      return(do.call(self$sagemaker$describe_feature_group, kwargs))
+    },
+
     #' @description Start Athena query execution.
     #' @param catalog (str): name of the data catalog.
     #' @param database (str): name of the data catalog database.
@@ -2290,19 +2410,14 @@ Session = R6Class("Session",
           EncryptionConfiguration=list(EncryptionOption="SSE_KMS", KmsKey=kms_key))
         )
       kwargs = modifyList(kwargs, list(ResultConfiguration=result_config))
-      athena_client = self$paws_sesssion$client("athena")
-      return(athena_client$start_query_execution(
-        QueryString = kwargs$QueryString,
-        QueryExecutionContext = kwargs$QueryExecutionContext,
-        ResultConfiguration = kwargs$ResultConfiguration
-        )
-      )
+      athena_client = self$paws_session$client("athena", config=list(region=self$paws_region_name))
+      return(do.call(athena_client$start_query_execution, kwargs))
     },
 
     #' @description Get execution status of the Athena query.
     #' @param query_execution_id (str): execution ID of the Athena query.
     get_query_execution = function(query_execution_id){
-      athena_client = self$paws_sesssion$client("athena")
+      athena_client = self$paws_session$client("athena", config=list(region=self$paws_region_name))
       return(athena_client$get_query_execution(QueryExecutionId=query_execution_id))
     },
 
@@ -2338,7 +2453,6 @@ Session = R6Class("Session",
                                             prefix,
                                             query_execution_id,
                                             filename){
-
       obj = self$s3$get_object(Bucket = bucket, Key = sprintf("%s/%s.csv",prefix,query_execution_id))
       write_bin(obj$Body, filename)
     },
@@ -2456,8 +2570,9 @@ Session = R6Class("Session",
         )
 
       tune_request$WarmStartConfig = warm_start_config
-      tune_request$Tags = tags
-
+      tags = .append_project_tags(tags)
+      if (!islistempty(tags))
+        tune_request[["Tags"]] = tags
       return(tune_request)
     },
 
@@ -2559,6 +2674,9 @@ Session = R6Class("Session",
     # SageMaker Profiler. (default: ``None``).
     # environment (dict[str, str]) : Environment variables to be set for
     # use during training job (default: ``None``)
+    # retry_strategy(dict): Defines RetryStrategy for InternalServerFailures.
+    # * max_retry_attsmpts (int): Number of times a job should be retried.
+    # The key in RetryStrategy is 'MaxRetryAttempts'.
     # Returns:
     #   Dict: a training request dict
     .get_train_request = function(input_mode,
@@ -2586,7 +2704,8 @@ Session = R6Class("Session",
                                   enable_sagemaker_metrics=NULL,
                                   profiler_rule_configs=NULL,
                                   profiler_config=NULL,
-                                  environment=NULL){
+                                  environment=NULL,
+                                  retry_strategy=NULL){
       train_request = list(
         "AlgorithmSpecification"=list("TrainingInputMode"= input_mode),
         "OutputDataConfig"= output_config,
@@ -2613,15 +2732,20 @@ Session = R6Class("Session",
 
       # Paws currently doesn't support
       # train_request$Environment = environment
-      train_request$Tags = tags
+      LOGGER$info("Paws currently doesn't support `environment`")
+      if(!islistempty(tags))
+        train_request$Tags = tags
       train_request$VpcConfig = vpc_config
 
       if (!islistempty(experiment_config))
         train_request$ExperimentConfig = experiment_config
 
-      train_request$EnableNetworkIsolation = enable_network_isolation
-      train_request$EnableInterContainerTrafficEncryption = encrypt_inter_container_traffic
-      train_request$EnableManagedSpotTraining = use_spot_instances
+      if (isTRUE(enable_network_isolation))
+        train_request$EnableNetworkIsolation = enable_network_isolation
+      if (isTRUE(encrypt_inter_container_traffic))
+        train_request$EnableInterContainerTrafficEncryption = encrypt_inter_container_traffic
+      if (isTRUE(use_spot_instances))
+        train_request$EnableManagedSpotTraining = use_spot_instances
 
       if (!is.null(checkpoint_s3_uri)){
         checkpoint_config = list("S3Uri"= checkpoint_s3_uri)
@@ -2633,6 +2757,10 @@ Session = R6Class("Session",
       train_request$TensorBoardOutputConfig = tensorboard_output_config
       train_request$ProfilerRuleConfigurations = profiler_rule_configs
       train_request$ProfilerConfig = profiler_config
+      # Paws currently doesn't support Retry Strategory
+      # train_request$RetryStrategy = retry_strategy
+      LOGGER$info("Paws currently doesn't support `retry_strategy`")
+
       return(train_request)
     },
 
@@ -2681,7 +2809,8 @@ Session = R6Class("Session",
       process_request$Environment = environment
       process_request$NetworkConfig = network_config
       process_request$StoppingCondition = stopping_condition
-      process_request$Tags = tags
+      if(!islistempty(tags))
+        process_request$Tags = tags
       process_request$ExperimentConfig = experiment_config
       return(process_request)
     },
@@ -2709,12 +2838,9 @@ Session = R6Class("Session",
       transform_request[["BatchStrategy"]] = strategy
       transform_request[["MaxConcurrentTransforms"]] = max_concurrent_transforms
       transform_request[["MaxPayloadInMB"]] = max_payload
-
-      if (!is.null(env)){
-        LOGGER$error("Currently doesn't support Envionement")
-        # transform_request[["Environment"]] = env
-      }
-      transform_request[["Tags"]] = tags
+      transform_request[["Environment"]] = env
+      if(!islistempty(tags))
+        transform_request[["Tags"]] = tags
       transform_request[["DataProcessing"]] = data_processing
 
       if (!islistempty(experiment_config))
@@ -2744,6 +2870,8 @@ Session = R6Class("Session",
         container_defs = primary_container
       }
 
+      role = self$expand_role(role)
+
       if (!is_list_named(container_defs)){
         container_definition = container_defs
       } else {
@@ -2754,7 +2882,8 @@ Session = R6Class("Session",
         request[["Containers"]] = container_definition
       } else {
         request[["PrimaryContainer"]] = container_definition}
-      request[["Tags"]] = tags
+      if(!islistempty(tags))
+        request[["Tags"]] = tags
       request[["VpcConfig"]] = vpc_config
 
       if (enable_network_isolation)
@@ -2848,13 +2977,14 @@ Session = R6Class("Session",
     .vpc_config_from_training_job = function(training_job_desc,
                                              vpc_config_override="VPC_CONFIG_DEFAULT"){
 
-      if (vpc_config_override == "VPC_CONFIG_DEFAULT"){return(training_job_desc$VpcConfig)}
+      if (identical(vpc_config_override, "VPC_CONFIG_DEFAULT")){
+        return(training_job_desc$VpcConfig)
+      }
       return(vpc_sanitize(vpc_config_override))
-
     },
 
     .wait_until = function(expr,
-                          poll = 5){
+                           poll = 5){
 
       result = eval.parent(substitute(expr))
       while((is.null(result) || length(result) == 0)){
@@ -2939,7 +3069,7 @@ Session = R6Class("Session",
         return(list(job_desc = desc, status = FALSE))
       }
 
-      writeLines("\n")
+      writeLines("")
       return(list(job_desc = desc, status = TRUE))
     },
 
@@ -3051,7 +3181,7 @@ Session = R6Class("Session",
 
       in_progress_statuses = c("InProgress", "Stopping")
 
-      desc = sagemaker_client.describe_transform_job(TransformJobName=job_name)
+      desc = self$sagemaker$describe_transform_job(TransformJobName=job_name)
       status = desc$TransformJobStatus
 
       msg = transform_job_status_codes[[status]]
@@ -3086,8 +3216,10 @@ Session = R6Class("Session",
       writeLines(msg, sep = "")
       flush(stdout())
 
-      if (status %in% in_progress_statuses) return(NULL)
+      if (status %in% in_progress_statuses)
+        return(NULL)
 
+      writeLines("")
       return (desc)
     },
 
@@ -3113,6 +3245,7 @@ Session = R6Class("Session",
     # approval_status (str): Model Approval Status, values can be "Approved", "Rejected",
     # or "PendingManualApproval" (default: "PendingManualApproval").
     # description (str): Model Package description (default: None).
+    # drift_check_baselines (DriftCheckBaselines): DriftCheckBaselines object (default: None)
     .get_create_model_package_request = function(model_package_name=NULL,
                                                  model_package_group_name=NULL,
                                                  containers=NULL,
@@ -3124,24 +3257,29 @@ Session = R6Class("Session",
                                                  metadata_properties=NULL,
                                                  marketplace_cert=FALSE,
                                                  approval_status="PendingManualApproval",
-                                                 description=NULL){
+                                                 description=NULL,
+                                                 drift_check_baselines=NULL){
       if (!is.null(model_package_name) && !is.null(model_package_group_name))
-        stop("model_package_name and model_package_group_name cannot be present at the ",
-             "same time.", call. = F)
-
+        ValueError$new(
+          "model_package_name and model_package_group_name cannot be present at the ",
+          "same time."
+        )
       request_dict = list()
       request_dict$ModelPackageName = model_package_name
       request_dict$ModelPackageGroupName = model_package_group_name
       request_dict$ModelPackageDescription = description
       request_dict$ModelMetrics = model_metrics
+      # Currently Paws doesn't support DriftCheckBaselines
+      # request_dict$DriftCheckBaselines = drift_check_baselines
       request_dict$MetadataProperties = metadata_properties
       if (!is.null(containers)){
-        if (!(!is.null(content_types) && !is.null(response_types) &&
-              !is.null(inference_instances) && !is.null(transform_instances)))
-          stop(
+        if (!all(!is.null(content_types) && !is.null(response_types) &&
+              !is.null(inference_instances) && !is.null(transform_instances))){
+          ValueError$new(
             "content_types, response_types, inference_inferences and transform_instances ",
-            "must be provided if containers is present.", call. = F
-            )
+            "must be provided if containers is present."
+          )
+        }
         inference_specification = list(
           "Containers"= containers,
           "SupportedContentTypes"= content_types,
@@ -3150,10 +3288,8 @@ Session = R6Class("Session",
           "SupportedTransformInstanceTypes"= transform_instances)
         request_dict$InferenceSpecification = inference_specification
       }
-
       request_dict$CertifyForMarketplace = marketplace_cert
       request_dict$ModelApprovalStatus = approval_status
-
       return(request_dict)
     }
   ),
@@ -3189,6 +3325,7 @@ Session = R6Class("Session",
 #' @param description (str): Model Package description (default: None).
 #' @param tags : Placeholder
 #' @param container_def_list (list): A list of container defintiions.
+#' @param drift_check_baselines (DriftCheckBaselines): DriftCheckBaselines object (default: None).
 #' @return list: A dictionary of method argument names and values.
 #' @export
 get_model_package_args = function(content_types,
@@ -3205,7 +3342,8 @@ get_model_package_args = function(content_types,
                                   approval_status=NULL,
                                   description=NULL,
                                   tags=NULL,
-                                  container_def_list=NULL){
+                                  container_def_list=NULL,
+                                  drift_check_baselines=NULL){
   if (!is.null(container_def_list)){
     containers = container_def_list
   } else {
@@ -3225,6 +3363,8 @@ get_model_package_args = function(content_types,
   model_package_args[["model_package_name"]] = model_package_name
   model_package_args[["model_package_group_name"]] = model_package_group_name
   model_package_args[["model_metrics"]] = model_metrics$.to_request_list()
+  # Paws currently doesn't support drift check baselines
+  # model_package_args[["drift_check_baselines"]] = drift_check_baselines$.to_request_list()
   model_package_args[["metadata_properties"]] = metadata_properties$.to_request_list()
   model_package_args[["approval_status"]] = approval_status
   model_package_args[["description"]] = description
@@ -3232,6 +3372,16 @@ get_model_package_args = function(content_types,
   return(model_package_args)
 }
 
+# Updates the request arguments dict with the value if populated.
+# This is to handle the case that the service API doesn't like NoneTypes for argument values.
+# Args:
+#     request_args (Dict[str, Any]): the request arguments dict
+#     ... : key, value pairs to update the args dict
+update_args = function(args, ...){
+  kwargs = list(...)
+  kwargs = Filter(Negate(is.null), kwargs)
+  return(modifyList(args, kwargs))
+}
 
 #' @title Create a definition for executing a container as part of a SageMaker model.
 #' @param image_uri (str): Docker image to run for this container.
@@ -3256,7 +3406,6 @@ container_def <- function(image_uri,
                           image_config=NULL){
   if(is.null(env)) env = list()
   c_def = list("Image" = image_uri, "Environment"= env)
-
   c_def$ModelDataUrl = model_data_url
   c_def$Mode = container_mode
   c_def$ImageConfig = image_config
@@ -3317,12 +3466,13 @@ production_variant <- function(model_name,
 .deployment_entity_exists <- function(describe_fn){
   tryCatch({
     eval.parent(substitute(describe_fn))
-    }, error = function(e){
-      error_code = paws_error_code(e)
-      if(!identical(error_code, "ValidationException")
-         && grepl("Could not find", e$error_response$Message)) {
-        stop(e)
-        }
+    return(TRUE)
+  }, error = function(e){
+    error_code = paws_error_code(e)
+    if(!(identical(error_code, "ValidationException")
+         && grepl("Could not find", e$error_response$Message))) {
+      stop(e)
+    }
   })
   return (FALSE)
 }
@@ -3339,8 +3489,8 @@ get_execution_role <- function(sagemaker_session = NULL){
   if (grepl(":role/", arn)) {
     return(arn)
   } else {
-    message <- sprintf("The current AWS identity is not a role: %s, therefore it cannot be used as a \nSageMaker execution role", arn)
-    stop(message, call.= F)
+    message <- sprintf("The current AWS identity is not a role: %s, therefore it cannot be used as a SageMaker execution role", arn)
+    ValueError$new(message)
   }
 }
 
@@ -3361,7 +3511,7 @@ get_execution_role <- function(sagemaker_session = NULL){
   return(FALSE)
 }
 
-.log_init <- function(description, job){
+.log_init <- function(sagemaker_session, description, job){
   switch(job,
          "Training" = {instance_count = description$ResourceConfig$InstanceCount},
          "Transform" = {instance_count = description$TransformResources$InstanceCount},
@@ -3370,9 +3520,17 @@ get_execution_role <- function(sagemaker_session = NULL){
   stream_names = list()
   log_group = sprintf("/aws/sagemaker/%sJobs",job)
 
+  # Increase retries allowed, to be interrupted by a transient exception.
+  client = sagemaker_session$paws_session$client("cloudwatchlogs", config = list(max_retries = 15))
+
   # reset position pkg environmental variable
   sm_env$positions = NULL
-  return(list("stream_names" = stream_names, "log_group" = log_group, "instance_count"= instance_count))
+  return(list(
+    "client" = client,
+    "stream_names" = stream_names,
+    "log_group" = log_group,
+    "instance_count"= instance_count)
+  )
 }
 
 .flush_log_streams <- function(stream_names,
@@ -3381,7 +3539,6 @@ get_execution_role <- function(sagemaker_session = NULL){
                               log_group,
                               job_name,
                               positions = sm_env$positions){
-
   if (length(stream_names) < instance_count){
     tryCatch({streams = cloudwatchlogs$describe_log_streams(
       logGroupName=log_group,

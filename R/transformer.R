@@ -138,6 +138,10 @@ Transformer = R6Class("Transformer",
     #'              Dictionary contains three optional keys,
     #'              'ExperimentName', 'TrialName', and 'TrialComponentDisplayName'.
     #'              (default: ``None``).
+    #' @param model_client_config (dict[str, str]): Model configuration.
+    #'              Dictionary contains two optional keys,
+    #'              'InvocationsTimeoutInSeconds', and 'InvocationsMaxRetries'.
+    #'              (default: ``None``).
     #' @param wait (bool): Whether the call should wait until the job completes
     #'              (default: TRUE).
     #' @param logs (bool): Whether to show the logs produced by the job.
