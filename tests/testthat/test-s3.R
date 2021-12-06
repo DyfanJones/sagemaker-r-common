@@ -17,8 +17,8 @@ KMS_KEY = "kmskey"
 
 
 sagemaker_session = Mock$new()
-sagemaker_session$call_args("upload_data")
-sagemaker_session$call_args("download_data")
+sagemaker_session$.call_args("upload_data")
+sagemaker_session$.call_args("download_data")
 
 
 test_that("test upload", {
@@ -29,7 +29,7 @@ test_that("test upload", {
     sagemaker_session=sagemaker_session
   )
 
-  expect_equal(sagemaker_session$upload_data(), list(
+  expect_equal(sagemaker_session$upload_data(..return_value = T), list(
       path = "/path/to/app.jar",
       bucket = BUCKET_NAME,
       key_prefix = file.path(CURRENT_JOB_NAME, SOURCE_NAME)
@@ -46,7 +46,7 @@ test_that("test upload with kms_key", {
     sagemaker_session=sagemaker_session
   )
 
-  expect_equal(sagemaker_session$upload_data(), list(
+  expect_equal(sagemaker_session$upload_data(..return_value = T), list(
       path = "/path/to/app.jar",
       bucket = BUCKET_NAME,
       key_prefix = file.path(CURRENT_JOB_NAME, SOURCE_NAME),
@@ -65,7 +65,7 @@ test_that("test upload with kms_key", {
     sagemaker_session=sagemaker_session
   )
 
-  expect_equal(sagemaker_session$upload_data(), list(
+  expect_equal(sagemaker_session$upload_data(..return_value = T), list(
     path = "/path/to/app.jar",
     bucket = BUCKET_NAME,
     key_prefix = file.path(CURRENT_JOB_NAME, SOURCE_NAME),
@@ -81,7 +81,7 @@ test_that("test download", {
     s3_uri=s3_uri, local_path="/path/for/download/", sagemaker_session=sagemaker_session
   )
 
-  expect_equal(sagemaker_session$download_data(), list(
+  expect_equal(sagemaker_session$download_data(..return_value = T), list(
     path = "/path/for/download/",
     bucket = BUCKET_NAME,
     key_prefix = file.path(CURRENT_JOB_NAME, SOURCE_NAME)
@@ -98,7 +98,7 @@ test_that("test download with kms key", {
     sagemaker_session=sagemaker_session
   )
 
-  expect_equal(sagemaker_session$download_data(), list(
+  expect_equal(sagemaker_session$download_data(..return_value = T), list(
     path = "/path/for/download/",
     bucket = BUCKET_NAME,
     key_prefix = file.path(CURRENT_JOB_NAME, SOURCE_NAME),
