@@ -13,6 +13,7 @@
 #' @import jsonlite
 #' @import lgr
 #' @import fs
+#' @importFrom utils modifyList
 
 NOTEBOOK_METADATA_FILE <- "/opt/ml/metadata/resource-metadata.json"
 
