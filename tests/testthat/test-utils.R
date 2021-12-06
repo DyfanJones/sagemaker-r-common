@@ -156,11 +156,11 @@ test_that("test secondary training status message prev missing", {
 
 test_that("test download folder", {
   paws_mock = Mock$new("PawsSession", region_name = "us-east-1")
-  paws_mock$call_args("client")
+  paws_mock$.call_args("client")
   session = Session$new(paws_session=paws_mock, sagemaker_client=Mock$new())
   s3_mock = Mock$new("s3")
-  s3_mock$call_args("get_object", list(Body = charToRaw("dummy")))
-  s3_mock$call_args("list_objects_v2", list(
+  s3_mock$.call_args("get_object", list(Body = charToRaw("dummy")))
+  s3_mock$.call_args("list_objects_v2", list(
       Contents = list(
         list(Key = "prefix/train/train_data.csv"),
         list(Key = "prefix/train/validation_data.csv")
@@ -189,10 +189,10 @@ test_that("test download folder", {
 
 test_that("test download folder points to single file", {
   paws_mock = Mock$new("PawsSession", region_name = "us-east-1")
-  paws_mock$call_args("client")
+  paws_mock$.call_args("client")
   session = Session$new(paws_session=paws_mock, sagemaker_client=Mock$new())
   s3_mock = Mock$new("s3")
-  s3_mock$call_args("get_object", list(Body = charToRaw("dummy")))
+  s3_mock$.call_args("get_object", list(Body = charToRaw("dummy")))
   session$s3 = s3_mock
 
   download_folder(BUCKET_NAME, "/prefix/train/train_data.csv","/tmp", session)
@@ -204,10 +204,10 @@ test_that("test download folder points to single file", {
 
 test_that("test download file", {
   paws_mock = Mock$new("PawsSession", region_name = "us-east-1")
-  paws_mock$call_args("client")
+  paws_mock$.call_args("client")
   session = Session$new(paws_session=paws_mock, sagemaker_client=Mock$new())
   s3_mock = Mock$new("s3")
-  s3_mock$call_args("get_object", list(Body = charToRaw("dummy")))
+  s3_mock$.call_args("get_object", list(Body = charToRaw("dummy")))
   session$s3 = s3_mock
 
   download_file(
@@ -270,14 +270,14 @@ tmp = file.path(getwd(), "temp")
 
 fake_s3_session <- function(tar=T, model_dir = file.path(tmp, "model-dir")){
   paws_mock = Mock$new("PawsSession", region_name = "us-east-1")
-  paws_mock$call_args("client")
+  paws_mock$.call_args("client")
   session = Session$new(paws_session=paws_mock, sagemaker_client=Mock$new())
   s3_mock = Mock$new("s3")
   if(tar){
     obj = list(Body = tar_and_raw(model_dir))
-    s3_mock$call_args("get_object", obj)
+    s3_mock$.call_args("get_object", return_value = obj)
   }
-  s3_mock$call_args("list_objects_v2", list(
+  s3_mock$.call_args("list_objects_v2", list(
       Contents = list(
         list(Key = "prefix/train/train_data.csv"),
         list(Key = "prefix/train/validation_data.csv")
@@ -285,7 +285,7 @@ fake_s3_session <- function(tar=T, model_dir = file.path(tmp, "model-dir")){
       ContinuationToken = character(0)
     )
   )
-  s3_mock$call_args("put_object")
+  s3_mock$.call_args("put_object")
 
   session$s3 = s3_mock
   return(session)
@@ -319,7 +319,7 @@ test_that("test repack model without source dir", {
     sagemaker_session=session
   )
 
-  obj = session$s3$put_object()
+  obj = session$s3$put_object(..return_value = T)
   writeBin(obj$Body,"tmp/temp.tar.gz")
 
   file_list = untar("tmp/temp.tar.gz", list = T)
@@ -357,7 +357,7 @@ test_that("test repack model with entry point without path without source dir", 
 
   setwd(cwd)
 
-  obj = session$s3$put_object()
+  obj = session$s3$put_object(..return_value = T)
   writeBin(obj$Body,"tmp/temp.tar.gz")
 
   file_list = untar("tmp/temp.tar.gz", list = T)
@@ -389,7 +389,7 @@ test_that("test repack model with entry point without path without source dir", 
     session
   )
 
-  obj = session$s3$put_object()
+  obj = session$s3$put_object(..return_value = T)
   writeBin(obj$Body,"tmp/temp.tar.gz")
 
   file_list = untar("tmp/temp.tar.gz", list = T)
@@ -421,7 +421,7 @@ test_that("test repack model from s3 to s3", {
     session
   )
 
-  obj = session$s3$put_object()
+  obj = session$s3$put_object(..return_value = T)
   writeBin(obj$Body,"tmp/temp.tar.gz")
 
   file_list = untar("tmp/temp.tar.gz", list = T)
@@ -478,7 +478,7 @@ test_that("test repack mode _with inference code should replace the code", {
     session
   )
 
-  obj = session$s3$put_object()
+  obj = session$s3$put_object(..return_value = T)
   writeBin(obj$Body,"tmp/temp.tar.gz")
 
   file_list = untar("tmp/temp.tar.gz", list = T)
@@ -539,7 +539,7 @@ test_that("test repack model with inference code and requirements", {
     session
   )
 
-  obj = session$s3$put_object()
+  obj = session$s3$put_object(..return_value = T)
   writeBin(obj$Body,"tmp/temp.tar.gz")
 
   file_list = untar("tmp/temp.tar.gz", list = T)
@@ -575,7 +575,7 @@ test_that("test repack model with same inference file name", {
     session
   )
 
-  obj = session$s3$put_object()
+  obj = session$s3$put_object(..return_value = T)
   writeBin(obj$Body,"tmp/temp.tar.gz")
 
   file_list = untar("tmp/temp.tar.gz", list = T)
