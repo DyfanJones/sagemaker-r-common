@@ -30,7 +30,8 @@ Mock <- R6::R6Class("Mock",
   lock_objects = F
 )
 
-iter <- function(return_value=list()) {
+iter <- function(...) {
+  return_value=list(...)
   value <- 1
   function(...) {
     if (value <= length(return_value)){
