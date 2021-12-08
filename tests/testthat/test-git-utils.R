@@ -13,7 +13,15 @@ CODECOMMIT_REPO = "https://git-codecommit.us-west-2.amazonaws.com/v1/repos/test-
 CODECOMMIT_REPO_SSH = "ssh://git-codecommit.us-west-2.amazonaws.com/v1/repos/test-repo/"
 CODECOMMIT_BRANCH = "master"
 
+rm_temp_dir = function(dir = REPO_DIR){
+  if(fs::dir_exists(dir))
+    fs::dir_delete(dir)
+}
+
 test_that("test git clone repo succeed", {
+  skip_on_cran()
+  rm_temp_dir()
+
   mockery::stub(git_clone_repo, "fs::is_file", TRUE)
   mockery::stub(git_clone_repo, "fs::is_dir", TRUE)
   mockery::stub(git_clone_repo, "fs::dir_exists", TRUE)
@@ -30,6 +38,9 @@ test_that("test git clone repo succeed", {
 })
 
 test_that("test git clone repo repo not provided", {
+  skip_on_cran()
+  rm_temp_dir()
+
   git_config = list("branch"=PUBLIC_BRANCH, "commit"=PUBLIC_COMMIT)
   entry_point = "entry_point_that_does_not_exist"
   source_dir = "source_dir"
@@ -41,6 +52,9 @@ test_that("test git clone repo repo not provided", {
 })
 
 test_that("test git clone repo git argument wrong format", {
+  skip_on_cran()
+  rm_temp_dir()
+
   git_config = list(
     "repo"=PUBLIC_GIT_REPO,
     "branch"=PUBLIC_BRANCH,
@@ -57,6 +71,9 @@ test_that("test git clone repo git argument wrong format", {
 })
 
 test_that("test git clone repo branch not exist", {
+  skip_on_cran()
+  rm_temp_dir()
+
   git_config = list("repo"=PUBLIC_GIT_REPO, "branch"="banana", "commit"=PUBLIC_COMMIT)
   entry_point = "entry_point"
   source_dir = "source_dir"
@@ -65,6 +82,9 @@ test_that("test git clone repo branch not exist", {
 })
 
 test_that("test git clone repo commit not exist", {
+  skip_on_cran()
+  rm_temp_dir()
+
   mockery::stub(git_clone_repo, "tempfile", REPO_DIR)
   git_config = list("repo"=PUBLIC_GIT_REPO, "branch"=PUBLIC_BRANCH, "commit"="banana")
   entry_point = "entry_point"
@@ -74,11 +94,14 @@ test_that("test git clone repo commit not exist", {
 })
 
 test_that("test git clone repo entry point not exist", {
+  skip_on_cran()
+  rm_temp_dir()
+
   mockery::stub(git_clone_repo, "fs::is_file", FALSE)
   mockery::stub(git_clone_repo, "fs::is_dir", TRUE)
   mockery::stub(git_clone_repo, "fs::dir_exists", TRUE)
   mockery::stub(git_clone_repo, "tempfile", REPO_DIR)
-  git_config = list( "repo"=PUBLIC_GIT_REPO, "branch"=PUBLIC_BRANCH, "commit"=PUBLIC_COMMIT)
+  git_config = list("repo"=PUBLIC_GIT_REPO, "branch"=PUBLIC_BRANCH, "commit"=PUBLIC_COMMIT)
   entry_point = "entry_point_that_does_not_exist"
   source_dir = "source_dir"
   dependencies = list("foo", "bar")
@@ -89,11 +112,14 @@ test_that("test git clone repo entry point not exist", {
 })
 
 test_that("test git clone repo source dir not exist", {
+  skip_on_cran()
+  rm_temp_dir()
+
   mockery::stub(git_clone_repo, "fs::is_file", TRUE)
   mockery::stub(git_clone_repo, "fs::is_dir", FALSE)
   mockery::stub(git_clone_repo, "fs::dir_exists", TRUE)
   mockery::stub(git_clone_repo, "tempfile", REPO_DIR)
-  git_config = list("repo": PUBLIC_GIT_REPO, "branch": PUBLIC_BRANCH, "commit": PUBLIC_COMMIT)
+  git_config = list("repo"=PUBLIC_GIT_REPO, "branch"=PUBLIC_BRANCH, "commit"=PUBLIC_COMMIT)
   entry_point = "entry_point"
   source_dir = "source_dir_that_does_not_exist"
   dependencies = list("foo", "bar")
@@ -104,6 +130,9 @@ test_that("test git clone repo source dir not exist", {
 })
 
 test_that("test git clone repo dependencies not exist", {
+  skip_on_cran()
+  rm_temp_dir()
+
   git_config = list("repo"=PUBLIC_GIT_REPO, "branch"=PUBLIC_BRANCH, "commit"=PUBLIC_COMMIT)
   entry_point = "entry_point"
   source_dir = "source_dir"
