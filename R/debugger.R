@@ -7,6 +7,8 @@
 #' @import R6
 #' @import R6sagemaker.debugger
 
+DEBUGGER_FLAG = "USE_SMDEBUG"
+
 # Return the Debugger rule image URI for the given AWS Region.
 # For a full list of rule image URIs,
 # see `Use Debugger Docker Images for Built-in or Custom Rules
@@ -157,6 +159,14 @@ Rule = R6Class("Rule",
   inherit = RuleBase,
   public = list(
 
+    #' @field collection_configs
+    #' A list of :class:`~sagemaker.debugger.CollectionConfig
+    collection_configs = NULL,
+
+    #' @field actions
+    #' Placeholder
+    actions = NULL,
+
     #' @description Configure the debugging rules using the following classmethods.
     #' @param name (str): The name of the rule.
     #' @param image_uri (str): The image URI to use the rule.
@@ -168,16 +178,16 @@ Rule = R6Class("Rule",
     #' @param collections_to_save ([sagemaker.debugger.CollectionConfig]): Optional. A list
     #'              of :class:`~sagemaker.debugger.CollectionConfig` objects to be saved.
     #' @param actions :
-    initialize = function(name,
-                          image_uri,
-                          instance_type,
-                          container_local_output_path,
-                          s3_output_path,
-                          volume_size_in_gb,
-                          rule_parameters,
-                          collections_to_save,
+    initialize = function(name=NULL,
+                          image_uri=NULL,
+                          instance_type=NULL,
+                          container_local_output_path=NULL,
+                          s3_output_path=NULL,
+                          volume_size_in_gb=NULL,
+                          rule_parameters=NULL,
+                          collections_to_save=NULL,
                           actions=NULL){
-      super$intialize(
+      super$initialize(
         name,
         image_uri,
         instance_type,
@@ -257,7 +267,8 @@ Rule = R6Class("Rule",
         base_config_collections = c(
           base_config_collections, CollectionConfig$new(name=collection_name, parameters=collection_parameters))
       }
-      return(self$initialize(
+
+      self$initialize(
         name=name %||% base_config[["DebugRuleConfiguration"]][["RuleConfigurationName"]],
         image_uri="DEFAULT_RULE_EVALUATOR_IMAGE",
         instance_type=NULL,
@@ -266,8 +277,9 @@ Rule = R6Class("Rule",
         volume_size_in_gb=NULL,
         rule_parameters=merged_rule_params,
         collections_to_save=collections_to_save %||% base_config_collections,
-        actions=actions)
+        actions=actions
       )
+      return(self)
     },
 
     #' @description Initialize a ``Rule`` object for a *custom* debugging rule.
@@ -319,7 +331,7 @@ Rule = R6Class("Rule",
       merged_rule_params = private$.set_rule_parameters(
         source, rule_to_invoke, other_trials_s3_input_paths, rule_parameters)
 
-      return (self$initialize(
+      self$initialize(
         name=name,
         image_uri=image_uri,
         instance_type=instance_type,
@@ -329,7 +341,7 @@ Rule = R6Class("Rule",
         rule_parameters=merged_rule_params,
         collections_to_save=collections_to_save %||% list(),
         actions=actions)
-      )
+      return(self)
     },
 
     #' @description Prepare actions for Debugger Rule.
