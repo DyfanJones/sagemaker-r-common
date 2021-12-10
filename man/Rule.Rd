@@ -19,6 +19,15 @@ The SageMaker Debugger Rule class configures *debugging* rules to debug your tra
 \section{Super class}{
 \code{\link[R6sagemaker.common:RuleBase]{R6sagemaker.common::RuleBase}} -> \code{Rule}
 }
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{collection_configs}}{A list of :class:`~sagemaker.debugger.CollectionConfig}
+
+\item{\code{actions}}{Placeholder}
+}
+\if{html}{\out{</div>}}
+}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
@@ -44,14 +53,14 @@ The SageMaker Debugger Rule class configures *debugging* rules to debug your tra
 Configure the debugging rules using the following classmethods.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Rule$new(
-  name,
-  image_uri,
-  instance_type,
-  container_local_output_path,
-  s3_output_path,
-  volume_size_in_gb,
-  rule_parameters,
-  collections_to_save,
+  name = NULL,
+  image_uri = NULL,
+  instance_type = NULL,
+  container_local_output_path = NULL,
+  s3_output_path = NULL,
+  volume_size_in_gb = NULL,
+  rule_parameters = NULL,
+  collections_to_save = NULL,
   actions = NULL
 )}\if{html}{\out{</div>}}
 }
