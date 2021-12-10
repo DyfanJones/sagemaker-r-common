@@ -12,6 +12,7 @@
 #' @include job.R
 #' @include error.R
 #' @include debugger_profiler_config.R
+#' @include debugger.R
 
 #' @import paws
 #' @import jsonlite
@@ -870,7 +871,7 @@ EstimatorBase = R6Class("EstimatorBase",
         volume_kms_key=volume_kms_key,
         sagemaker_session=self$sagemaker_session)
       )
-      },
+    },
 
     #' @description Returns VpcConfig dict either from this Estimator's subnets and
     #'              security groups, or else validate and return an optional override value.
@@ -896,7 +897,6 @@ EstimatorBase = R6Class("EstimatorBase",
           self$output_path = ""
         } else {self$output_path = sprintf("s3://%s/",self$sagemaker_session$default_bucket())}
       }
-
       private$.prepare_rules()
       private$.prepare_debugger_for_training()
       private$.prepare_profiler_for_training()
@@ -1094,12 +1094,12 @@ EstimatorBase = R6Class("EstimatorBase",
     .prepare_debugger_rules = function(){
       debugger_rule_configs = list()
       if (!islistempty(self$debugger_rules)){
-        for (rule in self$debugger_rules){
+        debugger_rule_configs = lapply(self$debugger_rules, function(rule){
           private$.set_default_rule_config(rule)
           private$.set_source_s3_uri(rule)
           rule$prepare_actions(self$.current_job_name)
-          debugger_rule_configs =c(debugger_rule_configs, rule$to_debugger_rule_config_dict())
-        }
+          rule$to_debugger_rule_config_dict()
+        })
       }
       return(debugger_rule_configs)
     },
@@ -1116,7 +1116,8 @@ EstimatorBase = R6Class("EstimatorBase",
       # Add the CollectionConfigs from DebuggerHookConfig to the set.
       if (!islistempty(self$debugger_hook_config))
         self$collection_configs = c(
-          self$collection_configs, self$debugger_hook_config$collection_configs %||% list()
+          self$collection_configs,
+          self$debugger_hook_config$collection_configs %||% list()
         )
     },
 
@@ -1242,7 +1243,7 @@ EstimatorBase = R6Class("EstimatorBase",
 
       current_hyperparameters = self$hyperparameters()
 
-      if (!islistempty(current_hyperparameters)){
+      if (!is.null(current_hyperparameters)){
         hyperparameters=lapply(current_hyperparameters, function(v) {
           if(inherits(v, c("Parameter", "Expression", "Properties","logical")))
             v else as.character(v)})
@@ -1424,11 +1425,12 @@ EstimatorBase = R6Class("EstimatorBase",
 
       if ("InputDataConfig" %in% names(job_details) && !is.null(model_channel_name)){
         for(channel in job_details$InputDataConfig){
-         if (channel$ChannelName == model_channel_name){
+          if (channel$ChannelName == model_channel_name){
             init_params$model_channel_name = model_channel_name
             init_params$model_uri = channel$DataSource$S3DataSource$S3Uri
-            break}
+            break
           }
+        }
       }
       if (job_details[["EnableManagedSpotTraining"]] %||% FALSE){
         init_params[["use_spot_instances"]] = TRUE
@@ -2053,7 +2055,7 @@ Framework = R6Class("Framework",
     #'              trains the model, calls this method to find the hyperparameters.
     #' @return dict[str, str]: The hyperparameters.
     hyperparameters = function(){
-      return(self$.hyperparameters)
+      return(private$.json_encode_hyperparameters(self$.hyperparameters))
     },
 
     #' @description Return the Docker image to use for training.
@@ -2290,16 +2292,36 @@ Framework = R6Class("Framework",
         dependencies=self$dependencies,
         kms_key=kms_key)
         )
-      },
+    },
 
     # Set defaults for debugging
     .validate_and_set_debugger_configs = function(){
-      if (!islistempty(self$debugger_hook_config)
-          && .region_supports_debugger(self$sagemaker_session$paws_region_name))
+      if(islistempty(self$debugger_hook_config) && .region_supports_debugger(
+        self$sagemaker_session$paws_region_name)
+      ){
         self$debugger_hook_config = DebuggerHookConfig$new(s3_output_path=self$output_path)
-      else if(islistempty(self$debugger_hook_config))
-        self$debugger_hook_config = NULL
-      },
+      } else if(islistempty(self$debugger_hook_config)){
+        # set hook config to False if _region_supports_debugger is False
+        self$debugger_hook_config = FALSE
+      }
+      # Disable debugger if checkpointing is enabled by the customer
+      if (!is.null(self$checkpoint_s3_uri) && !is.null(self$checkpoint_local_path) && !is.null(self$debugger_hook_config)){
+        if (attr(self, "_framework_name") %in% c("mxnet", "pytorch", "tensorflow")){
+          if (self$instance_count > 1 || !is.null(self$distribution)){
+            LOGGER$info(paste(
+              "SMDebug Does Not Currently Support",
+              "Distributed Training Jobs With Checkpointing Enabled")
+            )
+            self$debugger_hook_config = FALSE
+          }
+        }
+      }
+      if (isFALSE(self$debugger_hook_config)){
+        if (!is.null(self$environment))
+          self$environment = list()
+        self$environment[[DEBUGGER_FLAG]] = "0"
+      }
+    },
 
     # Get the appropriate value to pass as source_dir to model constructor
     # on deploying
@@ -2358,6 +2380,16 @@ Framework = R6Class("Framework",
       init_params$hyperparameters = hyperparameters
 
       return(init_params)
+    },
+
+    .json_encode_hyperparameters = function(hyperparameters){
+      current_hyperparameters = hyperparameters
+      if (!is.null(current_hyperparameters)){
+        hyperparameters=lapply(current_hyperparameters, function(v) {
+          if(inherits(v, c("Parameter", "Expression", "Properties")))
+            jsonlite::toJSON(v, auto_unbox = TRUE) else as.character(v)})
+      }
+      return(hyperparameters)
     },
 
     .update_init_params = function(hp, tf_arguments){
