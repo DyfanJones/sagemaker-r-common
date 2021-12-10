@@ -378,10 +378,10 @@ tar_subdir <- function(tarfile, src, compress = "gzip", ...){
     src_dir = unique(src)
     src_file = "."
   }
-  if(!dir.exists(src_dir)){
-    ValueError$new(
-      sprintf("Directory '%s' doesn't exist, please check directory location and try again.",
-              src_dir)
+  if(!fs::file_exists(src)){
+    ValueError$new(sprintf(
+      "Directory '%s' doesn't exist, please check directory location and try again.",
+      src)
     )
   }
   current_dir = getwd()
