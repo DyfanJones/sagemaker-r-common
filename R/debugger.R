@@ -3,6 +3,7 @@
 
 #' @include r_utils.R
 #' @include utils.R
+#' @include error.R
 
 #' @import R6
 #' @import R6sagemaker.debugger
@@ -88,7 +89,7 @@ RuleBase = R6Class("RuleBase",
                 is.null(instance_type) || is.character(instance_type),
                 is.null(container_local_output_path) || is.character(container_local_output_path),
                 is.null(s3_output_path) || is.character(s3_output_path),
-                is.null(volume_size_in_gb) || is.integer(volume_size_in_gb),
+                is.null(volume_size_in_gb) || is.numeric(volume_size_in_gb),
                 is.null(rule_parameters) || is.list(rule_parameters))
 
       self$name = name
@@ -117,9 +118,8 @@ RuleBase = R6Class("RuleBase",
     .set_rule_parameters = function(source=NULL,
                                     rule_to_invoke=NULL,
                                     rule_parameters=NULL){
-      if (!is.null(source) && !is.null(rule_to_invoke))
-        stop("If you provide a source, you must also provide a rule to invoke (and vice versa).",
-             call. = F)
+      if ((is.null(source) + is.null(rule_to_invoke)) == 1)
+        ValueError$new("If you provide a source, you must also provide a rule to invoke (and vice versa).")
 
       merged_rule_params = list()
       merged_rule_params = c(merged_rule_params, build_dict("source_s3_uri", source))
@@ -234,17 +234,16 @@ Rule = R6Class("Rule",
       merged_rule_params = list()
 
       if (!is.null(rule_parameters) && !islistempty(rule_parameters$rule_to_invoke))
-        stop("You cannot provide a 'rule_to_invoke' for SageMaker rules.",
-             "Either remove the rule_to_invoke or use a custom rule.",
-             call. = F)
-
+        RuntimeError$new(
+          "You cannot provide a 'rule_to_invoke' for SageMaker rules.",
+          "Either remove the rule_to_invoke or use a custom rule."
+        )
       if (!is.null(actions) && (inherits(actions, "Action") || inherits(actions, "ActionList")))
-        stop("`actions` must be of type `Action` or `ActionList`!", call. = F)
+        RuntimeError$new("`actions` must be of type `Action` or `ActionList`!")
 
       if (!is.null(other_trials_s3_input_paths)){
-        s3_in_split = split_str(other_trials_s3_input_paths, "")
-        for (index in seq_along(s3_in_split)){
-          merged_rule_params[[sprintf("other_trial_%s",index)]] = s3_in_split[index]
+        for (index in seq_along(other_trials_s3_input_paths)){
+          merged_rule_params[[sprintf("other_trial_%s",index-1)]] = other_trials_s3_input_paths[index]
         }
       }
 
@@ -326,7 +325,7 @@ Rule = R6Class("Rule",
                       collections_to_save=NULL,
                       actions=NULL){
       if(!is.null(actions) && !(inherits(actions, "Action") || inherits(actions, "ActionList")))
-        stop("`actions` must be of type `Action` or `ActionList`!", call. = F)
+        RuntimeError$new("`actions` must be of type `Action` or `ActionList`!")
 
       merged_rule_params = private$.set_rule_parameters(
         source, rule_to_invoke, other_trials_s3_input_paths, rule_parameters)
@@ -394,9 +393,8 @@ Rule = R6Class("Rule",
                                     rule_parameters){
       merged_rule_params = list()
       if (!is.null(other_trials_s3_input_paths)){
-        s3_in_split = split_str(other_trials_s3_input_paths, "")
-        for (index in seq_along(s3_in_split)){
-          merged_rule_params[[sprintf("other_trial_%s",index)]] = s3_in_split[index]
+        for (index in seq_along(other_trials_s3_input_paths)){
+          merged_rule_params[[sprintf("other_trial_%s",index-1)]] = other_trials_s3_input_paths[index]
         }
       }
       merged_rule_params = c(
@@ -687,9 +685,9 @@ CollectionConfig = R6Class("CollectionConfig",
 #' @export
 `==.CollectionConfig` <- function(self, other){
   if (!inherits(other, "CollectionConfig"))
-    stop("CollectionConfig is only comparable with other CollectionConfig objects.",
-         call. = F)
-
+    TypeError$new(
+      "CollectionConfig is only comparable with other CollectionConfig objects."
+    )
   eq_name = self$name == other$name
 
   # added an extra step for rebustness of check
@@ -711,8 +709,9 @@ CollectionConfig = R6Class("CollectionConfig",
 #' @export
 `!=.CollectionConfig` <- function(self, other){
   if (!inherits(other, "CollectionConfig"))
-    stop("CollectionConfig is only comparable with other CollectionConfig objects.",
-         call. = F)
+    TypeError$new(
+      "CollectionConfig is only comparable with other CollectionConfig objects."
+    )
   no_eq_name = self$name != other$name
 
   # added an extra step for rebustness of check
