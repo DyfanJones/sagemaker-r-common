@@ -1162,7 +1162,7 @@ EstimatorBase = R6Class("EstimatorBase",
     # Args:
     #   rule (:class:`~sagemaker.debugger.RuleBase`): Any rule object that derives from RuleBase
     .set_default_rule_config = function(rule){
-      if (!is.null(rule$image_uri) || rule$image_uri == "DEFAULT_RULE_EVALUATOR_IMAGE"){
+      if (rule$image_uri == "DEFAULT_RULE_EVALUATOR_IMAGE"){
         rule$image_uri = get_rule_container_image_uri(self$sagemaker_session$paws_region_name)
         rule$instance_type = NULL
         rule$volume_size_in_gb = NULL
@@ -1173,9 +1173,9 @@ EstimatorBase = R6Class("EstimatorBase",
     # Args:
     #   rule (:class:`~sagemaker.debugger.RuleBase`): Any rule object that derives from RuleBase
     .set_source_s3_uri = function(rule){
-      if ("source_s3_uri" %in% (rule$rule_parameters %||% list())){
+      if ("source_s3_uri" %in% names(rule$rule_parameters) %||% list()){
         parse_result = urltools::url_parse(rule$rule_parameters[["source_s3_uri"]])
-        if (parse_result$scheme != "s3"){
+        if (!identical(parse_result$scheme, "s3")){
           desired_s3_uri = file.path(
             "s3:/",
             self$sagemaker_session$default_bucket(),
