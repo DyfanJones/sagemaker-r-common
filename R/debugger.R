@@ -238,7 +238,7 @@ Rule = R6Class("Rule",
           "You cannot provide a 'rule_to_invoke' for SageMaker rules.",
           "Either remove the rule_to_invoke or use a custom rule."
         )
-      if (!is.null(actions) && (inherits(actions, "Action") || inherits(actions, "ActionList")))
+      if (!is.null(actions) && !inherits(actions, c("Action", "ActionList")))
         RuntimeError$new("`actions` must be of type `Action` or `ActionList`!")
 
       if (!is.null(other_trials_s3_input_paths)){
