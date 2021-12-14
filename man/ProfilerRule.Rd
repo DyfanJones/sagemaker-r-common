@@ -11,7 +11,8 @@ SageMaker Debugger profiling rules automatically analyze
              For example, the profiling rules can detect if GPUs are underutilized due to CPU bottlenecks or
              IO bottlenecks.
              For a full list of built-in rules for debugging, see
-             `List of Debugger Built-in Rules <https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html>`_.
+             `List of Debugger Built-in Rules`
+             \url{https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html}.
              You can also write your own profiling rules using the Amazon SageMaker
              Debugger APIs.
 }
@@ -54,12 +55,12 @@ Initialize a ``ProfilerRule`` object for a *built-in* profiling rule.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{base_config}}{(rule_configs.ProfilerReport): The base rule configuration object
-returned from the ``rule_configs`` method.
-For example, 'rule_configs.ProfilerReport()'.
+\item{\code{base_config}}{(\code{R6sagemaker.debugger::ProfilerReport}): The base rule configuration object
+returned from the \code{R6sagemaker.debugger} method.
+For example, \code{R6sagemaker.debugger::ProfilerReport$new()}.
 For a full list of built-in rules for debugging, see
-`List of Debugger Built-in Rules
-<https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html>`_.}
+`List of Debugger Built-in Rules`
+\url{https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html}.}
 
 \item{\code{name}}{(str): The name of the profiler rule. If one is not provided,
 the name of the base_config will be used.}

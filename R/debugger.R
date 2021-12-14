@@ -151,8 +151,8 @@ RuleBase = R6Class("RuleBase",
 #'              For example, the debugging rules can detect whether gradients are getting too large or
 #'              too small, or if a model is overfitting.
 #'              For a full list of built-in rules for debugging, see
-#'              `List of Debugger Built-in Rules
-#'              <https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html>`_.
+#'              `List of Debugger Built-in Rules`
+#'              \url{https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html}.
 #'              You can also write your own rules using the custom rule classmethod.
 #' @export
 Rule = R6Class("Rule",
@@ -201,11 +201,11 @@ Rule = R6Class("Rule",
 
     #' @description Initialize a ``Rule`` object for a \code{built-in} debugging rule.
     #' @param base_config (dict): Required. This is the base rule config dictionary returned from the
-    #'              :class:`~sagemaker.debugger.rule_configs` method.
-    #'              For example, ``rule_configs.dead_relu()``.
+    #'              :class:\code{R6sagemaker.debugger} method.
+    #'              For example, \code{R6sagemaker.debugger::dead_relu()}.
     #'              For a full list of built-in rules for debugging, see
-    #'              `List of Debugger Built-in Rules
-    #'              <https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html>`_.
+    #'              `List of Debugger Built-in Rules`
+    #'              \url{https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html}.
     #' @param name (str): Optional. The name of the debugger rule. If one is not provided,
     #'              the name of the base_config will be used.
     #' @param container_local_output_path (str): Optional. The local path in the rule processing
@@ -218,9 +218,9 @@ Rule = R6Class("Rule",
     #' @param other_trials_s3_input_paths ([str]): Optional. The Amazon S3 input paths
     #'              of other trials to use the SimilarAcrossRuns rule.
     #' @param rule_parameters (dict): Optional. A dictionary of parameters for the rule.
-    #' @param collections_to_save (:class:`~sagemaker.debugger.CollectionConfig`):
+    #' @param collections_to_save (:class:\code{R6sagemaker.debugger::CollectionConfig}):
     #'              Optional. A list
-    #'              of :class:`~sagemaker.debugger.CollectionConfig` objects to be saved.
+    #'              of :class:\code{R6sagemaker.debugger::CollectionConfig} objects to be saved.
     #' @param actions :
     #' @return :class:`~sagemaker.debugger.Rule`: An instance of the built-in rule.
     sagemaker = function(base_config,
@@ -285,9 +285,8 @@ Rule = R6Class("Rule",
     #'              You can create a custom rule that analyzes tensors emitted
     #'              during the training of a model
     #'              and monitors conditions that are critical for the success of a training
-    #'              job. For more information, see `Create Debugger Custom Rules for Training Job
-    #'              Analysis
-    #'              <https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-custom-rules.html>`_.
+    #'              job. For more information, see `Create Debugger Custom Rules for Training Job Analysis`
+    #'              \url{https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-custom-rules.html}.
     #' @param name (str): Required. The name of the debugger rule.
     #' @param image_uri (str): Required. The URI of the image to be used by the debugger rule.
     #' @param instance_type (str): Required. Type of EC2 instance to use, for example,
@@ -413,7 +412,8 @@ Rule = R6Class("Rule",
 #'              For example, the profiling rules can detect if GPUs are underutilized due to CPU bottlenecks or
 #'              IO bottlenecks.
 #'              For a full list of built-in rules for debugging, see
-#'              `List of Debugger Built-in Rules <https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html>`_.
+#'              `List of Debugger Built-in Rules`
+#'              \url{https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html}.
 #'              You can also write your own profiling rules using the Amazon SageMaker
 #'              Debugger APIs.
 #' @export
@@ -424,12 +424,12 @@ ProfilerRule = R6Class("ProfilerRule",
     #' @description Initialize a ``ProfilerRule`` object for a *built-in* profiling rule.
     #'              The rule analyzes system and framework metrics of a given
     #'              training job to identify performance bottlenecks.
-    #' @param base_config (rule_configs.ProfilerReport): The base rule configuration object
-    #'              returned from the ``rule_configs`` method.
-    #'              For example, 'rule_configs.ProfilerReport()'.
+    #' @param base_config (\code{R6sagemaker.debugger::ProfilerReport}): The base rule configuration object
+    #'              returned from the \code{R6sagemaker.debugger} method.
+    #'              For example, \code{R6sagemaker.debugger::ProfilerReport$new()}.
     #'              For a full list of built-in rules for debugging, see
-    #'              `List of Debugger Built-in Rules
-    #'              <https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html>`_.
+    #'              `List of Debugger Built-in Rules`
+    #'              \url{https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html}.
     #' @param name (str): The name of the profiler rule. If one is not provided,
     #'              the name of the base_config will be used.
     #' @param container_local_output_path (str): The path in the container.
@@ -531,10 +531,10 @@ ProfilerRule = R6Class("ProfilerRule",
 )
 
 #' @title Create a Debugger hook configuration object to save the tensor for debugging.
-#' @description DebuggerHookConfig provides options to customize how debugging
-#'              information is emitted and saved. This high-level DebuggerHookConfig class
+#' @description \code{DebuggerHookConfig} provides options to customize how debugging
+#'              information is emitted and saved. This high-level \code{DebuggerHookConfig} class
 #'              runs based on the `smdebug.SaveConfig
-#'              <https://github.com/awslabs/sagemaker-debugger/blob/master/docs/api.md#saveconfig>`
+#'              \url{https://github.com/awslabs/sagemaker-debugger/blob/master/docs/api.md#saveconfig}
 #'              class.
 #' @export
 DebuggerHookConfig = R6Class("DebuggerHookConfig",

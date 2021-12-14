@@ -12,8 +12,8 @@ The SageMaker Debugger Rule class configures *debugging* rules to debug your tra
              For example, the debugging rules can detect whether gradients are getting too large or
              too small, or if a model is overfitting.
              For a full list of built-in rules for debugging, see
-             `List of Debugger Built-in Rules
-             <https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html>`_.
+             `List of Debugger Built-in Rules`
+             \url{https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html}.
              You can also write your own rules using the custom rule classmethod.
 }
 \section{Super class}{
@@ -112,11 +112,11 @@ Initialize a ``Rule`` object for a \code{built-in} debugging rule.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{base_config}}{(dict): Required. This is the base rule config dictionary returned from the
-:class:`~sagemaker.debugger.rule_configs` method.
-For example, ``rule_configs.dead_relu()``.
+:class:\code{R6sagemaker.debugger} method.
+For example, \code{R6sagemaker.debugger::dead_relu()}.
 For a full list of built-in rules for debugging, see
-`List of Debugger Built-in Rules
-<https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html>`_.}
+`List of Debugger Built-in Rules`
+\url{https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html}.}
 
 \item{\code{name}}{(str): Optional. The name of the debugger rule. If one is not provided,
 the name of the base_config will be used.}
@@ -135,9 +135,9 @@ of other trials to use the SimilarAcrossRuns rule.}
 
 \item{\code{rule_parameters}}{(dict): Optional. A dictionary of parameters for the rule.}
 
-\item{\code{collections_to_save}}{(:class:`~sagemaker.debugger.CollectionConfig`):
+\item{\code{collections_to_save}}{(:class:\code{R6sagemaker.debugger::CollectionConfig}):
 Optional. A list
-of :class:`~sagemaker.debugger.CollectionConfig` objects to be saved.}
+of :class:\code{R6sagemaker.debugger::CollectionConfig} objects to be saved.}
 
 \item{\code{actions}}{:}
 }
@@ -155,9 +155,8 @@ Initialize a ``Rule`` object for a *custom* debugging rule.
              You can create a custom rule that analyzes tensors emitted
              during the training of a model
              and monitors conditions that are critical for the success of a training
-             job. For more information, see `Create Debugger Custom Rules for Training Job
-             Analysis
-             <https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-custom-rules.html>`_.
+             job. For more information, see `Create Debugger Custom Rules for Training Job Analysis`
+             \url{https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-custom-rules.html}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Rule$custom(
   name,
