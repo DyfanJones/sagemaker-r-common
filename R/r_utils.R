@@ -192,3 +192,19 @@ is_list_named = function(x){
 paws_error_code <- function(error){
   return(error[["error_response"]][["__type"]] %||% error[["error_response"]][["Code"]])
 }
+
+to_str <- function(obj, ...){
+  UseMethod("to_str")
+}
+
+to_str.default <- function(obj, ...){
+  as.character(obj)
+}
+
+to_str.list <- function(obj, ...){
+  jsonlite::toJSON(obj, auto_unbox = F)
+}
+
+to_str.numeric <- function(obj, ...){
+  format(obj, scientific = F)
+}
