@@ -7,6 +7,7 @@
 
 #' @import R6
 #' @import R6sagemaker.debugger
+#' @importFrom jsonlite toJSON
 
 DEBUGGER_FLAG = "USE_SMDEBUG"
 
@@ -358,7 +359,7 @@ Rule = R6Class("Rule",
 
     #' @description Generates a request dictionary using the parameters provided when initializing object.
     #' @return dict: An portion of an API request as a dictionary.
-    to_debugger_rule_config_dict = function(){
+    to_debugger_rule_config_list = function(){
       debugger_rule_config_request = list(
         "RuleConfigurationName"= self$name,
         "RuleEvaluatorImage"= self$image_uri)
@@ -505,11 +506,12 @@ ProfilerRule = R6Class("ProfilerRule",
     },
 
     #' @description Generates a request dictionary using the parameters provided when initializing object.
-    #' @return dict: An portion of an API request as a dictionary.
-    to_profiler_rule_config_dict = function(){
+    #' @return lict: An portion of an API request as a dictionary.
+    to_profiler_rule_config_list = function(){
       profiler_rule_config_request = list(
         "RuleConfigurationName"= self$name,
-        "RuleEvaluatorImage"= self$image_uri)
+        "RuleEvaluatorImage"= self$image_uri
+      )
       profiler_rule_config_request = c(profiler_rule_config_request, build_dict("InstanceType", self$instance_type))
       profiler_rule_config_request = c(profiler_rule_config_request, build_dict("VolumeSizeInGB", self$volume_size_in_gb))
       profiler_rule_config_request = c(profiler_rule_config_request,
@@ -521,7 +523,7 @@ ProfilerRule = R6Class("ProfilerRule",
         for (i in seq_along(profiler_rule_config_request[["RuleParameters"]])){
           k = names(profiler_rule_config_request[["RuleParameters"]])[i]
           v = profiler_rule_config_request[["RuleParameters"]][[i]]
-          profiler_rule_config_request[["RuleParameters"]][[k]] = as.character(v)
+          profiler_rule_config_request[["RuleParameters"]][[k]] = to_str(v)
         }
       }
       return(profiler_rule_config_request)
