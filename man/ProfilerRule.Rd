@@ -24,7 +24,7 @@ SageMaker Debugger profiling rules automatically analyze
 \itemize{
 \item \href{#method-sagemaker}{\code{ProfilerRule$sagemaker()}}
 \item \href{#method-custom}{\code{ProfilerRule$custom()}}
-\item \href{#method-to_profiler_rule_config_dict}{\code{ProfilerRule$to_profiler_rule_config_dict()}}
+\item \href{#method-to_profiler_rule_config_list}{\code{ProfilerRule$to_profiler_rule_config_list()}}
 \item \href{#method-clone}{\code{ProfilerRule$clone()}}
 }
 }
@@ -141,16 +141,16 @@ s3://sagemaker-<region>-<12digit_account_id>/<training-job-name>/profiler-output
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-to_profiler_rule_config_dict"></a>}}
-\if{latex}{\out{\hypertarget{method-to_profiler_rule_config_dict}{}}}
-\subsection{Method \code{to_profiler_rule_config_dict()}}{
+\if{html}{\out{<a id="method-to_profiler_rule_config_list"></a>}}
+\if{latex}{\out{\hypertarget{method-to_profiler_rule_config_list}{}}}
+\subsection{Method \code{to_profiler_rule_config_list()}}{
 Generates a request dictionary using the parameters provided when initializing object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ProfilerRule$to_profiler_rule_config_dict()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ProfilerRule$to_profiler_rule_config_list()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-dict: An portion of an API request as a dictionary.
+lict: An portion of an API request as a dictionary.
 }
 }
 \if{html}{\out{<hr>}}

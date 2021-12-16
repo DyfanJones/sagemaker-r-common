@@ -35,7 +35,7 @@ The SageMaker Debugger Rule class configures *debugging* rules to debug your tra
 \item \href{#method-sagemaker}{\code{Rule$sagemaker()}}
 \item \href{#method-custom}{\code{Rule$custom()}}
 \item \href{#method-prepare_actions}{\code{Rule$prepare_actions()}}
-\item \href{#method-to_debugger_rule_config_dict}{\code{Rule$to_debugger_rule_config_dict()}}
+\item \href{#method-to_debugger_rule_config_list}{\code{Rule$to_debugger_rule_config_list()}}
 \item \href{#method-clone}{\code{Rule$clone()}}
 }
 }
@@ -237,12 +237,12 @@ prefix for the StopTraining action if it is specified.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-to_debugger_rule_config_dict"></a>}}
-\if{latex}{\out{\hypertarget{method-to_debugger_rule_config_dict}{}}}
-\subsection{Method \code{to_debugger_rule_config_dict()}}{
+\if{html}{\out{<a id="method-to_debugger_rule_config_list"></a>}}
+\if{latex}{\out{\hypertarget{method-to_debugger_rule_config_list}{}}}
+\subsection{Method \code{to_debugger_rule_config_list()}}{
 Generates a request dictionary using the parameters provided when initializing object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Rule$to_debugger_rule_config_dict()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Rule$to_debugger_rule_config_list()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
