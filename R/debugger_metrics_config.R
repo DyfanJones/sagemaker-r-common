@@ -110,24 +110,24 @@ MetricsConfigBase = R6Class("MetricsConfigBase",
 
       if(!is.null(start_step)){
         if(!is.integer(start_step) && start_step < 0)
-          stop(ErrorMessages$INVALID_START_STEP, call. = F)
+          ValueError$new(ErrorMessages$INVALID_START_STEP)
       }
       if(!is.null(start_step)){
         if(!is.integer(start_step) && num_steps <= 0)
-          stop(ErrorMessages$INVALID_NUM_STEPS, call. = F)
+          ValueError$new(ErrorMessages$INVALID_NUM_STEPS)
       }
       if(!is.null(start_unix_time) && !inherits(start_unix_time, c("integer","numeric")))
-        stop(ErrorMessages$INVALID_START_UNIX_TIME, call. = F)
+        ValueError$new(ErrorMessages$INVALID_START_UNIX_TIME)
 
       if(!is.null(duration)){
         if(!inherits(duration, c("numeric", "integer")) || duration < 0)
-          stop(ErrorMessages$INVALID_DURATION, call. = F)
+          ValueError$new(ErrorMessages$INVALID_DURATION)
       }
       has_step_range = (!is.null(start_step) || !is.null(num_steps))
       has_time_range = (!is.null(start_unix_time) || !is.null(duration))
 
       if(has_step_range && has_time_range)
-        stop(ErrorMessages$FOUND_BOTH_STEP_AND_TIME_FIELDS, call. = F)
+        ValueError$new(ErrorMessages$FOUND_BOTH_STEP_AND_TIME_FIELDS)
 
       self$range = (
         if(has_step_range)
