@@ -933,7 +933,7 @@ EstimatorBase = R6Class("EstimatorBase",
       }
 
       self$profiler_rules = list(get_default_profiler_rule())
-      self$profiler_rule_configs = list(private$.prepare_profiler_rules())
+      self$profiler_rule_configs = private$.prepare_profiler_rules()
 
       private$.update(
         self$profiler_rule_configs, self$profiler_config$to_request_list())
@@ -992,7 +992,7 @@ EstimatorBase = R6Class("EstimatorBase",
         && is.null(system_monitor_interval_millis)
         && is.null(s3_output_path)
         && is.null(framework_profile_params)
-        && is.null(disable_framework_metrics)){
+        && isFALSE(disable_framework_metrics)){
         ValueError$new("Please provide profiler config or profiler rule to be updated.")
       }
       if (disable_framework_metrics && framework_profile_params){
@@ -1092,14 +1092,15 @@ EstimatorBase = R6Class("EstimatorBase",
 
     # Set any necessary values in debugger rules, if they are provided.
     .prepare_debugger_rules = function(){
-      debugger_rule_configs = list()
       if (!islistempty(self$debugger_rules)){
         debugger_rule_configs = lapply(self$debugger_rules, function(rule){
           private$.set_default_rule_config(rule)
           private$.set_source_s3_uri(rule)
           rule$prepare_actions(self$.current_job_name)
-          rule$to_debugger_rule_config_dict()
+          rule$to_debugger_rule_config_list()
         })
+      } else {
+        debugger_rule_configs = list()
       }
       return(debugger_rule_configs)
     },
@@ -1128,15 +1129,15 @@ EstimatorBase = R6Class("EstimatorBase",
     # 2. user only specify debugger rules, i.e., rules=[Rule.sagemaker(...)]
     .prepare_profiler_for_training = function(){
       if (self$disable_profiler){
-        if (!is.null(self$profiler_config))
+        if (!islistempty(self$profiler_config))
           RuntimeError$new("profiler_config cannot be set when disable_profiler is True.")
-        if (!is.null(self$profiler_rules))
+        if (!islistempty(self$profiler_rules))
           RuntimeError$new("ProfilerRule cannot be set when disable_profiler is True.")
       } else if (.region_supports_profiler(self$sagemaker_session$paws_region_name)){
         if (is.null(self$profiler_config))
           self$profiler_config = ProfilerConfig$new(s3_output_path=self$output_path)
         if (is.null(self$rules) || (!is.null(self$rules) && is.null(self$profiler_rules)))
-            self$profiler_rules = list(get_default_profiler_rule())
+          self$profiler_rules = list(get_default_profiler_rule())
       }
 
       if (!is.null(self$profiler_config) && is.null(self$profiler_config$s3_output_path))
@@ -1147,13 +1148,14 @@ EstimatorBase = R6Class("EstimatorBase",
 
     # Set any necessary values in profiler rules, if they are provided.
     .prepare_profiler_rules = function(){
-      profiler_rule_configs = list()
       if (!islistempty(self$profiler_rules)){
-        for (rule in self$profiler_rules){
+        profiler_rule_configs = lapply(self$profiler_rules, function(rule){
           private$.set_default_rule_config(rule)
           private$.set_source_s3_uri(rule)
-          profiler_rule_configs = c(profiler_rule_configs, list(rule$to_profiler_rule_config_dict()))
-        }
+          rule$to_profiler_rule_config_list()
+        })
+      } else {
+        profiler_rule_configs = list()
       }
       return(profiler_rule_configs)
     },
@@ -1360,7 +1362,7 @@ EstimatorBase = R6Class("EstimatorBase",
     # all information about the updated training job.
     .update = function(profiler_rule_configs=NULL,
                        profiler_config=NULL){
-      update_args = priavte$.get_update_args(estimator, profiler_rule_configs, profiler_config)
+      update_args = private$.get_update_args(profiler_rule_configs, profiler_config)
       do.call(self$sagemaker_session$update_training_job, update_args)
 
       return(self$latest_training_job)
