@@ -15,27 +15,10 @@ Note: Strong consistency is not guaranteed if S3Prefix is provided here.
 \section{Super class}{
 \code{\link[R6sagemaker.common:ApiObject]{R6sagemaker.common::ApiObject}} -> \code{S3Input}
 }
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{s3_uri}}{(str): the path to a specific S3 object or a S3 prefix}
-
-\item{\code{local_path}}{(str): the path to a local directory. If not provided, skips data download
-by SageMaker platform.}
-
-\item{\code{s3_data_type}}{(str): Valid options are "ManifestFile" or "S3Prefix".}
-
-\item{\code{s3_input_mode}}{(str): Valid options are "Pipe" or "File".}
-
-\item{\code{s3_data_distribution_type}}{(str): Valid options are "FullyReplicated" or "ShardedByS3Key".}
-
-\item{\code{s3_compression_type}}{(str): Valid options are "None" or "Gzip".}
-}
-\if{html}{\out{</div>}}
-}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
+\item \href{#method-new}{\code{S3Input$new()}}
 \item \href{#method-clone}{\code{S3Input$clone()}}
 }
 }
@@ -44,10 +27,46 @@ by SageMaker platform.}
 \itemize{
 \item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="ApiObject" data-id="format">}\href{../../R6sagemaker.common/html/ApiObject.html#method-format}{\code{R6sagemaker.common::ApiObject$format()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="ApiObject" data-id="from_paws">}\href{../../R6sagemaker.common/html/ApiObject.html#method-from_paws}{\code{R6sagemaker.common::ApiObject$from_paws()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="ApiObject" data-id="initialize">}\href{../../R6sagemaker.common/html/ApiObject.html#method-initialize}{\code{R6sagemaker.common::ApiObject$initialize()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="ApiObject" data-id="to_paws">}\href{../../R6sagemaker.common/html/ApiObject.html#method-to_paws}{\code{R6sagemaker.common::ApiObject$to_paws()}}\out{</span>}
 }
 \out{</details>}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
+\subsection{Method \code{new()}}{
+Initialize S3Input.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{S3Input$new(
+  s3_uri = NULL,
+  local_path = NULL,
+  s3_data_type = "S3Prefix",
+  s3_input_mode = "File",
+  s3_data_distribution_type = "FullyReplicated",
+  s3_compression_type = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{s3_uri}}{(str, default=None): the path to a specific S3 object or a S3 prefix}
+
+\item{\code{local_path}}{(str, default=None):
+the path to a local directory. If not provided, skips data download
+by SageMaker platform.}
+
+\item{\code{s3_data_type}}{(str, default="S3Prefix"): Valid options are "ManifestFile" or "S3Prefix".}
+
+\item{\code{s3_input_mode}}{(str, default="File"): Valid options are "Pipe" or "File".}
+
+\item{\code{s3_data_distribution_type}}{(str, default="FullyReplicated"):
+Valid options are "FullyReplicated" or "ShardedByS3Key".}
+
+\item{\code{s3_compression_type}}{(str, default=None): Valid options are "None" or "Gzip"}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}

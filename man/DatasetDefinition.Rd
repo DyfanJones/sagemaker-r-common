@@ -11,33 +11,10 @@ DatasetDefinition input.
 \section{Super class}{
 \code{\link[R6sagemaker.common:ApiObject]{R6sagemaker.common::ApiObject}} -> \code{DatasetDefinition}
 }
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{data_distribution_type}}{(str): Whether the generated dataset is FullyReplicated or
-ShardedByS3Key (default).}
-
-\item{\code{input_mode}}{(str): Whether to use File or Pipe input mode. In File (default) mode, Amazon
-SageMaker copies the data from the input source onto the local Amazon Elastic Block.
-Store (Amazon EBS) volumes before starting your training algorithm. This is the most
-commonly used input mode. In Pipe mode, Amazon SageMaker streams input data from the
-source directly to your algorithm without using the EBS volume.}
-
-\item{\code{local_path}}{(str): The local path where you want Amazon SageMaker to download the Dataset
-Definition inputs to run a processing job. LocalPath is an absolute path to the input
-data. This is a required parameter when `AppManaged` is False (default).}
-
-\item{\code{redshift_dataset_definition}}{(:class:`~sagemaker.dataset_definition.RedshiftDatasetDefinition`): Redshift
-dataset definition.}
-
-\item{\code{athena_dataset_definition}}{(:class:`~sagemaker.dataset_definition.AthenaDatasetDefinition`):
-Configuration for Athena Dataset Definition input.}
-}
-\if{html}{\out{</div>}}
-}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
+\item \href{#method-new}{\code{DatasetDefinition$new()}}
 \item \href{#method-clone}{\code{DatasetDefinition$clone()}}
 }
 }
@@ -46,10 +23,53 @@ Configuration for Athena Dataset Definition input.}
 \itemize{
 \item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="ApiObject" data-id="format">}\href{../../R6sagemaker.common/html/ApiObject.html#method-format}{\code{R6sagemaker.common::ApiObject$format()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="ApiObject" data-id="from_paws">}\href{../../R6sagemaker.common/html/ApiObject.html#method-from_paws}{\code{R6sagemaker.common::ApiObject$from_paws()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="ApiObject" data-id="initialize">}\href{../../R6sagemaker.common/html/ApiObject.html#method-initialize}{\code{R6sagemaker.common::ApiObject$initialize()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="ApiObject" data-id="to_paws">}\href{../../R6sagemaker.common/html/ApiObject.html#method-to_paws}{\code{R6sagemaker.common::ApiObject$to_paws()}}\out{</span>}
 }
 \out{</details>}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
+\subsection{Method \code{new()}}{
+Initialize DatasetDefinition.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DatasetDefinition$new(
+  data_distribution_type = "ShardedByS3Key",
+  input_mode = "File",
+  local_path = NULL,
+  redshift_dataset_definition = NULL,
+  athena_dataset_definition = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{data_distribution_type}}{(str, default="ShardedByS3Key"):
+Whether the generated dataset is FullyReplicated or ShardedByS3Key (default).}
+
+\item{\code{input_mode}}{(str, default="File"):
+Whether to use File or Pipe input mode. In File (default) mode, Amazon
+SageMaker copies the data from the input source onto the local Amazon Elastic Block
+Store (Amazon EBS) volumes before starting your training algorithm. This is the most
+commonly used input mode. In Pipe mode, Amazon SageMaker streams input data from the
+source directly to your algorithm without using the EBS volume.}
+
+\item{\code{local_path}}{(str, default=None):
+The local path where you want Amazon SageMaker to download the Dataset
+Definition inputs to run a processing job. LocalPath is an absolute path to the
+input data. This is a required parameter when `AppManaged` is False (default).}
+
+\item{\code{redshift_dataset_definition}}{(:class:\code{R6sagemaker.common::RedshiftDatasetDefinition},
+default=None):
+Configuration for Redshift Dataset Definition input.}
+
+\item{\code{athena_dataset_definition}}{(:class:\code{R6sagemaker.common::AthenaDatasetDefinition},
+default=None):
+Configuration for Athena Dataset Definition input.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}

@@ -12,46 +12,43 @@ RedshiftDatasetDefinition = R6Class("RedshiftDatasetDefinition",
   inherit = ApiObject,
   public = list(
 
-    #' @field cluster_id
-    #' (str): The Redshift cluster Identifier.
-    cluster_id = NULL,
-
-    #' @field database
-    #' (str): The name of the Redshift database used in Redshift query execution.
-    database = NULL,
-
-    #' @field db_user
-    #' (str): The database user name used in Redshift query execution.
-    db_user = NULL,
-
-    #' @field query_string
-    #' (str): The SQL query statements to be executed.
-    query_string = NULL,
-
-    #' @field cluster_role_arn
-    #' (str): The IAM role attached to your Redshift cluster that
-    #' Amazon SageMaker uses to generate datasets.
-    cluster_role_arn = NULL,
-
-    #' @field output_s3_uri
-    #' (str): The location in Amazon S3 where the Redshift query
-    #' results are stored.
-    output_s3_uri = NULL,
-
-    #' @field kms_key_id
-    #' (str): The AWS Key Management Service (AWS KMS) key that Amazon
-    #' SageMaker uses to encrypt data from a Redshift execution.
-    kms_key_id = NULL,
-
-    #' @field output_format
-    #' (str): The data storage format for Redshift query results.
-    #' Valid options are "PARQUET", "CSV"
-    output_format = NULL,
-
-    #' @field output_compression
-    #' (str): The compression used for Redshift query results.
-    #' Valid options are "None", "GZIP", "SNAPPY", "ZSTD", "BZIP2"
-    output_compression = NULL
+    #' @description Initialize RedshiftDatasetDefinition.
+    #' @param cluster_id (str, default=None): The Redshift cluster Identifier.
+    #'              database (str, default=None):
+    #'              The name of the Redshift database used in Redshift query execution.
+    #' @param db_user (str, default=None): The database user name used in Redshift query execution.
+    #' @param query_string (str, default=None): The SQL query statements to be executed.
+    #' @param cluster_role_arn (str, default=None): The IAM role attached to your Redshift cluster
+    #'              that Amazon SageMaker uses to generate datasets.
+    #' @param output_s3_uri (str, default=None): The location in Amazon S3 where the Redshift query
+    #'              results are stored.
+    #' @param kms_key_id (str, default=None): The AWS Key Management Service (AWS KMS) key that Amazon
+    #'              SageMaker uses to encrypt data from a Redshift execution.
+    #' @param output_format (str, default=None): The data storage format for Redshift query results.
+    #'              Valid options are "PARQUET", "CSV"
+    #' @param output_compression (str, default=None): The compression used for Redshift query results.
+    #'              Valid options are "None", "GZIP", "SNAPPY", "ZSTD", "BZIP2"
+    initialize = function(cluster_id=NULL,
+                          database=NULL,
+                          db_user=NULL,
+                          query_string=NULL,
+                          cluster_role_arn=NULL,
+                          output_s3_uri=NULL,
+                          kms_key_id=NULL,
+                          output_format=NULL,
+                          output_compression=NULL){
+      super$initialize(
+        cluster_id=cluster_id,
+        database=database,
+        db_user=db_user,
+        query_string=query_string,
+        cluster_role_arn=cluster_role_arn,
+        output_s3_uri=output_s3_uri,
+        kms_key_id=kms_key_id,
+        output_format=output_format,
+        output_compression=output_compression
+      )
+    }
   ),
   lock_objects=F
 )
@@ -63,40 +60,41 @@ AthenaDatasetDefinition = R6Class("AthenaDatasetDefinition",
   inherit = ApiObject,
   public = list(
 
-    #' @field catalog
-    #' (str): The name of the data catalog used in Athena query execution.
-    catalog = NULL,
-
-    #' @field database
-    #' (str): The name of the database used in the Athena query execution.
-    database = NULL,
-
-    #' @field query_string
-    #' (str): The SQL query statements, to be executed.
-    query_string = NULL,
-
-    #' @field output_s3_uri
-    #' (str): The location in Amazon S3 where Athena query results are stored.
-    output_s3_uri = NULL,
-
-    #' @field work_group
-    #' (str): The name of the workgroup in which the Athena query is being started.
-    work_group = NULL,
-
-    #' @field kms_key_id
-    #' (str): The AWS Key Management Service (AWS KMS) key that Amazon
-    #' SageMaker uses to encrypt data generated from an Athena query execution.
-    kms_key_id = NULL,
-
-    #' @field output_format
-    #' (str): The data storage format for Athena query results.
-    #' Valid options are "PARQUET", "ORC", "AVRO", "JSON", "TEXTFILE"
-    output_format = NULL,
-
-    #' @field output_compression
-    #' (str): The compression used for Athena query results.
-    #' Valid options are "GZIP", "SNAPPY", "ZLIB"
-    output_compression = NULL
+    #' @description Initialize AthenaDatasetDefinition.
+    #' @param catalog (str, default=None): The name of the data catalog used in Athena query
+    #'              execution.
+    #' @param database (str, default=None): The name of the database used in the Athena query
+    #'              execution.
+    #' @param query_string (str, default=None): The SQL query statements, to be executed.
+    #' @param output_s3_uri (str, default=None):
+    #'              The location in Amazon S3 where Athena query results are stored.
+    #' @param work_group (str, default=None):
+    #'              The name of the workgroup in which the Athena query is being started.
+    #' @param kms_key_id (str, default=None): The AWS Key Management Service (AWS KMS) key that Amazon
+    #'              SageMaker uses to encrypt data generated from an Athena query execution.
+    #' @param output_format (str, default=None): The data storage format for Athena query results.
+    #'              Valid options are "PARQUET", "ORC", "AVRO", "JSON", "TEXTFILE"
+    #' @param output_compression (str, default=None): The compression used for Athena query results.
+    #'              Valid options are "GZIP", "SNAPPY", "ZLIB"
+    initialize = function(catalog=NULL,
+                          database=NULL,
+                          query_string=NULL,
+                          output_s3_uri=NULL,
+                          work_group=NULL,
+                          kms_key_id=NULL,
+                          output_format=NULL,
+                          output_compression=NULL){
+      super$initialize(
+        catalog=catalog,
+        database=database,
+        query_string=query_string,
+        output_s3_uri=output_s3_uri,
+        work_group=work_group,
+        kms_key_id=kms_key_id,
+        output_format=output_format,
+        output_compression=output_compression
+      )
+    }
   ),
   lock_objects=F
 )
@@ -106,35 +104,40 @@ AthenaDatasetDefinition = R6Class("AthenaDatasetDefinition",
 DatasetDefinition = R6Class("DatasetDefinition",
   inherit = ApiObject,
   public = list(
-
-    #' @field data_distribution_type
-    #' (str): Whether the generated dataset is FullyReplicated or
-    #' ShardedByS3Key (default).
-    data_distribution_type = "ShardedByS3Key",
-
-    #' @field input_mode
-    #' (str): Whether to use File or Pipe input mode. In File (default) mode, Amazon
-    #' SageMaker copies the data from the input source onto the local Amazon Elastic Block.
-    #' Store (Amazon EBS) volumes before starting your training algorithm. This is the most
-    #' commonly used input mode. In Pipe mode, Amazon SageMaker streams input data from the
-    #' source directly to your algorithm without using the EBS volume.
-    input_mode = "File",
-
-    #' @field local_path (str): The local path where you want Amazon SageMaker to download the Dataset
-    #' Definition inputs to run a processing job. LocalPath is an absolute path to the input
-    #' data. This is a required parameter when `AppManaged` is False (default).
-    local_path = NULL,
-
-    #' @field redshift_dataset_definition
-    #' (:class:`~sagemaker.dataset_definition.RedshiftDatasetDefinition`): Redshift
-    #' dataset definition.
-    redshift_dataset_definition = NULL,
-
-
-    #' @field athena_dataset_definition
-    #' (:class:`~sagemaker.dataset_definition.AthenaDatasetDefinition`):
-    #' Configuration for Athena Dataset Definition input.
-    athena_dataset_definition = NULL
+    #' @description Initialize DatasetDefinition.
+    #' @param data_distribution_type (str, default="ShardedByS3Key"):
+    #'              Whether the generated dataset is FullyReplicated or ShardedByS3Key (default).
+    #' @param input_mode (str, default="File"):
+    #'              Whether to use File or Pipe input mode. In File (default) mode, Amazon
+    #'              SageMaker copies the data from the input source onto the local Amazon Elastic Block
+    #'              Store (Amazon EBS) volumes before starting your training algorithm. This is the most
+    #'              commonly used input mode. In Pipe mode, Amazon SageMaker streams input data from the
+    #'              source directly to your algorithm without using the EBS volume.
+    #' @param local_path (str, default=None):
+    #'              The local path where you want Amazon SageMaker to download the Dataset
+    #'              Definition inputs to run a processing job. LocalPath is an absolute path to the
+    #'              input data. This is a required parameter when `AppManaged` is False (default).
+    #' @param redshift_dataset_definition
+    #'              (:class:\code{R6sagemaker.common::RedshiftDatasetDefinition},
+    #'              default=None):
+    #'              Configuration for Redshift Dataset Definition input.
+    #' @param athena_dataset_definition
+    #'              (:class:\code{R6sagemaker.common::AthenaDatasetDefinition},
+    #'              default=None):
+    #'              Configuration for Athena Dataset Definition input.
+    initialize = function(data_distribution_type="ShardedByS3Key",
+                          input_mode="File",
+                          local_path=NULL,
+                          redshift_dataset_definition=NULL,
+                          athena_dataset_definition=NULL){
+      super$initialize(
+        data_distribution_type=data_distribution_type,
+        input_mode=input_mode,
+        local_path=local_path,
+        redshift_dataset_definition=redshift_dataset_definition,
+        athena_dataset_definition=athena_dataset_definition
+      )
+    }
   ),
   private = list(
     .custom_paws_types = list(
@@ -155,31 +158,31 @@ DatasetDefinition = R6Class("DatasetDefinition",
 S3Input = R6Class("S3Input",
   inherit = ApiObject,
   public = list(
-    #' @field s3_uri
-    #' (str): the path to a specific S3 object or a S3 prefix
-    s3_uri = NULL,
-
-    #' @field local_path
-    #' (str): the path to a local directory. If not provided, skips data download
-    #' by SageMaker platform.
-    local_path = NULL,
-
-    #' @field s3_data_type
-    #' (str): Valid options are "ManifestFile" or "S3Prefix".
-    s3_data_type = "S3Prefix",
-
-    #' @field s3_input_mode
-    #' (str): Valid options are "Pipe" or "File".
-    s3_input_mode = "File",
-
-    #' @field s3_data_distribution_type
-    #' (str): Valid options are "FullyReplicated" or "ShardedByS3Key".
-    s3_data_distribution_type = "FullyReplicated",
-
-    #' @field s3_compression_type
-    #' (str): Valid options are "None" or "Gzip".
-    s3_compression_type = NULL
-
+    #' @description Initialize S3Input.
+    #' @param s3_uri (str, default=None): the path to a specific S3 object or a S3 prefix
+    #' @param local_path (str, default=None):
+    #'              the path to a local directory. If not provided, skips data download
+    #'              by SageMaker platform.
+    #' @param s3_data_type (str, default="S3Prefix"): Valid options are "ManifestFile" or "S3Prefix".
+    #' @param s3_input_mode (str, default="File"): Valid options are "Pipe" or "File".
+    #' @param s3_data_distribution_type (str, default="FullyReplicated"):
+    #'              Valid options are "FullyReplicated" or "ShardedByS3Key".
+    #' @param s3_compression_type (str, default=None): Valid options are "None" or "Gzip"
+    initialize = function(s3_uri=NULL,
+                          local_path=NULL,
+                          s3_data_type="S3Prefix",
+                          s3_input_mode="File",
+                          s3_data_distribution_type="FullyReplicated",
+                          s3_compression_type=NULL){
+      super$initialize(
+        s3_uri=s3_uri,
+        local_path=local_path,
+        s3_data_type=s3_data_type,
+        s3_input_mode=s3_input_mode,
+        s3_data_distribution_type=s3_data_distribution_type,
+        s3_compression_type=s3_compression_type
+      )
+    }
   ),
   lock_objects=F
 )
