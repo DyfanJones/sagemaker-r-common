@@ -98,23 +98,23 @@
         input_mode="File")
 
       if (!islistempty(model_channel)){
-        input_config = if (islistempty(input_config)) list() else input_config
-        input_config = c(input_config, model_channel)
+        input_config = if (is.null(input_config)) list() else input_config
+        input_config = list.append(input_config, model_channel)
       }
-
       if (estimator$enable_network_isolation()){
         code_channel = private$.prepare_channel(input_config, estimator$code_uri, estimator$code_channel_name, validate_uri)
-        if (islistempty(code_channel)) {
-          input_config = if (islistempty(input_config)) list() else input_config
-          input_config = c(input_config, code_channel)}
+        if (!islistempty(code_channel)) {
+          input_config = if (is.null(input_config)) list() else input_config
+          input_config = list.append(input_config, code_channel)}
       }
-
-      return (list("input_config"= input_config,
-                   "role"= role,
-                   "output_config"= output_config,
-                   "resource_config"= resource_config,
-                   "stop_condition"= stop_condition,
-                   "vpc_config"= vpc_config))
+      return (list(
+        "input_config"= input_config,
+        "role"= role,
+        "output_config"= output_config,
+        "resource_config"= resource_config,
+        "stop_condition"= stop_condition,
+        "vpc_config"= vpc_config)
+      )
     },
 
     .format_inputs_to_input_config = function(inputs = NULL,
@@ -128,7 +128,7 @@
       input_dict = list()
       if (inherits(inputs, "character")){
         input_dict[["training"]] = private$.format_string_uri_input(inputs, validate_uri)
-      } else if (is.s3_uri(inputs)){
+      } else if (inherits(inputs, "TrainingInput")){
         input_dict[["training"]] = inputs
       } else if (inherits(inputs, "file_input")){
         input_dict[["training"]] = inputs
@@ -140,13 +140,11 @@
         input_dict = private$.format_record_set_list_input(inputs)
       } else if (inherits(inputs, "FileSystemInput")) {
         input_dict[["training"]] = inputs
-      } else{
+      } else {
         msg = "Cannot format input %s. Expecting one of str, dict, TrainingInput or FileSystemInput"
-        ValueError$new(sprintf(msg,inputs))
+        ValueError$new(sprintf(msg, inputs))
       }
-
-      channels = lapply(1:length(input_dict), function(x) {private$.convert_input_to_channel(names(input_dict)[x], input_dict[[x]])})
-
+      channels = lapply(names(input_dict), function(x) private$.convert_input_to_channel(x, input_dict[[x]]))
       return(channels)
     },
 
