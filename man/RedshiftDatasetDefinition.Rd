@@ -51,6 +51,8 @@ Initialize RedshiftDatasetDefinition.
 database (str, default=None):
 The name of the Redshift database used in Redshift query execution.}
 
+\item{\code{database}}{(str, default=None): The name of the Redshift database used in Redshift query execution.}
+
 \item{\code{db_user}}{(str, default=None): The database user name used in Redshift query execution.}
 
 \item{\code{query_string}}{(str, default=None): The SQL query statements to be executed.}

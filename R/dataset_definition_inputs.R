@@ -16,6 +16,7 @@ RedshiftDatasetDefinition = R6Class("RedshiftDatasetDefinition",
     #' @param cluster_id (str, default=None): The Redshift cluster Identifier.
     #'              database (str, default=None):
     #'              The name of the Redshift database used in Redshift query execution.
+    #' @param database (str, default=None): The name of the Redshift database used in Redshift query execution.
     #' @param db_user (str, default=None): The database user name used in Redshift query execution.
     #' @param query_string (str, default=None): The SQL query statements to be executed.
     #' @param cluster_role_arn (str, default=None): The IAM role attached to your Redshift cluster
