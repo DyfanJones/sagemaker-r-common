@@ -208,3 +208,9 @@ to_str.list <- function(obj, ...){
 to_str.numeric <- function(obj, ...){
   format(obj, scientific = F)
 }
+
+# Correctly mimic python append method for list
+# Full credit to package rlist: https://github.com/renkun-ken/rlist/blob/2692e064fc7b6cc7fe7079b3762df37bc25b3dbd/R/list.insert.R#L26-L44
+list.append = function (.data, ...) {
+  if (is.list(.data)) c(.data, list(...)) else c(.data, ..., recursive = FALSE)
+}
