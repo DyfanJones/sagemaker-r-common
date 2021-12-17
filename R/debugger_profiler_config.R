@@ -65,7 +65,7 @@ ProfilerConfig = R6Class("ProfilerConfig",
         ]] = self$system_monitor_interval_millis
       profiler_config_request[[
           "ProfilingParameters"
-          ]] = self$framework_profile_params.profiling_parameters
+          ]] = self$framework_profile_params$profiling_parameters
       return(profiler_config_request)
     },
 
