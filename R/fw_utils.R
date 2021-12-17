@@ -191,14 +191,16 @@ tar_and_upload_dir <- function(sagemaker_session,
     SSEKMSKeyId =  NULL
   }
 
-  if(!is.null(sagemaker_session$s3)) {
-    obj <- readBin(tar_file, "raw", n = file.size(tar_file))
-    sagemaker_session$s3$put_object(
-      Body = obj, Bucket = bucket, Key = key,
-      ServerSideEncryption = ServerSideEncryption,
-      SSEKMSKeyId = SSEKMSKeyId)
-  }
+  obj <- readBin(tar_file, "raw", n = file.size(tar_file))
+  kwargs = list(
+    Body = obj,
+    Bucket = bucket,
+    Key = key
+  )
+  kwargs[["ServerSideEncryption"]] = ServerSideEncryption
+  kwargs[["SSEKMSKeyId"]] = SSEKMSKeyId
 
+  do.call(sagemaker_session$s3$put_object, kwargs)
   on.exit(unlink(tmp, recursive = T))
 
   UploadedCode$s3_prefix=sprintf("s3://%s/%s",bucket, key)
