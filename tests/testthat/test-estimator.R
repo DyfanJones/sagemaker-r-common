@@ -20,7 +20,7 @@ ACCELERATOR_TYPE = "ml.eia.medium"
 ROLE = "DummyRole"
 IMAGE_URI = "fakeimage"
 REGION = "us-west-2"
-JOB_NAME = sprintf("%s-%s", IMAGE_URI, TIMESTAMP)
+JOB_NAME = sprintf("%s-[0-9:.-]+", IMAGE_URI)
 TAGS = list(list("Name"="some-tag", "Value"="value-for-tag"))
 OUTPUT_PATH = "s3://bucket/prefix"
 GIT_REPO = "https://github.com/aws/sagemaker-python-sdk.git"
@@ -108,7 +108,7 @@ DummyFramework = R6::R6Class("DummyFramework",
       if (is.null(enable_network_isolation))
         enable_network_isolation = self$enable_network_isolation()
       return(DummyFrameworkModel$new(
-        self.sagemaker_session,
+        self$sagemaker_session,
         vpc_config=self$get_vpc_config(vpc_config_override),
         entry_point=entry_point,
         enable_network_isolation=enable_network_isolation,
@@ -168,8 +168,7 @@ sagemaker_session = function(region=REGION){
     paws_region_name=region,
     config=NULL,
     local_mode=FALSE,
-    s3=NULL,
-    s3_resource=NULL
+    s3=NULL
   )
 
   sagemaker = Mock$new()
@@ -178,6 +177,9 @@ sagemaker_session = function(region=REGION){
   sagemaker$.call_args("describe_endpoint_config", return_value=ENDPOINT_CONFIG_DESC)
   sagemaker$.call_args("list_tags", return_value=LIST_TAGS_RESULT)
   sagemaker$.call_args("train")
+
+  s3_client = Mock$new()
+  s3_client$.call_args("put_object")
 
   sms$.call_args("default_bucket", return_value=BUCKET_NAME)
   sms$.call_args("upload_data", return_value=OUTPUT_PATH)
@@ -188,6 +190,7 @@ sagemaker_session = function(region=REGION){
   sms$.call_args("describe_training_job", return_value=DESCRIBE_TRAINING_JOB_RESULT)
   sms$.call_args("update_training_job")
   sms$sagemaker = sagemaker
+  sms$s3 = s3_client
   return(sms)
 }
 
@@ -1215,5 +1218,83 @@ test_that("test_sagemaker_model_default_channel_name", {
       "ChannelName"="model"
     )
   ))
+})
+
+test_that("test_sagemaker_model_custom_channel_name", {
+  sms = sagemaker_session()
+  f = DummyFramework$new(
+    entry_point="my_script.py",
+    role="DummyRole",
+    instance_count=3,
+    instance_type="ml.m4.xlarge",
+    sagemaker_session=sms,
+    model_uri="s3://model-bucket/prefix/model.tar.gz",
+    model_channel_name="testModelChannel"
+  )
+  f$.__enclos_env__$private$.start_new(list(), NULL)
+  args = sms$train(..return_value = T)
+  expect_equal(args[["input_config"]], list(
+    list(
+      "DataSource"=list(
+        "S3DataSource"=list(
+          "S3DataType"="S3Prefix",
+          "S3Uri"="s3://model-bucket/prefix/model.tar.gz",
+          "S3DataDistributionType"="FullyReplicated"
+        )
+      ),
+      "ContentType"="application/x-sagemaker-model",
+      "InputMode"="File",
+      "ChannelName"="testModelChannel"
+    )
+  ))
+})
+
+test_that("test_custom_code_bucket", {
+  code_bucket = "codebucket"
+  prefix = "someprefix"
+  code_location = sprintf("s3://%s/%s", code_bucket, prefix)
+  sms = sagemaker_session()
+  t = DummyFramework$new(
+    entry_point=SCRIPT_PATH,
+    role=ROLE,
+    sagemaker_session=sms,
+    instance_count=INSTANCE_COUNT,
+    instance_type=INSTANCE_TYPE,
+    code_location=code_location
+  )
+  t$fit("s3://bucket/mydata")
+
+  expected_key = sprintf("%s/%s/source/sourcedir.tar.gz", prefix, JOB_NAME)
+  args = sms$s3$put_object(..return_value = T)
+  expect_equal(args[["Bucket"]], code_bucket)
+  expect_true(grepl(expected_key, args[["Key"]]))
+
+  expected_submit_dir = sprintf("s3://%s/%s", code_bucket, expected_key)
+  args = sms$train(..return_value = T)
+  expect_true(grepl(expected_submit_dir, args[["hyperparameters"]][["sagemaker_submit_directory"]]))
+})
+
+test_that("test_custom_code_bucket_without_prefix", {
+  code_bucket = "codebucket"
+  code_location = sprintf("s3://%s", code_bucket)
+  sms = sagemaker_session()
+  t = DummyFramework$new(
+    entry_point=SCRIPT_PATH,
+    role=ROLE,
+    sagemaker_session=sms,
+    instance_count=INSTANCE_COUNT,
+    instance_type=INSTANCE_TYPE,
+    code_location=code_location
+  )
+  t$fit("s3://bucket/mydata")
+
+  expected_key = sprintf("%s/source/sourcedir.tar.gz", JOB_NAME)
+  args = sms$s3$put_object(..return_value = T)
+  expect_equal(args[["Bucket"]], code_bucket)
+  expect_true(grepl(expected_key, args[["Key"]]))
+
+  expected_submit_dir = sprintf("s3://%s/%s", code_bucket, expected_key)
+  args = sms$train(..return_value = T)
+  expect_true(grepl(expected_submit_dir, args[["hyperparameters"]][["sagemaker_submit_directory"]]))
 })
 
