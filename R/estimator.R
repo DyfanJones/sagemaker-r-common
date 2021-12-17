@@ -430,6 +430,21 @@ EstimatorBase = R6Class("EstimatorBase",
           self$sagemaker_session$wait_for_job(job = self$latest_training_job)}
     },
 
+    #' @description Returns a response from the DescribeTrainingJob API call.
+    describe = function(){
+      self$sagemaker_session$describe_training_job(self$latest_training_job)
+    },
+
+    #' @description Calls describe_training_job and returns two dictionaries.
+    #' @return list[dict]: A list of DebugRuleEvaluationStatuses and ProfilerRuleEvaluationStatuses
+    #'              dictionary.
+    rule_job_summary = function(){
+      job_summary = self$describe()
+      rule_eval_statuses = job_summary[["DebugRuleEvaluationStatuses"]] %||% list()
+      rule_eval_statuses = c(rule_eval_statuses, job_summary[["ProfilerRuleEvaluationStatuses"]])
+      return(rule_eval_statuses)
+    },
+
     #' @description Compile a Neo model using the input model.
     #' @param target_instance_family (str): Identifies the device that you want to
     #'              run your model after compilation, for example: ml_c5. For allowed
@@ -995,11 +1010,10 @@ EstimatorBase = R6Class("EstimatorBase",
         && isFALSE(disable_framework_metrics)){
         ValueError$new("Please provide profiler config or profiler rule to be updated.")
       }
-      if (disable_framework_metrics && framework_profile_params){
+      if (isTRUE(disable_framework_metrics) && !is.null(framework_profile_params)){
         ValueError$new(
           "framework_profile_params cannot be set when disable_framework_metrics is True")
       }
-
       profiler_config_request_dict = NULL
       profiler_rule_configs = NULL
 
@@ -1011,13 +1025,13 @@ EstimatorBase = R6Class("EstimatorBase",
           profiler_rule_configs = private$.prepare_profiler_rules()
         }
       }
-      if (disable_framework_metrics){
+      if (isTRUE(disable_framework_metrics)){
         empty_framework_profile_param = FrameworkProfile$new()
-      empty_framework_profile_param$profiling_parameters = list()
-      self$profiler_config = ProfilerConfig$new(
-        s3_output_path=s3_output_path,
-        system_monitor_interval_millis=system_monitor_interval_millis,
-        framework_profile_params=empty_framework_profile_param)
+        empty_framework_profile_param$profiling_parameters = list()
+        self$profiler_config = ProfilerConfig$new(
+          s3_output_path=s3_output_path,
+          system_monitor_interval_millis=system_monitor_interval_millis,
+          framework_profile_params=empty_framework_profile_param)
       } else{
         self$profiler_config = ProfilerConfig$new(
           s3_output_path=s3_output_path,
@@ -1026,7 +1040,6 @@ EstimatorBase = R6Class("EstimatorBase",
       }
 
       profiler_config_request_dict = self$profiler_config$to_request_list()
-
       private$.update(profiler_rule_configs, profiler_config_request_dict)
     },
 
@@ -1066,9 +1079,9 @@ EstimatorBase = R6Class("EstimatorBase",
       if (!is.null(self$rules)){
         for (rule in self$rules){
           if (inherits(rule, "Rule")){
-            self$debugger_rules = c(self$debugger_rules, rule)
+            self$debugger_rules = list.append(self$debugger_rules, rule)
           } else if (inherits(rule, "ProfilerRule")){
-            self$profiler_rules = c(self$profiler_rules, rule)
+            self$profiler_rules = list.append(self$profiler_rules, rule)
           } else {
             RuntimeError$new(
               "Rules list can only contain sagemaker.debugger.Rule ",
@@ -1346,7 +1359,6 @@ EstimatorBase = R6Class("EstimatorBase",
       update_args = list("job_name"= self$latest_training_job)
       update_args = c(update_args, build_dict("profiler_rule_configs", profiler_rule_configs))
       update_args = c(update_args, build_dict("profiler_config", profiler_config))
-
       return(update_args)
     },
 
