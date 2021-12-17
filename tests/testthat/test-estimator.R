@@ -229,7 +229,6 @@ test_that("test_framework_all_init_args", {
 
   f$.__enclos_env__$private$.start_new("s3://mydata", NULL)
 
-
   expect_equal(sms$train(..return_value = T), list(
       "input_config"=list(
         list(
@@ -866,7 +865,7 @@ test_that("test_framework_with_update_profiler_without_any_parameter", {
   )
 })
 
-test_that("test_framework_with_update_profiler_without_any_parameter", {
+test_that("test_framework_with_update_profiler_with_debugger_rule", {
   sms = sagemaker_session()
   f = DummyFramework$new(
     entry_point=SCRIPT_PATH,
@@ -883,4 +882,338 @@ test_that("test_framework_with_update_profiler_without_any_parameter", {
   )
 })
 
+test_that("test_framework_with_update_profiler_config", {
+  sms = sagemaker_session()
+  f = DummyFramework$new(
+    entry_point=SCRIPT_PATH,
+    role=ROLE,
+    sagemaker_session=sms,
+    instance_count=INSTANCE_COUNT,
+    instance_type=INSTANCE_TYPE
+  )
+  f$fit("s3://mydata")
+  f$update_profiler(system_monitor_interval_millis=1000)
+  args = sms$update_training_job(..return_value = T)
+  expect_equal(args[["profiler_config"]], list(
+    "ProfilingIntervalInMilliseconds"=1000
+  ))
+  expect_false("profiler_rule_configs" %in% names(args))
+})
+
+test_that("test_framework_with_update_profiler_report_rule", {
+  sms = sagemaker_session()
+  f = DummyFramework$new(
+    entry_point=SCRIPT_PATH,
+    role=ROLE,
+    sagemaker_session=sms,
+    instance_count=INSTANCE_COUNT,
+    instance_type=INSTANCE_TYPE
+  )
+  f$fit("s3://mydata")
+  f$update_profiler(
+    rules=list(
+      ProfilerRule$new()$sagemaker(R6sagemaker.debugger::ProfilerReport$new(), name="CustomProfilerReportRule")
+    )
+  )
+  args = sms$update_training_job(..return_value = T)
+  expect_equal(args[["profiler_rule_configs"]], list(
+    list(
+      "RuleConfigurationName"="CustomProfilerReportRule",
+      "RuleEvaluatorImage"="895741380848.dkr.ecr.us-west-2.amazonaws.com/sagemaker-debugger-rules:latest",
+      "RuleParameters"=list("rule_to_invoke"="ProfilerReport")
+    )
+  ))
+  expect_false("profiler_config" %in% names(args))
+})
+
+test_that("test_framework_with_disable_framework_metrics", {
+  sms = sagemaker_session()
+  f = DummyFramework$new(
+    entry_point=SCRIPT_PATH,
+    role=ROLE,
+    sagemaker_session=sms,
+    instance_count=INSTANCE_COUNT,
+    instance_type=INSTANCE_TYPE
+  )
+  f$fit("s3://mydata")
+  f$update_profiler(disable_framework_metrics=TRUE)
+  args = sms$update_training_job(..return_value = T)
+  expect_equal(args[["profiler_config"]], list("ProfilingParameters"=list()))
+  expect_false("profiler_rule_configs" %in% names(args))
+})
+
+test_that("test_framework_with_disable_framework_metrics_and_update_system_metrics", {
+  sms = sagemaker_session()
+  f = DummyFramework$new(
+    entry_point=SCRIPT_PATH,
+    role=ROLE,
+    sagemaker_session=sms,
+    instance_count=INSTANCE_COUNT,
+    instance_type=INSTANCE_TYPE
+  )
+  f$fit("s3://mydata")
+  f$update_profiler(system_monitor_interval_millis=1000, disable_framework_metrics=TRUE)
+  args = sms$update_training_job(..return_value = T)
+  expect_equal(args[["profiler_config"]], list(
+    "ProfilingIntervalInMilliseconds"=1000,
+    "ProfilingParameters"=list()
+  ))
+  expect_false("profiler_rule_configs" %in% names(args))
+})
+
+test_that("test_framework_with_disable_framework_metrics_and_update_framework_params", {
+  sms = sagemaker_session()
+  f = DummyFramework$new(
+    entry_point=SCRIPT_PATH,
+    role=ROLE,
+    sagemaker_session=sms,
+    instance_count=INSTANCE_COUNT,
+    instance_type=INSTANCE_TYPE
+  )
+  f$fit("s3://mydata")
+  expect_error(
+    f$update_profiler(
+      framework_profile_params=FrameworkProfile$new(), disable_framework_metrics=TRUE
+    ),
+    "framework_profile_params cannot be set when disable_framework_metrics is True",
+    class = "ValueError"
+  )
+})
+
+test_that("test_framework_with_update_profiler_config_and_profiler_rule", {
+  profiler_custom_rule = ProfilerRule$new()$custom(
+    name="CustomProfilerRule",
+    image_uri="RuleImageUri",
+    instance_type=INSTANCE_TYPE,
+    volume_size_in_gb=5
+  )
+  sms = sagemaker_session()
+  f = DummyFramework$new(
+    entry_point=SCRIPT_PATH,
+    role=ROLE,
+    sagemaker_session=sms,
+    instance_count=INSTANCE_COUNT,
+    instance_type=INSTANCE_TYPE
+  )
+  f$fit("s3://mydata")
+  f$update_profiler(rules=list(profiler_custom_rule), system_monitor_interval_millis=1000)
+  args = sms$update_training_job(..return_value = T)
+  expect_equal(args[["profiler_config"]], list("ProfilingIntervalInMilliseconds"=1000))
+  expect_equal(args[["profiler_rule_configs"]], list(
+    list(
+      "RuleConfigurationName"="CustomProfilerRule",
+      "RuleEvaluatorImage"="RuleImageUri",
+      "InstanceType"="c4.4xlarge",
+      "VolumeSizeInGB"=5
+    )
+  ))
+})
+
+test_that("test_training_job_with_rule_job_summary", {
+  sms = sagemaker_session()
+  sms$.call_args("describe_training_job", return_value=modifyList(DESCRIBE_TRAINING_JOB_RESULT, list(
+      "DebugRuleEvaluationStatuses" = list(
+        list(
+          "RuleConfigurationName"="debugger_rule",
+          "RuleEvaluationJobArn"="debugger_rule_job_arn",
+          "RuleEvaluationStatus"="InProgress"
+        )
+      ),
+      "ProfilerRuleEvaluationStatuses" = list(
+        list(
+          "RuleConfigurationName"="profiler_rule_1",
+          "RuleEvaluationJobArn"="profiler_rule_job_arn_1",
+          "RuleEvaluationStatus"="InProgress"
+        ),
+        list(
+          "RuleConfigurationName"="profiler_rule_2",
+          "RuleEvaluationJobArn"="profiler_rule_job_arn_2",
+          "RuleEvaluationStatus"="ERROR"
+        )
+      )
+    )
+  ))
+  f = DummyFramework$new(
+    entry_point=SCRIPT_PATH,
+    role=ROLE,
+    sagemaker_session=sms,
+    instance_count=INSTANCE_COUNT,
+    instance_type=INSTANCE_TYPE
+  )
+  f$fit("s3://mydata")
+
+  job_summary = f$rule_job_summary()
+  expect_equal(job_summary, list(
+    list(
+      "RuleConfigurationName"="debugger_rule",
+      "RuleEvaluationJobArn"="debugger_rule_job_arn",
+      "RuleEvaluationStatus"="InProgress"
+    ),
+    list(
+      "RuleConfigurationName"="profiler_rule_1",
+      "RuleEvaluationJobArn"="profiler_rule_job_arn_1",
+      "RuleEvaluationStatus"="InProgress"
+    ),
+    list(
+      "RuleConfigurationName"="profiler_rule_2",
+      "RuleEvaluationJobArn"="profiler_rule_job_arn_2",
+      "RuleEvaluationStatus"="ERROR"
+    )
+  ))
+})
+
+test_that("test_framework_with_spot_and_checkpoints", {
+  sms = sagemaker_session()
+  f = DummyFramework$new(
+    "my_script.py",
+    role="DummyRole",
+    instance_count=3,
+    instance_type="ml.m4.xlarge",
+    sagemaker_session=sms,
+    volume_size=123,
+    volume_kms_key="volumekms",
+    max_run=456,
+    input_mode="inputmode",
+    output_path="outputpath",
+    output_kms_key="outputkms",
+    base_job_name="basejobname",
+    tags=list(list("foo"="bar")),
+    subnets=list("123", "456"),
+    security_group_ids=list("789", "012"),
+    metric_definitions=list(list("Name"="validation-rmse", "Regex"="validation-rmse=(\\d+)")),
+    encrypt_inter_container_traffic=TRUE,
+    use_spot_instances=TRUE,
+    max_wait=500,
+    checkpoint_s3_uri="s3://mybucket/checkpoints/",
+    checkpoint_local_path="/tmp/checkpoints"
+  )
+  f$.__enclos_env__$private$.start_new("s3://mydata", NULL)
+  args = sms$train(..return_value = T)
+  expect_equal(args, list(
+    "input_config"=list(
+      list(
+        "DataSource"=list(
+          "S3DataSource"=list(
+            "S3DataType"="S3Prefix",
+            "S3Uri"="s3://mydata",
+            "S3DataDistributionType"="FullyReplicated"
+            )
+          ),
+        "ChannelName"="training"
+      )
+    ),
+    "role"=sms$expand_role(),
+    "output_config"=list("S3OutputPath"="outputpath", "KmsKeyId"="outputkms"),
+    "resource_config"=list(
+      "InstanceCount"=3,
+      "InstanceType"="ml.m4.xlarge",
+      "VolumeSizeInGB"=123,
+      "VolumeKmsKeyId"="volumekms"
+    ),
+    "stop_condition"=list("MaxRuntimeInSeconds"=456, "MaxWaitTimeInSeconds"=500),
+    "vpc_config"=list("Subnets"=list("123", "456"), "SecurityGroupIds"=list("789", "012")),
+    "input_mode"="inputmode",
+    "hyperparameters"=list(),
+    "tags"=list(list("foo"="bar")),
+    "metric_definitions"=list(list("Name"="validation-rmse", "Regex"="validation-rmse=(\\d+)")),
+    "encrypt_inter_container_traffic"=TRUE,
+    "image_uri"="fakeimage",
+    "use_spot_instances"=TRUE,
+    "checkpoint_s3_uri"="s3://mybucket/checkpoints/",
+    "checkpoint_local_path"="/tmp/checkpoints"
+  ))
+})
+
+test_that("test_framework_init_s3_entry_point_invalid", {
+  sms = sagemaker_session()
+  expect_error(
+    DummyFramework$new(
+      "s3://remote-script-because-im-mistaken",
+      role=ROLE,
+      sagemaker_session=sms,
+      instance_count=INSTANCE_COUNT,
+      instance_type=INSTANCE_TYPE
+    ),
+    "Must be a path to a local file",
+    class = "ValueError"
+  )
+})
+
+test_that("test_sagemaker_s3_uri_invalid", {
+  sms = sagemaker_session()
+  t = DummyFramework$new(
+    entry_point=SCRIPT_PATH,
+    role=ROLE,
+    sagemaker_session=sms,
+    instance_count=INSTANCE_COUNT,
+    instance_type=INSTANCE_TYPE
+  )
+  expect_error(
+    t$fit("thisdoesntstartwiths3"),
+    "must be a valid S3 or FILE URI",
+    class = "ValueError"
+  )
+})
+
+test_that("test_sagemaker_model_s3_uri_invalid", {
+  sms = sagemaker_session()
+  t = DummyFramework$new(
+    entry_point=SCRIPT_PATH,
+    role=ROLE,
+    sagemaker_session=sms,
+    instance_count=INSTANCE_COUNT,
+    instance_type=INSTANCE_TYPE,
+    model_uri="thisdoesntstartwiths3either.tar.gz"
+  )
+  expect_error(
+    t$fit("s3://mydata"),
+    "must be a valid S3 or FILE URI",
+    class="ValueError"
+  )
+})
+
+test_that("test_sagemaker_model_file_uri_invalid", {
+  sms = sagemaker_session()
+  t = DummyFramework$new(
+    entry_point=SCRIPT_PATH,
+    role=ROLE,
+    sagemaker_session=sms,
+    instance_count=INSTANCE_COUNT,
+    instance_type=INSTANCE_TYPE,
+    model_uri="file://notins3.tar.gz"
+  )
+  expect_error(
+    t$fit("s3://mydata"),
+    "File URIs are supported in local mode only",
+    class = "ValueError"
+  )
+})
+
+test_that("test_sagemaker_model_default_channel_name", {
+  sms = sagemaker_session()
+  f = DummyFramework$new(
+    entry_point="my_script.py",
+    role="DummyRole",
+    instance_count=3,
+    instance_type="ml.m4.xlarge",
+    sagemaker_session=sms,
+    model_uri="s3://model-bucket/prefix/model.tar.gz"
+  )
+  f$.__enclos_env__$private$.start_new(list(), NULL)
+  args = sms$train(..return_value = T)
+  expect_equal(args[["input_config"]], list(
+    list(
+      "DataSource"=list(
+        "S3DataSource"=list(
+          "S3DataType"="S3Prefix",
+          "S3Uri"="s3://model-bucket/prefix/model.tar.gz",
+          "S3DataDistributionType"="FullyReplicated"
+        )
+      ),
+      "ContentType"= "application/x-sagemaker-model",
+      "InputMode"="File",
+      "ChannelName"="model"
+    )
+  ))
+})
 
