@@ -38,6 +38,8 @@ Updating the profiling configuration for TensorFlow dataloader profiling
 \item \href{#method-latest_job_profiler_artifacts_path}{\code{EstimatorBase$latest_job_profiler_artifacts_path()}}
 \item \href{#method-fit}{\code{EstimatorBase$fit()}}
 \item \href{#method-wait}{\code{EstimatorBase$wait()}}
+\item \href{#method-describe}{\code{EstimatorBase$describe()}}
+\item \href{#method-rule_job_summary}{\code{EstimatorBase$rule_job_summary()}}
 \item \href{#method-compile_model}{\code{EstimatorBase$compile_model()}}
 \item \href{#method-attach}{\code{EstimatorBase$attach()}}
 \item \href{#method-logs}{\code{EstimatorBase$logs()}}
@@ -448,6 +450,30 @@ strings are "All", "NULL", "Training", or "Rules". To maintain backwards
 compatibility, boolean values are also accepted and converted to strings.}
 }
 \if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-describe"></a>}}
+\if{latex}{\out{\hypertarget{method-describe}{}}}
+\subsection{Method \code{describe()}}{
+Returns a response from the DescribeTrainingJob API call.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{EstimatorBase$describe()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-rule_job_summary"></a>}}
+\if{latex}{\out{\hypertarget{method-rule_job_summary}{}}}
+\subsection{Method \code{rule_job_summary()}}{
+Calls describe_training_job and returns two dictionaries.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{EstimatorBase$rule_job_summary()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+list[dict]: A list of DebugRuleEvaluationStatuses and ProfilerRuleEvaluationStatuses
+             dictionary.
 }
 }
 \if{html}{\out{<hr>}}
