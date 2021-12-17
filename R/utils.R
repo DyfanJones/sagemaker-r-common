@@ -117,7 +117,7 @@ sagemaker_short_timestamp <- function() return(strftime(Sys.time(), "%y%m%d-%H%M
 #' @return dict: dict of key and value or an empty dict.
 #' @export
 build_dict <- function(key, value = NULL){
-  if (!is.null(value)) {
+  if (!islistempty(value)) {
     dict = list(value)
     names(dict) = key
     return(dict)
