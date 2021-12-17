@@ -2282,21 +2282,20 @@ Framework = R6Class("Framework",
         parsed_s3$key = sprintf("%s/%s",self$.current_job_name, "source")
         kms_key = NULL
       } else if(is.null(self$code_location)){
-        parsed_s3 = R6sagemaker.common::split_s3_uri(self$output_path)
+        parsed_s3 = parse_s3_url(self$output_path)
         parsed_s3$key = sprintf("%s/%s",self$.current_job_name, "source")
         kms_key = self$output_kms_key
       } else if (local_mode) {
-        parsed_s3 = R6sagemaker.common::split_s3_uri(self$code_location)
-        parsed_s3$key = paste(Filter(Negate(is.null), c(key_prefix, self$.current_job_name, "source")), collapse = "/")
+        parsed_s3 = parse_s3_url(self$code_location)
+        parsed_s3$key = paste(Filter(Negate(is.na), c(parsed_s3$key, self$.current_job_name, "source")), collapse = "/")
         kms_key = NULL
       } else {
-        parsed_s3 = R6sagemaker.common::split_s3_uri(self$code_location)
-        parsed_s3$key = paste(Filter(Negate(is.null), c(key_prefix, self$.current_job_name, "source")), collapse = "/")
+        parsed_s3 = parse_s3_url(self$code_location)
+        parsed_s3$key = paste(Filter(Negate(is.na), c(parsed_s3$key, self$.current_job_name, "source")), collapse = "/")
 
-        output_bucket = R6sagemaker.common::split_s3_uri(self$output_path)$bucket
+        output_bucket = parse_s3_url(self$output_path)$bucket
         kms_key = if (parsed_s3$bucket == output_bucket) self$output_kms_key else NULL
       }
-
       return (tar_and_upload_dir(
         sagemaker_session=self$sagemaker_session,
         bucket=parsed_s3$bucket,
