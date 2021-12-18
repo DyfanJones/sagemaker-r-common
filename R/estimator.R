@@ -1272,13 +1272,14 @@ EstimatorBase = R6Class("EstimatorBase",
       train_args$experiment_config = experiment_config
       train_args$environment = self$environment
 
-      if (inherits(inputs, "TrainingInputs")){
+      if (inherits(inputs, "TrainingInput")){
         if ("InputMode" %in% names(inputs$config)){
-          LOGGER$debug("Selecting TrainingInput's input_mode (%s) for TrainingInputMode.",
-                    inputs$config$InputMode)
-          train_args$input_mode = inputs$config$InputMode}
+          LOGGER$debug(
+            "Selecting TrainingInput's input_mode (%s) for TrainingInputMode.",
+            inputs$config$InputMode)
+          train_args$input_mode = inputs$config$InputMode
+        }
       }
-
       if (self$enable_network_isolation())
         train_args$enable_network_isolation = TRUE
 
