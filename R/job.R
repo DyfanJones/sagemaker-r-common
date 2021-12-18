@@ -151,7 +151,7 @@
     .convert_input_to_channel = function(channel_name,
                                          channel_s3_input){
       channel_config = channel_s3_input$config
-      channel_config$ChannelName = channel_name
+      channel_config[["ChannelName"]] = channel_name
       return(channel_config)
     },
 
