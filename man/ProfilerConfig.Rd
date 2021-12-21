@@ -16,7 +16,7 @@ SageMaker Debugger collects system and framework profiling
 # The following example shows the basic ``profiler_config``
 # parameter configuration, enabling system monitoring every 5000 milliseconds
 # and framework profiling with default parameter values.
-library(R6sagemaker.common)
+library(sagemaker.common)
 
 profiler_config = ProfilerConfig$new(
       system_monitor_interval_millis = 5000,
@@ -76,7 +76,7 @@ see :class:`~sagemaker.debugger.FrameworkProfile`.}
 \preformatted{# The following example shows the basic ``profiler_config``
 # parameter configuration, enabling system monitoring every 5000 milliseconds
 # and framework profiling with default parameter values.
-library(R6sagemaker.common)
+library(sagemaker.common)
 
 profiler_config = ProfilerConfig$new(
       system_monitor_interval_millis = 5000,

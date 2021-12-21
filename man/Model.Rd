@@ -7,7 +7,7 @@
 A SageMaker ``Model`` that can be deployed to an ``Endpoint``.
 }
 \section{Super class}{
-\code{\link[R6sagemaker.common:ModelBase]{R6sagemaker.common::ModelBase}} -> \code{Model}
+\code{\link[sagemaker.common:ModelBase]{sagemaker.common::ModelBase}} -> \code{Model}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -29,7 +29,7 @@ A SageMaker ``Model`` that can be deployed to an ``Endpoint``.
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="ModelBase" data-id="format">}\href{../../R6sagemaker.common/html/ModelBase.html#method-format}{\code{R6sagemaker.common::ModelBase$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="ModelBase" data-id="format">}\href{../../sagemaker.common/html/ModelBase.html#method-format}{\code{sagemaker.common::ModelBase$format()}}\out{</span>}
 }
 \out{</details>}
 }

@@ -38,7 +38,7 @@ Validates user inputs and fills in default values if no input is provided.
              }
 }
 \examples{
-library(R6sagemaker.common)
+library(sagemaker.common)
 profiler_config=ProfilerConfig$new(
        framework_profile_params=FrameworkProfile$new(
        start_step=1,

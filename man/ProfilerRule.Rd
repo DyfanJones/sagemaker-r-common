@@ -17,7 +17,7 @@ SageMaker Debugger profiling rules automatically analyze
              Debugger APIs.
 }
 \section{Super class}{
-\code{\link[R6sagemaker.common:RuleBase]{R6sagemaker.common::RuleBase}} -> \code{ProfilerRule}
+\code{\link[sagemaker.common:RuleBase]{sagemaker.common::RuleBase}} -> \code{ProfilerRule}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -31,8 +31,8 @@ SageMaker Debugger profiling rules automatically analyze
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="RuleBase" data-id="format">}\href{../../R6sagemaker.common/html/RuleBase.html#method-format}{\code{R6sagemaker.common::RuleBase$format()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="RuleBase" data-id="initialize">}\href{../../R6sagemaker.common/html/RuleBase.html#method-initialize}{\code{R6sagemaker.common::RuleBase$initialize()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="RuleBase" data-id="format">}\href{../../sagemaker.common/html/RuleBase.html#method-format}{\code{sagemaker.common::RuleBase$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="RuleBase" data-id="initialize">}\href{../../sagemaker.common/html/RuleBase.html#method-initialize}{\code{sagemaker.common::RuleBase$initialize()}}\out{</span>}
 }
 \out{</details>}
 }
@@ -55,9 +55,9 @@ Initialize a ``ProfilerRule`` object for a *built-in* profiling rule.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{base_config}}{(\code{R6sagemaker.debugger::ProfilerReport}): The base rule configuration object
-returned from the \code{R6sagemaker.debugger} method.
-For example, \code{R6sagemaker.debugger::ProfilerReport$new()}.
+\item{\code{base_config}}{(\code{sagemaker.debugger::ProfilerReport}): The base rule configuration object
+returned from the \code{sagemaker.debugger} method.
+For example, \code{sagemaker.debugger::ProfilerReport$new()}.
 For a full list of built-in rules for debugging, see
 `List of Debugger Built-in Rules`
 \url{https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html}.}

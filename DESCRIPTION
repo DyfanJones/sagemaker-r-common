@@ -1,4 +1,4 @@
-Package: R6sagemaker.common
+Package: sagemaker.common
 Type: Package
 Title: R6sagemaker lower level api calls
 Version: 0.1.0
@@ -19,13 +19,13 @@ Imports:
     urltools,
     utils,
     zip,
-    R6sagemaker.debugger
+    sagemaker.debugger
 Suggests:
     yaml,
     mockery,
     crayon,
     testthat (>= 3.0.0),
-    R6sagemaker.local,
+    sagemaker.local,
     readr
 Remotes:
     DyfanJones/sagemaker-r-debugger

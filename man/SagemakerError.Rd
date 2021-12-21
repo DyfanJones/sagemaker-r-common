@@ -58,7 +58,7 @@ The objects of this class are cloneable with this method.
 }
 }
 \section{Super class}{
-\code{\link[R6sagemaker.common:SagemakerError]{R6sagemaker.common::SagemakerError}} -> \code{NotImplementedError}
+\code{\link[sagemaker.common:SagemakerError]{sagemaker.common::SagemakerError}} -> \code{NotImplementedError}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -69,7 +69,7 @@ The objects of this class are cloneable with this method.
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="SagemakerError" data-id="initialize">}\href{../../R6sagemaker.common/html/SagemakerError.html#method-initialize}{\code{R6sagemaker.common::SagemakerError$initialize()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="SagemakerError" data-id="initialize">}\href{../../sagemaker.common/html/SagemakerError.html#method-initialize}{\code{sagemaker.common::SagemakerError$initialize()}}\out{</span>}
 }
 \out{</details>}
 }
@@ -92,7 +92,7 @@ The objects of this class are cloneable with this method.
 }
 }
 \section{Super class}{
-\code{\link[R6sagemaker.common:SagemakerError]{R6sagemaker.common::SagemakerError}} -> \code{ValueError}
+\code{\link[sagemaker.common:SagemakerError]{sagemaker.common::SagemakerError}} -> \code{ValueError}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -103,7 +103,7 @@ The objects of this class are cloneable with this method.
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="SagemakerError" data-id="initialize">}\href{../../R6sagemaker.common/html/SagemakerError.html#method-initialize}{\code{R6sagemaker.common::SagemakerError$initialize()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="SagemakerError" data-id="initialize">}\href{../../sagemaker.common/html/SagemakerError.html#method-initialize}{\code{sagemaker.common::SagemakerError$initialize()}}\out{</span>}
 }
 \out{</details>}
 }
@@ -126,7 +126,7 @@ The objects of this class are cloneable with this method.
 }
 }
 \section{Super class}{
-\code{\link[R6sagemaker.common:SagemakerError]{R6sagemaker.common::SagemakerError}} -> \code{TypeError}
+\code{\link[sagemaker.common:SagemakerError]{sagemaker.common::SagemakerError}} -> \code{TypeError}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -137,7 +137,7 @@ The objects of this class are cloneable with this method.
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="SagemakerError" data-id="initialize">}\href{../../R6sagemaker.common/html/SagemakerError.html#method-initialize}{\code{R6sagemaker.common::SagemakerError$initialize()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="SagemakerError" data-id="initialize">}\href{../../sagemaker.common/html/SagemakerError.html#method-initialize}{\code{sagemaker.common::SagemakerError$initialize()}}\out{</span>}
 }
 \out{</details>}
 }
@@ -160,7 +160,7 @@ The objects of this class are cloneable with this method.
 }
 }
 \section{Super classes}{
-\code{\link[R6sagemaker.common:SagemakerError]{R6sagemaker.common::SagemakerError}} -> \code{\link[R6sagemaker.common:ValueError]{R6sagemaker.common::ValueError}} -> \code{UnexpectedStatusError}
+\code{\link[sagemaker.common:SagemakerError]{sagemaker.common::SagemakerError}} -> \code{\link[sagemaker.common:ValueError]{sagemaker.common::ValueError}} -> \code{UnexpectedStatusError}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -215,7 +215,7 @@ The objects of this class are cloneable with this method.
 }
 }
 \section{Super class}{
-\code{\link[R6sagemaker.common:SagemakerError]{R6sagemaker.common::SagemakerError}} -> \code{RuntimeError}
+\code{\link[sagemaker.common:SagemakerError]{sagemaker.common::SagemakerError}} -> \code{RuntimeError}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -226,7 +226,7 @@ The objects of this class are cloneable with this method.
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="SagemakerError" data-id="initialize">}\href{../../R6sagemaker.common/html/SagemakerError.html#method-initialize}{\code{R6sagemaker.common::SagemakerError$initialize()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="SagemakerError" data-id="initialize">}\href{../../sagemaker.common/html/SagemakerError.html#method-initialize}{\code{sagemaker.common::SagemakerError$initialize()}}\out{</span>}
 }
 \out{</details>}
 }
@@ -249,7 +249,7 @@ The objects of this class are cloneable with this method.
 }
 }
 \section{Super class}{
-\code{\link[R6sagemaker.common:SagemakerError]{R6sagemaker.common::SagemakerError}} -> \code{AttributeError}
+\code{\link[sagemaker.common:SagemakerError]{sagemaker.common::SagemakerError}} -> \code{AttributeError}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -260,7 +260,7 @@ The objects of this class are cloneable with this method.
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="SagemakerError" data-id="initialize">}\href{../../R6sagemaker.common/html/SagemakerError.html#method-initialize}{\code{R6sagemaker.common::SagemakerError$initialize()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="SagemakerError" data-id="initialize">}\href{../../sagemaker.common/html/SagemakerError.html#method-initialize}{\code{sagemaker.common::SagemakerError$initialize()}}\out{</span>}
 }
 \out{</details>}
 }
@@ -283,7 +283,7 @@ The objects of this class are cloneable with this method.
 }
 }
 \section{Super class}{
-\code{\link[R6sagemaker.common:SagemakerError]{R6sagemaker.common::SagemakerError}} -> \code{DataNotFoundError}
+\code{\link[sagemaker.common:SagemakerError]{sagemaker.common::SagemakerError}} -> \code{DataNotFoundError}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -294,7 +294,7 @@ The objects of this class are cloneable with this method.
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="SagemakerError" data-id="initialize">}\href{../../R6sagemaker.common/html/SagemakerError.html#method-initialize}{\code{R6sagemaker.common::SagemakerError$initialize()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="SagemakerError" data-id="initialize">}\href{../../sagemaker.common/html/SagemakerError.html#method-initialize}{\code{sagemaker.common::SagemakerError$initialize()}}\out{</span>}
 }
 \out{</details>}
 }
@@ -317,7 +317,7 @@ The objects of this class are cloneable with this method.
 }
 }
 \section{Super classes}{
-\code{\link[R6sagemaker.common:SagemakerError]{R6sagemaker.common::SagemakerError}} -> \code{\link[R6sagemaker.common:DataNotFoundError]{R6sagemaker.common::DataNotFoundError}} -> \code{UnknownServiceError}
+\code{\link[sagemaker.common:SagemakerError]{sagemaker.common::SagemakerError}} -> \code{\link[sagemaker.common:DataNotFoundError]{sagemaker.common::DataNotFoundError}} -> \code{UnknownServiceError}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -328,7 +328,7 @@ The objects of this class are cloneable with this method.
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="SagemakerError" data-id="initialize">}\href{../../R6sagemaker.common/html/SagemakerError.html#method-initialize}{\code{R6sagemaker.common::SagemakerError$initialize()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="SagemakerError" data-id="initialize">}\href{../../sagemaker.common/html/SagemakerError.html#method-initialize}{\code{sagemaker.common::SagemakerError$initialize()}}\out{</span>}
 }
 \out{</details>}
 }

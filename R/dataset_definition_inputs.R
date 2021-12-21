@@ -119,11 +119,11 @@ DatasetDefinition = R6Class("DatasetDefinition",
     #'              Definition inputs to run a processing job. LocalPath is an absolute path to the
     #'              input data. This is a required parameter when `AppManaged` is False (default).
     #' @param redshift_dataset_definition
-    #'              (:class:\code{R6sagemaker.common::RedshiftDatasetDefinition},
+    #'              (:class:\code{sagemaker.common::RedshiftDatasetDefinition},
     #'              default=None):
     #'              Configuration for Redshift Dataset Definition input.
     #' @param athena_dataset_definition
-    #'              (:class:\code{R6sagemaker.common::AthenaDatasetDefinition},
+    #'              (:class:\code{sagemaker.common::AthenaDatasetDefinition},
     #'              default=None):
     #'              Configuration for Athena Dataset Definition input.
     initialize = function(data_distribution_type="ShardedByS3Key",

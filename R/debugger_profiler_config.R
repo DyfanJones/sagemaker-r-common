@@ -37,7 +37,7 @@ ProfilerConfig = R6Class("ProfilerConfig",
     #' # The following example shows the basic ``profiler_config``
     #' # parameter configuration, enabling system monitoring every 5000 milliseconds
     #' # and framework profiling with default parameter values.
-    #' library(R6sagemaker.common)
+    #' library(sagemaker.common)
     #'
     #' profiler_config = ProfilerConfig$new(
     #'       system_monitor_interval_millis = 5000,

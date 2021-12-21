@@ -8,7 +8,7 @@ Fetch results about a hyperparameter tuning job and make them accessible
              for analytics.
 }
 \section{Super class}{
-\code{\link[R6sagemaker.common:AnalyticsMetricsBase]{R6sagemaker.common::AnalyticsMetricsBase}} -> \code{HyperparameterTuningJobAnalytics}
+\code{\link[sagemaker.common:AnalyticsMetricsBase]{sagemaker.common::AnalyticsMetricsBase}} -> \code{HyperparameterTuningJobAnalytics}
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
@@ -64,9 +64,9 @@ https://botocore.readthedocs.io/en/latest/reference/services/sagemaker.html#Sage
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="AnalyticsMetricsBase" data-id="dataframe">}\href{../../R6sagemaker.common/html/AnalyticsMetricsBase.html#method-dataframe}{\code{R6sagemaker.common::AnalyticsMetricsBase$dataframe()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="AnalyticsMetricsBase" data-id="export_csv">}\href{../../R6sagemaker.common/html/AnalyticsMetricsBase.html#method-export_csv}{\code{R6sagemaker.common::AnalyticsMetricsBase$export_csv()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="AnalyticsMetricsBase" data-id="format">}\href{../../R6sagemaker.common/html/AnalyticsMetricsBase.html#method-format}{\code{R6sagemaker.common::AnalyticsMetricsBase$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="AnalyticsMetricsBase" data-id="dataframe">}\href{../../sagemaker.common/html/AnalyticsMetricsBase.html#method-dataframe}{\code{sagemaker.common::AnalyticsMetricsBase$dataframe()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="AnalyticsMetricsBase" data-id="export_csv">}\href{../../sagemaker.common/html/AnalyticsMetricsBase.html#method-export_csv}{\code{sagemaker.common::AnalyticsMetricsBase$export_csv()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="AnalyticsMetricsBase" data-id="format">}\href{../../sagemaker.common/html/AnalyticsMetricsBase.html#method-format}{\code{sagemaker.common::AnalyticsMetricsBase$format()}}\out{</span>}
 }
 \out{</details>}
 }

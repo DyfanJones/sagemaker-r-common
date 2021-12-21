@@ -180,7 +180,8 @@
         return(s3_input_result)
       }
       if (is.character(uri_input) && validate_uri && startsWith(uri_input,"file://")){
-        return (R6sagemaker.local:::file_input(uri_input))
+        file_input = pkg_method("file_input", "sagemaker.local")
+        return (file_input$new(uri_input))
       }
       if (inherits(uri_input, "character") && validate_uri)
         ValueError$new(sprintf(

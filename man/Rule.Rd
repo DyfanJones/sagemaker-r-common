@@ -17,7 +17,7 @@ The SageMaker Debugger Rule class configures *debugging* rules to debug your tra
              You can also write your own rules using the custom rule classmethod.
 }
 \section{Super class}{
-\code{\link[R6sagemaker.common:RuleBase]{R6sagemaker.common::RuleBase}} -> \code{Rule}
+\code{\link[sagemaker.common:RuleBase]{sagemaker.common::RuleBase}} -> \code{Rule}
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -42,7 +42,7 @@ The SageMaker Debugger Rule class configures *debugging* rules to debug your tra
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="RuleBase" data-id="format">}\href{../../R6sagemaker.common/html/RuleBase.html#method-format}{\code{R6sagemaker.common::RuleBase$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="RuleBase" data-id="format">}\href{../../sagemaker.common/html/RuleBase.html#method-format}{\code{sagemaker.common::RuleBase$format()}}\out{</span>}
 }
 \out{</details>}
 }
@@ -112,8 +112,8 @@ Initialize a ``Rule`` object for a \code{built-in} debugging rule.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{base_config}}{(dict): Required. This is the base rule config dictionary returned from the
-:class:\code{R6sagemaker.debugger} method.
-For example, \code{R6sagemaker.debugger::dead_relu()}.
+:class:\code{sagemaker.debugger} method.
+For example, \code{sagemaker.debugger::dead_relu()}.
 For a full list of built-in rules for debugging, see
 `List of Debugger Built-in Rules`
 \url{https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html}.}
@@ -135,9 +135,9 @@ of other trials to use the SimilarAcrossRuns rule.}
 
 \item{\code{rule_parameters}}{(dict): Optional. A dictionary of parameters for the rule.}
 
-\item{\code{collections_to_save}}{(:class:\code{R6sagemaker.debugger::CollectionConfig}):
+\item{\code{collections_to_save}}{(:class:\code{sagemaker.debugger::CollectionConfig}):
 Optional. A list
-of :class:\code{R6sagemaker.debugger::CollectionConfig} objects to be saved.}
+of :class:\code{sagemaker.debugger::CollectionConfig} objects to be saved.}
 
 \item{\code{actions}}{:}
 }

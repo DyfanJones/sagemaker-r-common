@@ -13,7 +13,7 @@ Note: Strong consistency is not guaranteed if S3Prefix is provided here.
              Use ManifestFile if strong consistency is required.
 }
 \section{Super class}{
-\code{\link[R6sagemaker.common:ApiObject]{R6sagemaker.common::ApiObject}} -> \code{S3Input}
+\code{\link[sagemaker.common:ApiObject]{sagemaker.common::ApiObject}} -> \code{S3Input}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -25,9 +25,9 @@ Note: Strong consistency is not guaranteed if S3Prefix is provided here.
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="ApiObject" data-id="format">}\href{../../R6sagemaker.common/html/ApiObject.html#method-format}{\code{R6sagemaker.common::ApiObject$format()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="ApiObject" data-id="from_paws">}\href{../../R6sagemaker.common/html/ApiObject.html#method-from_paws}{\code{R6sagemaker.common::ApiObject$from_paws()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="ApiObject" data-id="to_paws">}\href{../../R6sagemaker.common/html/ApiObject.html#method-to_paws}{\code{R6sagemaker.common::ApiObject$to_paws()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="ApiObject" data-id="format">}\href{../../sagemaker.common/html/ApiObject.html#method-format}{\code{sagemaker.common::ApiObject$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="ApiObject" data-id="from_paws">}\href{../../sagemaker.common/html/ApiObject.html#method-from_paws}{\code{sagemaker.common::ApiObject$from_paws()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="ApiObject" data-id="to_paws">}\href{../../sagemaker.common/html/ApiObject.html#method-to_paws}{\code{sagemaker.common::ApiObject$to_paws()}}\out{</span>}
 }
 \out{</details>}
 }

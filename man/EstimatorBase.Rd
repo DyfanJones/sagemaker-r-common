@@ -65,8 +65,8 @@ Initialize an ``EstimatorBase`` instance.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{EstimatorBase$new(
   role,
-  instance_count,
-  instance_type,
+  instance_count = NULL,
+  instance_type = NULL,
   volume_size = 30,
   volume_kms_key = NULL,
   max_run = 24 * 60 * 60,

@@ -839,7 +839,7 @@ model_parameters <- Enum(
 #'              configuration in model environment variables.
 #' @export
 FrameworkModel = R6Class("FrameworkModel",
-  inherit = R6sagemaker.common::Model,
+  inherit = sagemaker.common::Model,
   public = list(
 
    #' @description Initialize a ``FrameworkModel``.

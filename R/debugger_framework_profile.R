@@ -50,7 +50,7 @@ ALL_METRIC_CONFIGS <- list(
 #'              the ``start_step=1`` and ``num_steps=10`` will be ignored.}
 #'              }
 #' @examples
-#' library(R6sagemaker.common)
+#' library(sagemaker.common)
 #' profiler_config=ProfilerConfig$new(
 #'        framework_profile_params=FrameworkProfile$new(
 #'        start_step=1,

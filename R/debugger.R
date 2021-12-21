@@ -6,7 +6,7 @@
 #' @include error.R
 
 #' @import R6
-#' @import R6sagemaker.debugger
+#' @import sagemaker.debugger
 #' @importFrom jsonlite toJSON
 
 DEBUGGER_FLAG = "USE_SMDEBUG"
@@ -27,7 +27,7 @@ get_rule_container_image_uri <- function(region){
 # Returns:
 #   sagemaker.debugger.ProfilerRule: The instance of the built-in ProfilerRule.
 get_default_profiler_rule <- function(){
-  default_rule = R6sagemaker.debugger::ProfilerReport$new()
+  default_rule = sagemaker.debugger::ProfilerReport$new()
   custom_name = sprintf("%s-%s", default_rule$rule_name, as.integer(Sys.time()))
   return(ProfilerRule$new()$sagemaker(default_rule, name=custom_name))
 }
@@ -135,7 +135,7 @@ RuleBase = R6Class("RuleBase",
 
 .get_rule_config <- function(rule_name){
   rule_config = NULL
-  config_file_path = system.file("rule_config_jsons", "ruleConfigs.json", package= "R6sagemaker.common")
+  config_file_path = system.file("rule_config_jsons", "ruleConfigs.json", package= "sagemaker.common")
   if(file.exists(config_file_path)){
     configs = jsonlite::read_json(config_file_path)
     rule_config = configs[[rule_name]]
@@ -202,8 +202,8 @@ Rule = R6Class("Rule",
 
     #' @description Initialize a ``Rule`` object for a \code{built-in} debugging rule.
     #' @param base_config (dict): Required. This is the base rule config dictionary returned from the
-    #'              :class:\code{R6sagemaker.debugger} method.
-    #'              For example, \code{R6sagemaker.debugger::dead_relu()}.
+    #'              :class:\code{sagemaker.debugger} method.
+    #'              For example, \code{sagemaker.debugger::dead_relu()}.
     #'              For a full list of built-in rules for debugging, see
     #'              `List of Debugger Built-in Rules`
     #'              \url{https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html}.
@@ -219,9 +219,9 @@ Rule = R6Class("Rule",
     #' @param other_trials_s3_input_paths ([str]): Optional. The Amazon S3 input paths
     #'              of other trials to use the SimilarAcrossRuns rule.
     #' @param rule_parameters (dict): Optional. A dictionary of parameters for the rule.
-    #' @param collections_to_save (:class:\code{R6sagemaker.debugger::CollectionConfig}):
+    #' @param collections_to_save (:class:\code{sagemaker.debugger::CollectionConfig}):
     #'              Optional. A list
-    #'              of :class:\code{R6sagemaker.debugger::CollectionConfig} objects to be saved.
+    #'              of :class:\code{sagemaker.debugger::CollectionConfig} objects to be saved.
     #' @param actions :
     #' @return :class:`~sagemaker.debugger.Rule`: An instance of the built-in rule.
     sagemaker = function(base_config,
@@ -425,9 +425,9 @@ ProfilerRule = R6Class("ProfilerRule",
     #' @description Initialize a ``ProfilerRule`` object for a *built-in* profiling rule.
     #'              The rule analyzes system and framework metrics of a given
     #'              training job to identify performance bottlenecks.
-    #' @param base_config (\code{R6sagemaker.debugger::ProfilerReport}): The base rule configuration object
-    #'              returned from the \code{R6sagemaker.debugger} method.
-    #'              For example, \code{R6sagemaker.debugger::ProfilerReport$new()}.
+    #' @param base_config (\code{sagemaker.debugger::ProfilerReport}): The base rule configuration object
+    #'              returned from the \code{sagemaker.debugger} method.
+    #'              For example, \code{sagemaker.debugger::ProfilerReport$new()}.
     #'              For a full list of built-in rules for debugging, see
     #'              `List of Debugger Built-in Rules`
     #'              \url{https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html}.

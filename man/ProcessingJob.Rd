@@ -15,7 +15,7 @@ Other Processor:
 }
 \concept{Processor}
 \section{Super class}{
-\code{\link[R6sagemaker.common:.Job]{R6sagemaker.common::.Job}} -> \code{ProcessingJob}
+\code{\link[sagemaker.common:.Job]{sagemaker.common::.Job}} -> \code{ProcessingJob}
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -48,7 +48,7 @@ Other Processor:
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic=".Job" data-id="format">}\href{../../R6sagemaker.common/html/.Job.html#method-format}{\code{R6sagemaker.common::.Job$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic=".Job" data-id="format">}\href{../../sagemaker.common/html/.Job.html#method-format}{\code{sagemaker.common::.Job$format()}}\out{</span>}
 }
 \out{</details>}
 }

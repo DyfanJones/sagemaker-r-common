@@ -7,7 +7,7 @@
 Handles Amazon SageMaker processing tasks for jobs using a machine learning framework
 }
 \section{Super classes}{
-\code{\link[R6sagemaker.common:Processor]{R6sagemaker.common::Processor}} -> \code{\link[R6sagemaker.common:ScriptProcessor]{R6sagemaker.common::ScriptProcessor}} -> \code{FrameworkProcessor}
+\code{\link[sagemaker.common:Processor]{sagemaker.common::Processor}} -> \code{\link[sagemaker.common:ScriptProcessor]{sagemaker.common::ScriptProcessor}} -> \code{FrameworkProcessor}
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -28,7 +28,7 @@ Handles Amazon SageMaker processing tasks for jobs using a machine learning fram
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="Processor" data-id="format">}\href{../../R6sagemaker.common/html/Processor.html#method-format}{\code{R6sagemaker.common::Processor$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="Processor" data-id="format">}\href{../../sagemaker.common/html/Processor.html#method-format}{\code{sagemaker.common::Processor$format()}}\out{</span>}
 }
 \out{</details>}
 }
