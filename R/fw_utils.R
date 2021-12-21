@@ -181,7 +181,7 @@ tar_and_upload_dir <- function(sagemaker_session,
 
   tryCatch({
     source_files = unlist(c(.list_files_to_compress(script, directory), dependencies))
-    tar_file = create_tar_file(source_files, tmp) ############
+    tar_file = create_tar_file(source_files, tmp)
   })
   if (!is.null(kms_key)) {
     ServerSideEncryption = "aws:kms"
