@@ -170,8 +170,8 @@ EstimatorBase = R6Class("EstimatorBase",
     #'              (default: ``None``)
     #' @param ... : update any deprecated parameters passed into class.
     initialize = function(role,
-                          instance_count,
-                          instance_type,
+                          instance_count=NULL,
+                          instance_type=NULL,
                           volume_size = 30,
                           volume_kms_key = NULL,
                           max_run = 24 * 60 * 60,
@@ -239,18 +239,17 @@ EstimatorBase = R6Class("EstimatorBase",
       if (self$instance_type %in% c("local", "local_gpu")) {
         if (self$instance_type == "local_gpu" && self$instance_count > 1)
           RuntimeError$new("Distributed Training in Local GPU is not supported")
-        NotImplementedError$new("Currently don't support local sagemaker")
-        self$sagemaker_session = sagemaker_session #%||%  LocalSession()
-        if (!inherist(self$sagemaker_session, c("Session", "LocalSession")))
+        LocalSession = pkg_method("LocalSession" ,"sagemaker.local")
+        self$sagemaker_session = sagemaker_session %||%  LocalSession$new()
+        if (!inherits(self$sagemaker_session, c("Session", "LocalSession")))
           RuntimeError$new("instance_type local or local_gpu is only supported with an instance of LocalSession")
       } else {
         self$sagemaker_session = sagemaker_session %||% Session$new()
       }
-
       self$base_job_name = base_job_name
       self$.current_job_name = NULL
 
-      if (self$sagemaker_session$local_mode
+      if (!self$sagemaker_session$local_mode
         && !is.null(output_path)
         && startsWith(output_path, "file://")) {
         RuntimeError$new("file:// output paths are only supported in Local Mode")
@@ -1645,8 +1644,8 @@ Estimator = R6Class("Estimator",
     #' @param ... : additional arguements for parent class `EstimatorBase`.
     initialize = function(image_uri,
                           role,
-                          instance_count,
-                          instance_type,
+                          instance_count=NULL,
+                          instance_type=NULL,
                           volume_size=30,
                           volume_kms_key=NULL,
                           max_run=24 * 60 * 60,
@@ -1981,10 +1980,10 @@ Framework = R6Class("Framework",
                           enable_sagemaker_metrics=NULL,
                           ...){
       super$initialize(enable_network_isolation=enable_network_isolation, ...)
-      if (startsWith(entry_point,"s3://")){
+      if (startsWith(entry_point, "s3://")){
         ValueError$new(sprintf("Invalid entry point script: %s. Must be a path to a local file.",
-            entry_point))}
-
+            entry_point))
+      }
       self$entry_point = entry_point
       self$git_config = git_config
       self$source_dir = source_dir
@@ -2374,7 +2373,6 @@ Framework = R6Class("Framework",
         job_details, model_channel_name)
 
       init_params$entry_point = init_params$hyperparameters[[model_parameters$SCRIPT_PARAM_NAME]]
-
       init_params$source_dir = init_params$hyperparameters[[model_parameters$DIR_PARAM_NAME]]
       init_params$container_log_level = init_params$hyperparameters[[model_parameters$CONTAINER_LOG_LEVEL_PARAM_NAME]]
 
@@ -2392,7 +2390,6 @@ Framework = R6Class("Framework",
       }
 
       init_params$hyperparameters = hyperparameters
-
       return(init_params)
     },
 
@@ -2400,7 +2397,7 @@ Framework = R6Class("Framework",
       current_hyperparameters = hyperparameters
       if (!is.null(current_hyperparameters)){
         hyperparameters=lapply(current_hyperparameters, function(v) {
-          if(inherits(v, c("Parameter", "Expression", "Properties")))
+          if(inherits(v, c("Parameter", "Expression", "Properties", "list")))
             jsonlite::toJSON(v, auto_unbox = TRUE) else as.character(v)})
       }
       return(hyperparameters)
