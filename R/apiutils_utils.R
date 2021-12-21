@@ -10,7 +10,7 @@ ApiUtils = R6Class("ApiUtils",
     # Generate a random string of length 4.
     suffix = function(){
       alpha = paste(sample(letters, 4), collapse = "")
-      return(paste(format(Sys.time(), "%Y-%m-%d-%H%M%S"), alpha, sep = "-"))
+      return(paste(strftime(Sys.time(), "%Y-%m-%d-%H%M%S"), alpha, sep = "-"))
     },
 
     # Generate a new name with the specified prefix.
