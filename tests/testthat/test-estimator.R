@@ -1,7 +1,7 @@
 # NOTE: This code has been modified from AWS Sagemaker Python:
 # https://github.com/aws/sagemaker-python-sdk/blob/master/tests/unit/test_session.py
 
-lg = lgr::get_logger("R6sagemaker")
+lg = lgr::get_logger("sagemaker")
 
 MODEL_DATA = "s3://bucket/model.tar.gz"
 MODEL_IMAGE = "mi"
@@ -163,7 +163,7 @@ sagemaker_session = function(region=REGION){
   )
 
   sms = Mock$new(
-    name="sagemaker_session",
+    name="Session",
     paws_session=paws_mock,
     paws_region_name=region,
     config=NULL,
@@ -194,12 +194,13 @@ sagemaker_session = function(region=REGION){
   return(sms)
 }
 
-training_job_description = function(sms){
-  sagemaker_session = sms$clone()
-  returned_job_description = RETURNED_JOB_DESCRIPTION
-  sagemaker_session$sagemaker$.call_args("describe_training_job", return_value=returned_job_description)
-  sagemaker_session$.call_args("describe_training_job", return_value=returned_job_description)
-  return(sagemaker_session)
+training_job_description = function(returned_job_description = RETURNED_JOB_DESCRIPTION, ll = list()){
+  sms = sagemaker_session()
+  sms$sagemaker$.call_args("describe_training_job", return_value=modifyList(
+    returned_job_description, ll))
+  sms$.call_args("describe_training_job", return_value=modifyList(
+    returned_job_description, ll))
+  return(sms)
 }
 
 test_that("test_framework_all_init_args", {
@@ -273,7 +274,7 @@ test_that("test_framework_all_init_args", {
 
 test_that("test_framework_with_debugger_and_built_in_rule", {
   debugger_built_in_rule_with_custom_args = Rule$new()$sagemaker(
-    base_config=R6sagemaker.debugger::stalled_training_rule(),
+    base_config=sagemaker.debugger::stalled_training_rule(),
     rule_parameters=list("threshold"="120", "stop_training_on_fire"="True"),
     collections_to_save=list(
       CollectionConfig$new(
@@ -375,7 +376,7 @@ test_that("test_framework_with_only_debugger_rule", {
     sagemaker_session=sms,
     instance_count=INSTANCE_COUNT,
     instance_type=INSTANCE_TYPE,
-    rules=list(Rule$new()$sagemaker(R6sagemaker.debugger::stalled_training_rule()))
+    rules=list(Rule$new()$sagemaker(sagemaker.debugger::stalled_training_rule()))
   )
   f$fit("s3://mydata")
   args = sms$train(..return_value = T)
@@ -389,7 +390,7 @@ test_that("test_framework_with_only_debugger_rule", {
 })
 
 test_that("test_framework_with_debugger_rule_and_single_action", {
-  stop_training_action = R6sagemaker.debugger::StopTraining$new()
+  stop_training_action = sagemaker.debugger::StopTraining$new()
   sms = sagemaker_session()
   f = DummyFramework$new(
     entry_point=SCRIPT_PATH,
@@ -397,7 +398,7 @@ test_that("test_framework_with_debugger_rule_and_single_action", {
     sagemaker_session=sms,
     instance_count=INSTANCE_COUNT,
     instance_type=INSTANCE_TYPE,
-    rules=list(Rule$new()$sagemaker(R6sagemaker.debugger::stalled_training_rule(), actions=stop_training_action))
+    rules=list(Rule$new()$sagemaker(sagemaker.debugger::stalled_training_rule(), actions=stop_training_action))
   )
   f$fit("s3://mydata")
   args = sms$train(..return_value = T)
@@ -413,10 +414,10 @@ test_that("test_framework_with_debugger_rule_and_single_action", {
 })
 
 test_that("test_framework_with_debugger_rule_and_multiple_actions", {
-  action_list = R6sagemaker.debugger::ActionList$new(
-    R6sagemaker.debugger::StopTraining$new(),
-    R6sagemaker.debugger::Email$new("abc@abc.com"),
-    R6sagemaker.debugger::SMS$new("+1234567890")
+  action_list = sagemaker.debugger::ActionList$new(
+    sagemaker.debugger::StopTraining$new(),
+    sagemaker.debugger::Email$new("abc@abc.com"),
+    sagemaker.debugger::SMS$new("+1234567890")
   )
   sms = sagemaker_session()
   f = DummyFramework$new(
@@ -425,7 +426,7 @@ test_that("test_framework_with_debugger_rule_and_multiple_actions", {
     sagemaker_session=sms,
     instance_count=INSTANCE_COUNT,
     instance_type=INSTANCE_TYPE,
-    rules=list(Rule$new()$sagemaker(R6sagemaker.debugger::stalled_training_rule(), actions=action_list))
+    rules=list(Rule$new()$sagemaker(sagemaker.debugger::stalled_training_rule(), actions=action_list))
   )
   f$fit("s3://mydata")
   args = sms$train(..return_value = T)
@@ -493,7 +494,7 @@ test_that("test_framework_without_debugger_and_profiler", {
 
 test_that("test_framework_with_debugger_and_profiler_rules", {
   debugger_built_in_rule_with_custom_args = Rule$new()$sagemaker(
-    base_config=R6sagemaker.debugger::stalled_training_rule(),
+    base_config=sagemaker.debugger::stalled_training_rule(),
     rule_parameters=list("threshold"="120", "stop_training_on_fire"="True"),
     collections_to_save=list(
       CollectionConfig$new(
@@ -502,7 +503,7 @@ test_that("test_framework_with_debugger_and_profiler_rules", {
     )
   )
   profiler_built_in_rule_with_custom_args = ProfilerRule$new()$sagemaker(
-    base_config=R6sagemaker.debugger::ProfilerReport$new(CPUBottleneck_threshold=90),
+    base_config=sagemaker.debugger::ProfilerReport$new(CPUBottleneck_threshold=90),
     name="CustomProfilerReportRule"
   )
   profiler_custom_rule = ProfilerRule$new()$custom(
@@ -580,7 +581,7 @@ test_that("test_framework_with_only_profiler_rule_specified", {
     sagemaker_session=sms,
     instance_count=INSTANCE_COUNT,
     instance_type=INSTANCE_TYPE,
-    rules=list(ProfilerRule$new()$sagemaker(R6sagemaker.debugger::CPUBottleneck$new(gpu_threshold=60)))
+    rules=list(ProfilerRule$new()$sagemaker(sagemaker.debugger::CPUBottleneck$new(gpu_threshold=60)))
   )
   f$fit("s3://mydata")
   args = sms$train(..return_value = T)
@@ -611,7 +612,7 @@ test_that("test_framework_with_only_profiler_rule_specified", {
     sagemaker_session=sms,
     instance_count=INSTANCE_COUNT,
     instance_type=INSTANCE_TYPE,
-    rules=list(ProfilerRule$new()$sagemaker(R6sagemaker.debugger::CPUBottleneck$new(gpu_threshold=60)))
+    rules=list(ProfilerRule$new()$sagemaker(sagemaker.debugger::CPUBottleneck$new(gpu_threshold=60)))
   )
   f$fit("s3://mydata")
   args = sms$train(..return_value = T)
@@ -656,7 +657,7 @@ test_that("test_framework_with_profiler_config_without_s3_output_path", {
 })
 
 test_that("test_framework_with_no_default_profiler_in_unsupported_region", {
-  sms = sagemaker_session(R6sagemaker.common:::PROFILER_UNSUPPORTED_REGIONS)
+  sms = sagemaker_session(sagemaker.common:::PROFILER_UNSUPPORTED_REGIONS)
   f = DummyFramework$new(
     entry_point=SCRIPT_PATH,
     role=ROLE,
@@ -879,7 +880,7 @@ test_that("test_framework_with_update_profiler_with_debugger_rule", {
   )
   f$fit("s3://mydata")
   expect_error(
-    f$update_profiler(rules=list(Rule$new()$sagemaker(R6sagemaker.debugger::stalled_training_rule()))),
+    f$update_profiler(rules=list(Rule$new()$sagemaker(sagemaker.debugger::stalled_training_rule()))),
     "Please provide ProfilerRule to be updated.",
     class = "ValueError"
   )
@@ -915,7 +916,7 @@ test_that("test_framework_with_update_profiler_report_rule", {
   f$fit("s3://mydata")
   f$update_profiler(
     rules=list(
-      ProfilerRule$new()$sagemaker(R6sagemaker.debugger::ProfilerReport$new(), name="CustomProfilerReportRule")
+      ProfilerRule$new()$sagemaker(sagemaker.debugger::ProfilerReport$new(), name="CustomProfilerReportRule")
     )
   )
   args = sms$update_training_job(..return_value = T)
@@ -1297,4 +1298,339 @@ test_that("test_custom_code_bucket_without_prefix", {
   args = sms$train(..return_value = T)
   expect_true(grepl(expected_submit_dir, args[["hyperparameters"]][["sagemaker_submit_directory"]]))
 })
+
+test_that("test_invalid_custom_code_bucket", {
+  code_location = "thisllworkright?"
+  sms = sagemaker_session()
+  t = DummyFramework$new(
+    entry_point=SCRIPT_PATH,
+    role=ROLE,
+    sagemaker_session=sms,
+    instance_count=INSTANCE_COUNT,
+    instance_type=INSTANCE_TYPE,
+    code_location=code_location
+  )
+  expect_error(
+    t$fit("s3://bucket/mydata")
+  )
+})
+
+test_that("test_augmented_manifest", {
+  sms = sagemaker_session()
+  fw = DummyFramework$new(
+    entry_point=SCRIPT_PATH,
+    role="DummyRole",
+    sagemaker_session=sms,
+    instance_count=INSTANCE_COUNT,
+    instance_type=INSTANCE_TYPE
+  )
+  fw$fit(
+    inputs=TrainingInput$new(
+      "s3://mybucket/train_manifest",
+      s3_data_type="AugmentedManifestFile",
+      attribute_names=list("foo", "bar")
+    )
+  )
+  train_kwargs = sms$train(..return_value = T)
+  s3_data_source = train_kwargs[["input_config"]][[1]][["DataSource"]][["S3DataSource"]]
+  expect_equal(s3_data_source[["S3Uri"]], "s3://mybucket/train_manifest")
+  expect_equal(s3_data_source[["S3DataType"]], "AugmentedManifestFile")
+  expect_equal(s3_data_source[["AttributeNames"]], list("foo", "bar"))
+})
+
+test_that("test_s3_input_mode", {
+  expected_input_mode = "Pipe"
+  sms = sagemaker_session()
+  fw = DummyFramework$new(
+    entry_point=SCRIPT_PATH,
+    role="DummyRole",
+    sagemaker_session=sms,
+    instance_count=INSTANCE_COUNT,
+    instance_type=INSTANCE_TYPE
+  )
+  fw$fit(inputs=TrainingInput$new("s3://mybucket/train_manifest", input_mode=expected_input_mode))
+  train_kwargs = sms$train(..return_value = T)
+  expect_equal(train_kwargs[["input_config"]][[1]][["InputMode"]], "Pipe")
+  expect_equal(train_kwargs[["input_mode"]], "Pipe")
+})
+
+test_that("test_shuffle_config", {
+  sms = sagemaker_session()
+  fw = DummyFramework$new(
+    entry_point=SCRIPT_PATH,
+    role="DummyRole",
+    sagemaker_session=sms,
+    instance_count=INSTANCE_COUNT,
+    instance_type=INSTANCE_TYPE
+  )
+  fw$fit(inputs=TrainingInput$new("s3://mybucket/train_manifest", shuffle_config=ShuffleConfig$new(100)))
+  train_kwargs = sms$train(..return_value = T)
+  channel = train_kwargs[["input_config"]][[1]]
+  expect_equal(channel[["ShuffleConfig"]][["Seed"]], 100)
+})
+
+BASE_HP = list(
+  "sagemaker_program"=SCRIPT_NAME,
+  "sagemaker_submit_directory"=sprintf("s3://mybucket/%s/source/sourcedir.tar.gz", JOB_NAME),
+  "sagemaker_job_name"=JOB_NAME
+)
+
+test_that("test_local_code_location", {
+  config = list("local"=list("local_code"=TRUE, "region"="us-west-2"))
+  sms = sagemaker_session()
+  sms$config = config
+  sms$local_mode = T
+  t = DummyFramework$new(
+    entry_point=SCRIPT_PATH,
+    role=ROLE,
+    sagemaker_session=sms,
+    instance_count=1,
+    instance_type="local",
+    base_job_name=IMAGE_URI,
+    hyperparameters=list("123"=456, "learning_rate"=0.1)
+  )
+  t$fit("file:///data/file")
+  expect_equal(t$source_dir, DATA_DIR)
+  expect_equal(t$entry_point, "dummy_script.py")
+})
+
+test_that("test_start_new_convert_hyperparameters_to_str", {
+  uri = "bucket/mydata"
+  sms = sagemaker_session()
+  t = DummyFramework$new(
+    entry_point=SCRIPT_PATH,
+    role=ROLE,
+    sagemaker_session=sms,
+    instance_count=INSTANCE_COUNT,
+    instance_type=INSTANCE_TYPE,
+    base_job_name=IMAGE_URI,
+    hyperparameters=list("123"=list(456), "learning_rate"=0.1)
+  )
+  t$fit(sprintf("s3://%s",uri))
+  expected_hyperparameters = BASE_HP
+  expected_hyperparameters[["sagemaker_container_log_level"]] = "20"
+  expected_hyperparameters[["learning_rate"]] = "0.1"
+  expected_hyperparameters[["123"]] = as.character(jsonlite::toJSON(list(456), auto_unbox = T))
+  expected_hyperparameters[["sagemaker_region"]] = 'us-west-2'
+
+  actual_hyperparameter = sms$train(..return_value = T)$hyperparameters
+
+  for (n in sort(names(expected_hyperparameters))){
+    if (!(n  %in% c("sagemaker_job_name", "sagemaker_submit_directory")))
+      expect_equal(actual_hyperparameter[[n]], expected_hyperparameters[[n]])
+    else
+      expect_true(grepl(expected_hyperparameters[[n]], actual_hyperparameter[[n]]))
+  }
+})
+
+test_that("test_start_new_wait_called", {
+  uri = "bucket/mydata"
+  sms = sagemaker_session()
+  t = DummyFramework$new(
+    entry_point=SCRIPT_PATH,
+    role=ROLE,
+    sagemaker_session=sms,
+    instance_count=INSTANCE_COUNT,
+    instance_type=INSTANCE_TYPE
+  )
+  t$fit(sprintf("s3://%s",uri))
+  expected_hyperparameters = BASE_HP
+  expected_hyperparameters[["sagemaker_container_log_level"]] = "20"
+  expected_hyperparameters[["sagemaker_region"]] = 'us-west-2'
+
+  actual_hyperparameter = sms$train(..return_value = T)$hyperparameters
+  for (n in sort(names(expected_hyperparameters))){
+    if (!(n  %in% c("sagemaker_job_name", "sagemaker_submit_directory")))
+      expect_equal(actual_hyperparameter[[n]], expected_hyperparameters[[n]])
+    else
+      expect_true(grepl(expected_hyperparameters[[n]], actual_hyperparameter[[n]]))
+  }
+})
+
+test_that("test_attach_framework", {
+  sms = training_job_description(ll=list(
+    "VpcConfig" = list("Subnets"=list("foo"), "SecurityGroupIds"=list("bar")),
+    "EnableNetworkIsolation" = TRUE)
+  )
+  f = DummyFramework$new("dummy", instance_count=10, instance_type="dummy", role = "dummy", sagemaker_session=sms)
+  framework_estimator = f$attach(
+    training_job_name="neo", sagemaker_session=sms
+  )
+  expect_equal(framework_estimator$.current_job_name, "neo")
+  expect_equal(framework_estimator$latest_training_job, "neo")
+  expect_equal(framework_estimator$role, "arn:aws:iam::366:role/SageMakerRole")
+  expect_equal(framework_estimator$instance_count, 1)
+  expect_equal(framework_estimator$max_run, 24 * 60 * 60)
+  expect_equal(framework_estimator$input_mode, "File")
+  expect_equal(framework_estimator$base_job_name, "neo")
+  expect_equal(framework_estimator$output_path, "s3://place/output/neo")
+  expect_equal(framework_estimator$output_kms_key, "")
+  expect_equal(framework_estimator$hyperparameters()$training_steps, "100")
+  expect_equal(framework_estimator$source_dir, "s3://some/sourcedir.tar.gz")
+  expect_equal(framework_estimator$entry_point, "iris-dnn-classifier.py")
+  expect_equal(framework_estimator$subnets, list("foo"))
+  expect_equal(framework_estimator$security_group_ids, list("bar"))
+  expect_false(framework_estimator$encrypt_inter_container_traffic)
+  expect_equal(framework_estimator$tags, LIST_TAGS_RESULT[["Tags"]])
+  expect_equal(framework_estimator$tags, LIST_TAGS_RESULT[["Tags"]])
+  expect_true(framework_estimator$enable_network_isolation())
+})
+
+mod_list = list("VpcConfig" = list("Subnets"=list("foo"), "SecurityGroupIds"=list("bar")), "EnableNetworkIsolation" = TRUE)
+
+test_that("test_attach_framework", {
+  SagemakerSesion = training_job_description(ll=mod_list)
+  f = DummyFramework$new("dummy", instance_count=10, instance_type="dummy", role = "dummy", sagemaker_session=SagemakerSesion)
+  framework_estimator = f$attach(training_job_name="neo", sagemaker_session=SagemakerSesion)
+  expect_equal(framework_estimator$.current_job_name, "neo")
+  expect_equal(framework_estimator$latest_training_job, "neo")
+  expect_equal(framework_estimator$role, "arn:aws:iam::366:role/SageMakerRole")
+  expect_equal(framework_estimator$instance_count, 1)
+  expect_equal(framework_estimator$max_run, 24 * 60 * 60)
+  expect_equal(framework_estimator$input_mode, "File")
+  expect_equal(framework_estimator$base_job_name, "neo")
+  expect_equal(framework_estimator$output_path, "s3://place/output/neo")
+  expect_equal(framework_estimator$output_kms_key, "")
+  expect_equal(framework_estimator$hyperparameters()$training_steps, "100")
+  expect_equal(framework_estimator$source_dir, "s3://some/sourcedir.tar.gz")
+  expect_equal(framework_estimator$entry_point, "iris-dnn-classifier.py")
+  expect_equal(framework_estimator$subnets, list("foo"))
+  expect_equal(framework_estimator$security_group_ids, list("bar"))
+  expect_false(framework_estimator$encrypt_inter_container_traffic)
+  expect_equal(framework_estimator$tags, LIST_TAGS_RESULT[["Tags"]])
+  expect_equal(framework_estimator$tags, LIST_TAGS_RESULT[["Tags"]])
+  expect_true(framework_estimator$enable_network_isolation())
+})
+
+test_that("test_attach_no_logs", {
+  SagemakerSesion = training_job_description(ll = mod_list)
+  f = Estimator$new("dummy", instance_count=10, instance_type="dummy", role = "dummy", sagemaker_session=SagemakerSesion)
+  f$attach(training_job_name="job", sagemaker_session=SagemakerSesion)
+  expect_null(SagemakerSesion$logs_for_job(..return_value = T))
+})
+
+test_that("test_logs", {
+  SagemakerSesion = training_job_description(ll = mod_list)
+  f = Estimator$new("dummy", instance_count=10, instance_type="dummy", role = "dummy", sagemaker_session=SagemakerSesion)
+  estimator = f$attach(training_job_name="job", sagemaker_session=SagemakerSesion)
+  estimator$logs()
+  expect_true(SagemakerSesion$logs_for_job(..return_value = T)$wait)
+})
+
+test_that("test_attach_without_hyperparameters", {
+  RETURNED_JOB_NO_HYPER_DESC = RETURNED_JOB_DESCRIPTION
+  RETURNED_JOB_NO_HYPER_DESC[["HyperParameters"]] = NULL
+  SagemakerSesion = training_job_description(RETURNED_JOB_NO_HYPER_DESC, ll = mod_list)
+  f = Estimator$new("dummy", instance_count=10, instance_type="dummy", role = "dummy", sagemaker_session=SagemakerSesion)
+  estimator = f$attach(training_job_name="job", sagemaker_session=SagemakerSesion)
+
+  expect_equal(estimator$hyperparameters(), list())
+})
+
+test_that("test_attach_framework_with_tuning", {
+  sms = training_job_description(ll = list("HyperParameters"= list("_tuning_objective_metric"="Validation-accuracy")))
+  f = DummyFramework$new("dummy", instance_count=10, instance_type="dummy", role = "dummy", sagemaker_session=sms)
+  framework_estimator = f$attach(training_job_name="neo", sagemaker_session=sms)
+  expect_equal(framework_estimator$latest_training_job, "neo")
+  expect_equal(framework_estimator$role, "arn:aws:iam::366:role/SageMakerRole")
+  expect_equal(framework_estimator$instance_count, 1)
+  expect_equal(framework_estimator$max_run, 24 * 60 * 60)
+  expect_equal(framework_estimator$input_mode, "File")
+  expect_equal(framework_estimator$base_job_name, "neo")
+  expect_equal(framework_estimator$output_path, "s3://place/output/neo")
+  expect_equal(framework_estimator$output_kms_key, "")
+  hyper_params = framework_estimator$hyperparameters()
+  expect_equal(hyper_params[["training_steps"]], "100")
+  expect_equal(hyper_params[["_tuning_objective_metric"]], "Validation-accuracy")
+  expect_equal(framework_estimator$source_dir, "s3://some/sourcedir.tar.gz")
+  expect_equal(framework_estimator$entry_point, "iris-dnn-classifier.py")
+  expect_false(framework_estimator$encrypt_inter_container_traffic)
+})
+
+test_that("test_attach_framework_with_model_channel", {
+  s3_uri = "s3://some/s3/path/model.tar.gz"
+  sms = training_job_description(ll = list("InputDataConfig" = list(
+    list(
+      "ChannelName"="model",
+      "InputMode"="File",
+      "DataSource"=list("S3DataSource"=list("S3Uri"=s3_uri))
+      )
+    )
+  ))
+  f = DummyFramework$new("dummy", instance_count=10, instance_type="dummy", role = "dummy", sagemaker_session=sms)
+  framework_estimator = f$attach(training_job_name="neo", sagemaker_session=sms)
+  expect_equal(framework_estimator$model_uri, s3_uri)
+  expect_false(framework_estimator$encrypt_inter_container_traffic)
+})
+
+test_that("test_attach_framework_with_inter_container_traffic_encryption_flag", {
+  sms = training_job_description(ll = list("EnableInterContainerTrafficEncryption" = TRUE))
+  f = DummyFramework$new("dummy", instance_count=10, instance_type="dummy", role = "dummy", sagemaker_session=sms)
+  framework_estimator = f$attach(training_job_name="neo", sagemaker_session=sms)
+  expect_true(framework_estimator$encrypt_inter_container_traffic)
+})
+
+test_that("test_attach_framework_base_from_generated_name", {
+  base_job_name = "neo"
+  sms = training_job_description()
+  f = DummyFramework$new("dummy", instance_count=10, instance_type="dummy", role = "dummy", sagemaker_session=sms)
+  framework_estimator = f$attach(training_job_name=name_from_base(base_job_name), sagemaker_session=sms)
+  expect_equal(framework_estimator$base_job_name, base_job_name)
+})
+
+test_that("est_fit_verify_job_name", {
+  sms = sagemaker_session()
+  fw = DummyFramework$new(
+    entry_point=SCRIPT_PATH,
+    role="DummyRole",
+    sagemaker_session=sms,
+    instance_count=INSTANCE_COUNT,
+    instance_type=INSTANCE_TYPE,
+    tags=TAGS,
+    encrypt_inter_container_traffic=TRUE
+  )
+  fw$fit(inputs=TrainingInput$new("s3://mybucket/train"))
+  train_kwargs = sms$train(..return_value = T)
+  expect_equal(train_kwargs$image_uri, IMAGE_URI)
+  expect_equal(train_kwargs$input_mode, "File")
+  expect_equal(train_kwargs$tags, TAGS)
+  expect_true(grepl(JOB_NAME, train_kwargs$job_name))
+  expect_true(train_kwargs$encrypt_inter_container_traffic)
+})
+
+test_that("test_prepare_for_training_unique_job_name_generation", {
+  sms = sagemaker_session()
+  fw = DummyFramework$new(
+    entry_point=SCRIPT_PATH,
+    role=ROLE,
+    sagemaker_session=sms,
+    instance_count=INSTANCE_COUNT,
+    instance_type=INSTANCE_TYPE
+  )
+  fw$.prepare_for_training()
+  first_job_name = fw$.current_job_name
+
+  Sys.sleep(0.1)
+  fw$.prepare_for_training()
+  second_job_name = fw$.current_job_name
+
+  expect_false(first_job_name == second_job_name)
+})
+
+test_that("test_prepare_for_training_force_name", {
+  sms = sagemaker_session()
+  fw = DummyFramework$new(
+    entry_point=SCRIPT_PATH,
+    role=ROLE,
+    sagemaker_session=sms,
+    instance_count=INSTANCE_COUNT,
+    instance_type=INSTANCE_TYPE,
+    base_job_name="some"
+  )
+  fw$.prepare_for_training(job_name="use_it")
+  expect_equal(fw$.current_job_name, "use_it")
+})
+
+
+
 
