@@ -26,9 +26,11 @@ Suggests:
     crayon,
     testthat (>= 3.0.0),
     sagemaker.local,
+    sagemaker.mlcore,
     readr
 Remotes:
-    DyfanJones/sagemaker-r-debugger
+    DyfanJones/sagemaker-r-debugger,
+    DyfanJones/sagemaker-r-mlcore
 License: Apache License (>= 2.0)
 Encoding: UTF-8
 RoxygenNote: 7.1.2
