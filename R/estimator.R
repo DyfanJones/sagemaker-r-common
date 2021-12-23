@@ -1092,7 +1092,7 @@ EstimatorBase = R6Class("EstimatorBase",
 
     # Prepare debugger rules and debugger configs for training.
     .prepare_debugger_for_training = function(){
-      if (!is.null(self$debugger_rules) && is.null(self$debugger_hook_config)){
+      if (!islistempty(self$debugger_rules) && is.null(self$debugger_hook_config)){
         self$debugger_hook_config = DebuggerHookConfig$new(s3_output_path=self$output_path)
       }
       # If debugger_hook_config was provided without an S3 URI, default it for the customer.
@@ -1254,7 +1254,6 @@ EstimatorBase = R6Class("EstimatorBase",
       }
 
       config = .Job$new()$.__enclos_env__$private$.load_config(inputs, self)
-
       current_hyperparameters = self$hyperparameters()
 
       if (!is.null(current_hyperparameters)){
@@ -1282,23 +1281,23 @@ EstimatorBase = R6Class("EstimatorBase",
       if (self$enable_network_isolation())
         train_args$enable_network_isolation = TRUE
 
-      if (!is.null(self$max_retry_attempts))
+      if (!is.null(self$max_retry_attempts)) {
         train_args[["retry_strategy"]] = list("MaximumRetryAttempts"=self$max_retry_attempts)
-      else
+      } else {
         train_args[["retry_strategy"]] = NULL
-
-      if (self$encrypt_inter_container_traffic)
+      }
+      if (self$encrypt_inter_container_traffic) {
         train_args$encrypt_inter_container_traffic = TRUE
-
+      }
       if (inherits(self, "AlgorithmEstimator")){
         train_args$algorithm_arn = self$algorithm_arn
       } else {
         train_args$image_uri = self$training_image_uri()
       }
-      if (!islistempty(self$debugger_rule_configs))
+      if (!islistempty(self$debugger_rule_configs)) {
         train_args$debugger_rule_configs = self$debugger_rule_configs
-
-      if (!islistempty(self$debugger_hook_config)){
+      }
+      if (!is.logical(self$debugger_hook_config) && !islistempty(self$debugger_hook_config)){
         self$debugger_hook_config$collection_configs = self$collection_configs
         train_args$debugger_hook_config = self$debugger_hook_config$to_request_list()}
 
@@ -1307,7 +1306,7 @@ EstimatorBase = R6Class("EstimatorBase",
 
       train_args = private$.add_spot_checkpoint_args(local_mode, train_args)
 
-      if (!islistempty(self$enable_sagemaker_metrics))
+      if (isTRUE(self$enable_sagemaker_metrics))
         train_args$enable_sagemaker_metrics = self$enable_sagemaker_metrics
 
       if (!islistempty(self$profiler_rule_configs))
@@ -1778,6 +1777,7 @@ Estimator = R6Class("Estimator",
         # predict_wrapper = function(endpoint, session){
         #   return(Predictor$new(endpoint, session))
         # }
+        Predictor = pkg_method("Predictor", "sagemaker.mlcore")
         predictor_cls = Predictor
       }
 
@@ -1969,7 +1969,7 @@ Framework = R6Class("Framework",
     initialize = function(entry_point,
                           source_dir=NULL,
                           hyperparameters=NULL,
-                          container_log_level=c("INFO", "WARN", "ERROR", "FATAL", "CRITICAL"),
+                          container_log_level=c("INFO", "DEBUG", "WARN", "ERROR", "FATAL", "CRITICAL"),
                           code_location=NULL,
                           image_uri=NULL,
                           dependencies=NULL,
@@ -1993,6 +1993,7 @@ Framework = R6Class("Framework",
       # Align logging level with python logging
       container_log_level = match.arg(container_log_level)
       container_log_level = switch(container_log_level,
+                                   "DEBUG" = 10,
                                    "INFO" = 20,
                                    "WARN" = 30,
                                    "ERROR" = 40,
@@ -2048,7 +2049,7 @@ Framework = R6Class("Framework",
         code_dir = self$CONTAINER_CODE_CHANNEL_SOURCEDIR_PATH
         script = self$uploaded_code$script_name
         self$code_uri = self$uploaded_code$s3_prefix
-      } else{
+      } else {
         self$uploaded_code = private$.stage_user_code_in_s3()
         code_dir = self$uploaded_code$s3_prefix
         script = self$uploaded_code$script_name
