@@ -1186,7 +1186,6 @@ ModelPackage = R6Class("ModelPackage",
        vpc_config=self$vpc_config,
        enable_network_isolation=self$enable_network_isolation())
    }
-
   ),
   private = list(
     .create_sagemaker_model_package = function(){
