@@ -29,6 +29,7 @@ Updating the profiling configuration for TensorFlow dataloader profiling
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{EstimatorBase$new()}}
+\item \href{#method-help}{\code{EstimatorBase$help()}}
 \item \href{#method-training_image_uri}{\code{EstimatorBase$training_image_uri()}}
 \item \href{#method-hyperparameters}{\code{EstimatorBase$hyperparameters()}}
 \item \href{#method-enable_network_isolation}{\code{EstimatorBase$enable_network_isolation()}}
@@ -273,6 +274,16 @@ You can cap the total duration for your job by setting ``max_wait`` and ``max_ru
 }
 \if{html}{\out{</div>}}
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-help"></a>}}
+\if{latex}{\out{\hypertarget{method-help}{}}}
+\subsection{Method \code{help()}}{
+Return class documentation
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{EstimatorBase$help()}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-training_image_uri"></a>}}
@@ -737,6 +748,7 @@ Creates a model package for creating SageMaker models or listing on Marketplace.
   description = NULL,
   compile_model_family = NULL,
   model_name = NULL,
+  drift_check_baselines = NULL,
   ...
 )}\if{html}{\out{</div>}}
 }
@@ -780,6 +792,8 @@ or "PendingManualApproval" (default: "PendingManualApproval").}
 model will be used (default: None).}
 
 \item{\code{model_name}}{(str): User defined model name (default: None).}
+
+\item{\code{drift_check_baselines}}{(DriftCheckBaselines): DriftCheckBaselines object (default: None).}
 
 \item{\code{...}}{: Passed to invocation of ``create_model()``. Implementations may customize
 ``create_model()`` to accept ``**kwargs`` to customize model creation during

@@ -18,9 +18,15 @@ Base class that cannot be instantiated directly.
 
 \item{\code{LAUNCH_MPI_ENV_NAME}}{class metadata}
 
+\item{\code{LAUNCH_SM_DDP_ENV_NAME}}{class metadata}
+
+\item{\code{INSTANCE_TYPE}}{class metadata}
+
 \item{\code{MPI_NUM_PROCESSES_PER_HOST}}{class metadata}
 
 \item{\code{MPI_CUSTOM_MPI_OPTIONS}}{class metadata}
+
+\item{\code{SM_DDP_CUSTOM_MPI_OPTIONS}}{class metadata}
 
 \item{\code{CONTAINER_CODE_CHANNEL_SOURCEDIR_PATH}}{class metadata}
 }
@@ -52,6 +58,7 @@ Base class that cannot be instantiated directly.
 \item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="EstimatorBase" data-id="fit">}\href{../../sagemaker.common/html/EstimatorBase.html#method-fit}{\code{sagemaker.common::EstimatorBase$fit()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="EstimatorBase" data-id="format">}\href{../../sagemaker.common/html/EstimatorBase.html#method-format}{\code{sagemaker.common::EstimatorBase$format()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="EstimatorBase" data-id="get_vpc_config">}\href{../../sagemaker.common/html/EstimatorBase.html#method-get_vpc_config}{\code{sagemaker.common::EstimatorBase$get_vpc_config()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="EstimatorBase" data-id="help">}\href{../../sagemaker.common/html/EstimatorBase.html#method-help}{\code{sagemaker.common::EstimatorBase$help()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="EstimatorBase" data-id="latest_job_debugger_artifacts_path">}\href{../../sagemaker.common/html/EstimatorBase.html#method-latest_job_debugger_artifacts_path}{\code{sagemaker.common::EstimatorBase$latest_job_debugger_artifacts_path()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="EstimatorBase" data-id="latest_job_profiler_artifacts_path">}\href{../../sagemaker.common/html/EstimatorBase.html#method-latest_job_profiler_artifacts_path}{\code{sagemaker.common::EstimatorBase$latest_job_profiler_artifacts_path()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="EstimatorBase" data-id="latest_job_tensorboard_artifacts_path">}\href{../../sagemaker.common/html/EstimatorBase.html#method-latest_job_tensorboard_artifacts_path}{\code{sagemaker.common::EstimatorBase$latest_job_tensorboard_artifacts_path()}}\out{</span>}
@@ -75,7 +82,7 @@ Base class initializer. Subclasses which override ``__init__`` should
   entry_point,
   source_dir = NULL,
   hyperparameters = NULL,
-  container_log_level = c("INFO", "WARN", "ERROR", "FATAL", "CRITICAL"),
+  container_log_level = c("INFO", "DEBUG", "WARN", "ERROR", "FATAL", "CRITICAL"),
   code_location = NULL,
   image_uri = NULL,
   dependencies = NULL,

@@ -95,6 +95,7 @@ Manage interactions with the Amazon SageMaker APIs and any other AWS services ne
 \item \href{#method-wait_for_athena_query}{\code{Session$wait_for_athena_query()}}
 \item \href{#method-download_athena_query_result}{\code{Session$download_athena_query_result()}}
 \item \href{#method-account_id}{\code{Session$account_id()}}
+\item \href{#method-help}{\code{Session$help()}}
 \item \href{#method-format}{\code{Session$format()}}
 \item \href{#method-clone}{\code{Session$clone()}}
 }
@@ -2627,6 +2628,16 @@ Get the AWS account id of the caller.
 \subsection{Returns}{
 AWS account ID.
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-help"></a>}}
+\if{latex}{\out{\hypertarget{method-help}{}}}
+\subsection{Method \code{help()}}{
+Return class documentation
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Session$help()}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-format"></a>}}
