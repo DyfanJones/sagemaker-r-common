@@ -4,10 +4,10 @@
 \alias{DebuggerHookConfig}
 \title{Create a Debugger hook configuration object to save the tensor for debugging.}
 \description{
-DebuggerHookConfig provides options to customize how debugging
-             information is emitted and saved. This high-level DebuggerHookConfig class
+\code{DebuggerHookConfig} provides options to customize how debugging
+             information is emitted and saved. This high-level \code{DebuggerHookConfig} class
              runs based on the `smdebug.SaveConfig
-             <https://github.com/awslabs/sagemaker-debugger/blob/master/docs/api.md#saveconfig>`
+             \url{https://github.com/awslabs/sagemaker-debugger/blob/master/docs/api.md#saveconfig}
              class.
 }
 \section{Public fields}{

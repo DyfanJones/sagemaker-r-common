@@ -7,51 +7,73 @@
 With this input, SQL queries will be executed using Redshift to generate datasets to S3.
 }
 \section{Super class}{
-\code{\link[R6sagemaker.common:ApiObject]{R6sagemaker.common::ApiObject}} -> \code{RedshiftDatasetDefinition}
-}
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{cluster_id}}{(str): The Redshift cluster Identifier.}
-
-\item{\code{database}}{(str): The name of the Redshift database used in Redshift query execution.}
-
-\item{\code{db_user}}{(str): The database user name used in Redshift query execution.}
-
-\item{\code{query_string}}{(str): The SQL query statements to be executed.}
-
-\item{\code{cluster_role_arn}}{(str): The IAM role attached to your Redshift cluster that
-Amazon SageMaker uses to generate datasets.}
-
-\item{\code{output_s3_uri}}{(str): The location in Amazon S3 where the Redshift query
-results are stored.}
-
-\item{\code{kms_key_id}}{(str): The AWS Key Management Service (AWS KMS) key that Amazon
-SageMaker uses to encrypt data from a Redshift execution.}
-
-\item{\code{output_format}}{(str): The data storage format for Redshift query results.
-Valid options are "PARQUET", "CSV"}
-
-\item{\code{output_compression}}{(str): The compression used for Redshift query results.
-Valid options are "None", "GZIP", "SNAPPY", "ZSTD", "BZIP2"}
-}
-\if{html}{\out{</div>}}
+\code{\link[sagemaker.common:ApiObject]{sagemaker.common::ApiObject}} -> \code{RedshiftDatasetDefinition}
 }
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
+\item \href{#method-new}{\code{RedshiftDatasetDefinition$new()}}
 \item \href{#method-clone}{\code{RedshiftDatasetDefinition$clone()}}
 }
 }
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="ApiObject" data-id="format">}\href{../../R6sagemaker.common/html/ApiObject.html#method-format}{\code{R6sagemaker.common::ApiObject$format()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="ApiObject" data-id="from_paws">}\href{../../R6sagemaker.common/html/ApiObject.html#method-from_paws}{\code{R6sagemaker.common::ApiObject$from_paws()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="ApiObject" data-id="initialize">}\href{../../R6sagemaker.common/html/ApiObject.html#method-initialize}{\code{R6sagemaker.common::ApiObject$initialize()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="ApiObject" data-id="to_paws">}\href{../../R6sagemaker.common/html/ApiObject.html#method-to_paws}{\code{R6sagemaker.common::ApiObject$to_paws()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="ApiObject" data-id="format">}\href{../../sagemaker.common/html/ApiObject.html#method-format}{\code{sagemaker.common::ApiObject$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="ApiObject" data-id="from_paws">}\href{../../sagemaker.common/html/ApiObject.html#method-from_paws}{\code{sagemaker.common::ApiObject$from_paws()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="ApiObject" data-id="to_paws">}\href{../../sagemaker.common/html/ApiObject.html#method-to_paws}{\code{sagemaker.common::ApiObject$to_paws()}}\out{</span>}
 }
 \out{</details>}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
+\subsection{Method \code{new()}}{
+Initialize RedshiftDatasetDefinition.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{RedshiftDatasetDefinition$new(
+  cluster_id = NULL,
+  database = NULL,
+  db_user = NULL,
+  query_string = NULL,
+  cluster_role_arn = NULL,
+  output_s3_uri = NULL,
+  kms_key_id = NULL,
+  output_format = NULL,
+  output_compression = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{cluster_id}}{(str, default=None): The Redshift cluster Identifier.
+database (str, default=None):
+The name of the Redshift database used in Redshift query execution.}
+
+\item{\code{database}}{(str, default=None): The name of the Redshift database used in Redshift query execution.}
+
+\item{\code{db_user}}{(str, default=None): The database user name used in Redshift query execution.}
+
+\item{\code{query_string}}{(str, default=None): The SQL query statements to be executed.}
+
+\item{\code{cluster_role_arn}}{(str, default=None): The IAM role attached to your Redshift cluster
+that Amazon SageMaker uses to generate datasets.}
+
+\item{\code{output_s3_uri}}{(str, default=None): The location in Amazon S3 where the Redshift query
+results are stored.}
+
+\item{\code{kms_key_id}}{(str, default=None): The AWS Key Management Service (AWS KMS) key that Amazon
+SageMaker uses to encrypt data from a Redshift execution.}
+
+\item{\code{output_format}}{(str, default=None): The data storage format for Redshift query results.
+Valid options are "PARQUET", "CSV"}
+
+\item{\code{output_compression}}{(str, default=None): The compression used for Redshift query results.
+Valid options are "None", "GZIP", "SNAPPY", "ZSTD", "BZIP2"}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}

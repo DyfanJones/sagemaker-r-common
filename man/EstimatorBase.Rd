@@ -29,6 +29,7 @@ Updating the profiling configuration for TensorFlow dataloader profiling
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{EstimatorBase$new()}}
+\item \href{#method-help}{\code{EstimatorBase$help()}}
 \item \href{#method-training_image_uri}{\code{EstimatorBase$training_image_uri()}}
 \item \href{#method-hyperparameters}{\code{EstimatorBase$hyperparameters()}}
 \item \href{#method-enable_network_isolation}{\code{EstimatorBase$enable_network_isolation()}}
@@ -38,6 +39,8 @@ Updating the profiling configuration for TensorFlow dataloader profiling
 \item \href{#method-latest_job_profiler_artifacts_path}{\code{EstimatorBase$latest_job_profiler_artifacts_path()}}
 \item \href{#method-fit}{\code{EstimatorBase$fit()}}
 \item \href{#method-wait}{\code{EstimatorBase$wait()}}
+\item \href{#method-describe}{\code{EstimatorBase$describe()}}
+\item \href{#method-rule_job_summary}{\code{EstimatorBase$rule_job_summary()}}
 \item \href{#method-compile_model}{\code{EstimatorBase$compile_model()}}
 \item \href{#method-attach}{\code{EstimatorBase$attach()}}
 \item \href{#method-logs}{\code{EstimatorBase$logs()}}
@@ -63,8 +66,8 @@ Initialize an ``EstimatorBase`` instance.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{EstimatorBase$new(
   role,
-  instance_count,
-  instance_type,
+  instance_count = NULL,
+  instance_type = NULL,
   volume_size = 30,
   volume_kms_key = NULL,
   max_run = 24 * 60 * 60,
@@ -273,6 +276,16 @@ You can cap the total duration for your job by setting ``max_wait`` and ``max_ru
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-help"></a>}}
+\if{latex}{\out{\hypertarget{method-help}{}}}
+\subsection{Method \code{help()}}{
+Return class documentation
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{EstimatorBase$help()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-training_image_uri"></a>}}
 \if{latex}{\out{\hypertarget{method-training_image_uri}{}}}
 \subsection{Method \code{training_image_uri()}}{
@@ -448,6 +461,30 @@ strings are "All", "NULL", "Training", or "Rules". To maintain backwards
 compatibility, boolean values are also accepted and converted to strings.}
 }
 \if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-describe"></a>}}
+\if{latex}{\out{\hypertarget{method-describe}{}}}
+\subsection{Method \code{describe()}}{
+Returns a response from the DescribeTrainingJob API call.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{EstimatorBase$describe()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-rule_job_summary"></a>}}
+\if{latex}{\out{\hypertarget{method-rule_job_summary}{}}}
+\subsection{Method \code{rule_job_summary()}}{
+Calls describe_training_job and returns two dictionaries.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{EstimatorBase$rule_job_summary()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+list[dict]: A list of DebugRuleEvaluationStatuses and ProfilerRuleEvaluationStatuses
+             dictionary.
 }
 }
 \if{html}{\out{<hr>}}
@@ -711,6 +748,7 @@ Creates a model package for creating SageMaker models or listing on Marketplace.
   description = NULL,
   compile_model_family = NULL,
   model_name = NULL,
+  drift_check_baselines = NULL,
   ...
 )}\if{html}{\out{</div>}}
 }
@@ -754,6 +792,8 @@ or "PendingManualApproval" (default: "PendingManualApproval").}
 model will be used (default: None).}
 
 \item{\code{model_name}}{(str): User defined model name (default: None).}
+
+\item{\code{drift_check_baselines}}{(DriftCheckBaselines): DriftCheckBaselines object (default: None).}
 
 \item{\code{...}}{: Passed to invocation of ``create_model()``. Implementations may customize
 ``create_model()`` to accept ``**kwargs`` to customize model creation during

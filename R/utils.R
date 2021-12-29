@@ -117,7 +117,7 @@ sagemaker_short_timestamp <- function() return(strftime(Sys.time(), "%y%m%d-%H%M
 #' @return dict: dict of key and value or an empty dict.
 #' @export
 build_dict <- function(key, value = NULL){
-  if (!is.null(value)) {
+  if (!islistempty(value)) {
     dict = list(value)
     names(dict) = key
     return(dict)
@@ -378,10 +378,10 @@ tar_subdir <- function(tarfile, src, compress = "gzip", ...){
     src_dir = unique(src)
     src_file = "."
   }
-  if(!dir.exists(src_dir)){
-    ValueError$new(
-      sprintf("Directory '%s' doesn't exist, please check directory location and try again.",
-              src_dir)
+  if(!any(fs::file_exists(src))){
+    ValueError$new(sprintf(
+      "Directory '%s' doesn't exist, please check directory location and try again.",
+      src)
     )
   }
   current_dir = getwd()

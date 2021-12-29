@@ -36,10 +36,11 @@ renamed_kwargs <- function(old_name,
                            new_name,
                            value,
                            kwargs){
-  if(old_name %in% names(renamed_kwargs)){
+  kwargs_name = deparse(substitute(kwargs))
+  if(old_name %in% names(kwargs)){
     value = kwargs[[old_name]] %||% value
     kwargs[[new_name]] = value
-    assign("kwargs", kwargs, envir = parent.env(environment()))
+    assign(kwargs_name, kwargs, envir = parent.frame())
     renamed_warning(old_name)}
   return(value)
 }

@@ -1,5 +1,5 @@
 #' @import R6
-#' @importFrom utils getFromNamespace
+#' @importFrom utils getFromNamespace help
 
 `%||%` <- function(x, y) if (is.null(x)) return(y) else return(x)
 
@@ -191,4 +191,50 @@ is_list_named = function(x){
 
 paws_error_code <- function(error){
   return(error[["error_response"]][["__type"]] %||% error[["error_response"]][["Code"]])
+}
+
+to_str <- function(obj, ...){
+  UseMethod("to_str")
+}
+
+to_str.default <- function(obj, ...){
+  as.character(obj)
+}
+
+to_str.list <- function(obj, ...){
+  jsonlite::toJSON(obj, auto_unbox = F)
+}
+
+to_str.numeric <- function(obj, ...){
+  format(obj, scientific = F)
+}
+
+# Correctly mimic python append method for list
+# Full credit to package rlist: https://github.com/renkun-ken/rlist/blob/2692e064fc7b6cc7fe7079b3762df37bc25b3dbd/R/list.insert.R#L26-L44
+list.append = function (.data, ...) {
+  if (is.list(.data)) c(.data, list(...)) else c(.data, ..., recursive = FALSE)
+}
+
+#' @title Helper function to return help documentation for sagemaker R6 classes.
+#' @param cls (R6::R6Class): R6 class
+#' @param pkg_name (str): package name to get documentation
+#' @export
+cls_help = function(cls){
+  cls_name = class(cls)[[1]]
+  cls_env = tryCatch({
+    get(cls_name)$parent_env
+  }, error = function(e){
+    NULL
+  })
+  pkg_name = if(is.null(cls_env)) NULL else get0(".packageName", envir = cls_env, inherits = FALSE)
+  if(is.null(pkg_name)) {
+    utils::help((cls_name))
+  } else {
+    utils::help((cls_name), (pkg_name))
+  }
+}
+
+pkg_name = function(){
+  env <- topenv(environment())
+  get0(".packageName", envir = env, inherits = FALSE)
 }

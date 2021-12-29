@@ -1,4 +1,4 @@
 library(testthat)
-library(R6sagemaker.common)
+library(sagemaker.common)
 
-test_check("R6sagemaker.common")
+test_check("sagemaker.common")

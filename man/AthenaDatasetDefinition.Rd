@@ -7,47 +7,70 @@
 With this input, SQL queries will be executed using Athena to generate datasets to S3.
 }
 \section{Super class}{
-\code{\link[R6sagemaker.common:ApiObject]{R6sagemaker.common::ApiObject}} -> \code{AthenaDatasetDefinition}
-}
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{catalog}}{(str): The name of the data catalog used in Athena query execution.}
-
-\item{\code{database}}{(str): The name of the database used in the Athena query execution.}
-
-\item{\code{query_string}}{(str): The SQL query statements, to be executed.}
-
-\item{\code{output_s3_uri}}{(str): The location in Amazon S3 where Athena query results are stored.}
-
-\item{\code{work_group}}{(str): The name of the workgroup in which the Athena query is being started.}
-
-\item{\code{kms_key_id}}{(str): The AWS Key Management Service (AWS KMS) key that Amazon
-SageMaker uses to encrypt data generated from an Athena query execution.}
-
-\item{\code{output_format}}{(str): The data storage format for Athena query results.
-Valid options are "PARQUET", "ORC", "AVRO", "JSON", "TEXTFILE"}
-
-\item{\code{output_compression}}{(str): The compression used for Athena query results.
-Valid options are "GZIP", "SNAPPY", "ZLIB"}
-}
-\if{html}{\out{</div>}}
+\code{\link[sagemaker.common:ApiObject]{sagemaker.common::ApiObject}} -> \code{AthenaDatasetDefinition}
 }
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
+\item \href{#method-new}{\code{AthenaDatasetDefinition$new()}}
 \item \href{#method-clone}{\code{AthenaDatasetDefinition$clone()}}
 }
 }
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="ApiObject" data-id="format">}\href{../../R6sagemaker.common/html/ApiObject.html#method-format}{\code{R6sagemaker.common::ApiObject$format()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="ApiObject" data-id="from_paws">}\href{../../R6sagemaker.common/html/ApiObject.html#method-from_paws}{\code{R6sagemaker.common::ApiObject$from_paws()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="ApiObject" data-id="initialize">}\href{../../R6sagemaker.common/html/ApiObject.html#method-initialize}{\code{R6sagemaker.common::ApiObject$initialize()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="ApiObject" data-id="to_paws">}\href{../../R6sagemaker.common/html/ApiObject.html#method-to_paws}{\code{R6sagemaker.common::ApiObject$to_paws()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="ApiObject" data-id="format">}\href{../../sagemaker.common/html/ApiObject.html#method-format}{\code{sagemaker.common::ApiObject$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="ApiObject" data-id="from_paws">}\href{../../sagemaker.common/html/ApiObject.html#method-from_paws}{\code{sagemaker.common::ApiObject$from_paws()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="ApiObject" data-id="to_paws">}\href{../../sagemaker.common/html/ApiObject.html#method-to_paws}{\code{sagemaker.common::ApiObject$to_paws()}}\out{</span>}
 }
 \out{</details>}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
+\subsection{Method \code{new()}}{
+Initialize AthenaDatasetDefinition.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AthenaDatasetDefinition$new(
+  catalog = NULL,
+  database = NULL,
+  query_string = NULL,
+  output_s3_uri = NULL,
+  work_group = NULL,
+  kms_key_id = NULL,
+  output_format = NULL,
+  output_compression = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{catalog}}{(str, default=None): The name of the data catalog used in Athena query
+execution.}
+
+\item{\code{database}}{(str, default=None): The name of the database used in the Athena query
+execution.}
+
+\item{\code{query_string}}{(str, default=None): The SQL query statements, to be executed.}
+
+\item{\code{output_s3_uri}}{(str, default=None):
+The location in Amazon S3 where Athena query results are stored.}
+
+\item{\code{work_group}}{(str, default=None):
+The name of the workgroup in which the Athena query is being started.}
+
+\item{\code{kms_key_id}}{(str, default=None): The AWS Key Management Service (AWS KMS) key that Amazon
+SageMaker uses to encrypt data generated from an Athena query execution.}
+
+\item{\code{output_format}}{(str, default=None): The data storage format for Athena query results.
+Valid options are "PARQUET", "ORC", "AVRO", "JSON", "TEXTFILE"}
+
+\item{\code{output_compression}}{(str, default=None): The compression used for Athena query results.
+Valid options are "GZIP", "SNAPPY", "ZLIB"}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}

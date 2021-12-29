@@ -1,4 +1,4 @@
-#' r6sagemaker.common: this is just a placeholder
+#' sagemaker.common: this is just a placeholder
 #'
 #' @import R6
 #' @import paws
@@ -16,7 +16,7 @@
 
 .onLoad <- function(libname, pkgname) {
   # set package logs and don't propagate root logs
-  .logger = lgr::get_logger(name = "R6sagemaker")$set_propagate(FALSE)
+  .logger = lgr::get_logger(name = "sagemaker")$set_propagate(FALSE)
 
   # set logging layout
   .logger$add_appender(

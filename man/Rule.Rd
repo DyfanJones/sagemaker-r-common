@@ -12,12 +12,21 @@ The SageMaker Debugger Rule class configures *debugging* rules to debug your tra
              For example, the debugging rules can detect whether gradients are getting too large or
              too small, or if a model is overfitting.
              For a full list of built-in rules for debugging, see
-             `List of Debugger Built-in Rules
-             <https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html>`_.
+             `List of Debugger Built-in Rules`
+             \url{https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html}.
              You can also write your own rules using the custom rule classmethod.
 }
 \section{Super class}{
-\code{\link[R6sagemaker.common:RuleBase]{R6sagemaker.common::RuleBase}} -> \code{Rule}
+\code{\link[sagemaker.common:RuleBase]{sagemaker.common::RuleBase}} -> \code{Rule}
+}
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{collection_configs}}{A list of :class:`~sagemaker.debugger.CollectionConfig}
+
+\item{\code{actions}}{Placeholder}
+}
+\if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -26,14 +35,14 @@ The SageMaker Debugger Rule class configures *debugging* rules to debug your tra
 \item \href{#method-sagemaker}{\code{Rule$sagemaker()}}
 \item \href{#method-custom}{\code{Rule$custom()}}
 \item \href{#method-prepare_actions}{\code{Rule$prepare_actions()}}
-\item \href{#method-to_debugger_rule_config_dict}{\code{Rule$to_debugger_rule_config_dict()}}
+\item \href{#method-to_debugger_rule_config_list}{\code{Rule$to_debugger_rule_config_list()}}
 \item \href{#method-clone}{\code{Rule$clone()}}
 }
 }
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="RuleBase" data-id="format">}\href{../../R6sagemaker.common/html/RuleBase.html#method-format}{\code{R6sagemaker.common::RuleBase$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="RuleBase" data-id="format">}\href{../../sagemaker.common/html/RuleBase.html#method-format}{\code{sagemaker.common::RuleBase$format()}}\out{</span>}
 }
 \out{</details>}
 }
@@ -44,14 +53,14 @@ The SageMaker Debugger Rule class configures *debugging* rules to debug your tra
 Configure the debugging rules using the following classmethods.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Rule$new(
-  name,
-  image_uri,
-  instance_type,
-  container_local_output_path,
-  s3_output_path,
-  volume_size_in_gb,
-  rule_parameters,
-  collections_to_save,
+  name = NULL,
+  image_uri = NULL,
+  instance_type = NULL,
+  container_local_output_path = NULL,
+  s3_output_path = NULL,
+  volume_size_in_gb = NULL,
+  rule_parameters = NULL,
+  collections_to_save = NULL,
   actions = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -103,11 +112,11 @@ Initialize a ``Rule`` object for a \code{built-in} debugging rule.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{base_config}}{(dict): Required. This is the base rule config dictionary returned from the
-:class:`~sagemaker.debugger.rule_configs` method.
-For example, ``rule_configs.dead_relu()``.
+:class:\code{sagemaker.debugger} method.
+For example, \code{sagemaker.debugger::dead_relu()}.
 For a full list of built-in rules for debugging, see
-`List of Debugger Built-in Rules
-<https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html>`_.}
+`List of Debugger Built-in Rules`
+\url{https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html}.}
 
 \item{\code{name}}{(str): Optional. The name of the debugger rule. If one is not provided,
 the name of the base_config will be used.}
@@ -126,9 +135,9 @@ of other trials to use the SimilarAcrossRuns rule.}
 
 \item{\code{rule_parameters}}{(dict): Optional. A dictionary of parameters for the rule.}
 
-\item{\code{collections_to_save}}{(:class:`~sagemaker.debugger.CollectionConfig`):
+\item{\code{collections_to_save}}{(:class:\code{sagemaker.debugger::CollectionConfig}):
 Optional. A list
-of :class:`~sagemaker.debugger.CollectionConfig` objects to be saved.}
+of :class:\code{sagemaker.debugger::CollectionConfig} objects to be saved.}
 
 \item{\code{actions}}{:}
 }
@@ -146,9 +155,8 @@ Initialize a ``Rule`` object for a *custom* debugging rule.
              You can create a custom rule that analyzes tensors emitted
              during the training of a model
              and monitors conditions that are critical for the success of a training
-             job. For more information, see `Create Debugger Custom Rules for Training Job
-             Analysis
-             <https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-custom-rules.html>`_.
+             job. For more information, see `Create Debugger Custom Rules for Training Job Analysis`
+             \url{https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-custom-rules.html}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Rule$custom(
   name,
@@ -229,12 +237,12 @@ prefix for the StopTraining action if it is specified.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-to_debugger_rule_config_dict"></a>}}
-\if{latex}{\out{\hypertarget{method-to_debugger_rule_config_dict}{}}}
-\subsection{Method \code{to_debugger_rule_config_dict()}}{
+\if{html}{\out{<a id="method-to_debugger_rule_config_list"></a>}}
+\if{latex}{\out{\hypertarget{method-to_debugger_rule_config_list}{}}}
+\subsection{Method \code{to_debugger_rule_config_list()}}{
 Generates a request dictionary using the parameters provided when initializing object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Rule$to_debugger_rule_config_dict()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Rule$to_debugger_rule_config_list()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{

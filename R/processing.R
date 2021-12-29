@@ -166,7 +166,7 @@ Processor = R6Class("Processor",
 
       if(self$instance_type %in% c("local", "local_gpu")){
         if(!inherits(sagemaker_session, "LocalSession")){
-          LocalSession = pkg_method("LocalSession", "R6sagemaker.local")
+          LocalSession = pkg_method("LocalSession", "sagemaker.local")
           sagemaker_session = LocalSession$new()
         }
       }

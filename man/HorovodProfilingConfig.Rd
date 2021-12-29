@@ -7,7 +7,7 @@
 The configuration for framework metrics from Horovod distributed training.
 }
 \section{Super class}{
-\code{\link[R6sagemaker.common:MetricsConfigBase]{R6sagemaker.common::MetricsConfigBase}} -> \code{HorovodProfilingConfig}
+\code{\link[sagemaker.common:MetricsConfigBase]{sagemaker.common::MetricsConfigBase}} -> \code{HorovodProfilingConfig}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -19,8 +19,8 @@ The configuration for framework metrics from Horovod distributed training.
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="MetricsConfigBase" data-id="format">}\href{../../R6sagemaker.common/html/MetricsConfigBase.html#method-format}{\code{R6sagemaker.common::MetricsConfigBase$format()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="MetricsConfigBase" data-id="to_json_string">}\href{../../R6sagemaker.common/html/MetricsConfigBase.html#method-to_json_string}{\code{R6sagemaker.common::MetricsConfigBase$to_json_string()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="MetricsConfigBase" data-id="format">}\href{../../sagemaker.common/html/MetricsConfigBase.html#method-format}{\code{sagemaker.common::MetricsConfigBase$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="MetricsConfigBase" data-id="to_json_string">}\href{../../sagemaker.common/html/MetricsConfigBase.html#method-to_json_string}{\code{sagemaker.common::MetricsConfigBase$to_json_string()}}\out{</span>}
 }
 \out{</details>}
 }

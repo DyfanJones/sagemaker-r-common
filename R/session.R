@@ -46,7 +46,7 @@ Session = R6Class("Session",
 
     #' @description Creates a new instance of this [R6][R6::R6Class] class.
     #'              Initialize a SageMaker \code{Session}.
-    #' @param paws_session (\link[R6sagemaker.common]{PawsSession}): The underlying AWS credentails passed to paws SDK.
+    #' @param paws_session (\link[sagemaker.common]{PawsSession}): The underlying AWS credentails passed to paws SDK.
     #' @param sagemaker_client (\link[paws]{sagemaker}): Client which makes Amazon SageMaker service
     #'              calls other than ``InvokeEndpoint`` (default: None). Estimators created using this
     #'              ``Session`` use this client. If not provided, one will be created using this
@@ -2468,6 +2468,11 @@ Session = R6Class("Session",
       return(sts_client$get_caller_identity()[["Account"]])
     },
 
+    #' @description Return class documentation
+    help = function(){
+      cls_help(self)
+    },
+
     #' @description foramt class
     format = function(){
       format_class(self)
@@ -3363,10 +3368,17 @@ get_model_package_args = function(content_types,
   )
   model_package_args[["model_package_name"]] = model_package_name
   model_package_args[["model_package_group_name"]] = model_package_group_name
-  model_package_args[["model_metrics"]] = model_metrics$.to_request_list()
+  if(!is.null(model_metrics)) {
+    model_package_args[["model_metrics"]] = model_metrics$to_request_list()
+  }
   # Paws currently doesn't support drift check baselines
-  # model_package_args[["drift_check_baselines"]] = drift_check_baselines$.to_request_list()
-  model_package_args[["metadata_properties"]] = metadata_properties$.to_request_list()
+  if(!is.null(drift_check_baselines)) {
+    LOGGER$warn("Paws SDK currently doesn't drift_check_baselines. For the time being this parameter is ignored.")
+    # model_package_args[["drift_check_baselines"]] = drift_check_baselines$to_request_list()
+  }
+  if(!is.null(metadata_properties)){
+    model_package_args[["metadata_properties"]] = metadata_properties$to_request_list()
+  }
   model_package_args[["approval_status"]] = approval_status
   model_package_args[["description"]] = description
   model_package_args[["tags"]] = tags

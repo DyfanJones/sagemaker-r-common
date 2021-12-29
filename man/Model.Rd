@@ -7,7 +7,7 @@
 A SageMaker ``Model`` that can be deployed to an ``Endpoint``.
 }
 \section{Super class}{
-\code{\link[R6sagemaker.common:ModelBase]{R6sagemaker.common::ModelBase}} -> \code{Model}
+\code{\link[sagemaker.common:ModelBase]{sagemaker.common::ModelBase}} -> \code{Model}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -29,7 +29,8 @@ A SageMaker ``Model`` that can be deployed to an ``Endpoint``.
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="ModelBase" data-id="format">}\href{../../R6sagemaker.common/html/ModelBase.html#method-format}{\code{R6sagemaker.common::ModelBase$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="ModelBase" data-id="format">}\href{../../sagemaker.common/html/ModelBase.html#method-format}{\code{sagemaker.common::ModelBase$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="ModelBase" data-id="help">}\href{../../sagemaker.common/html/ModelBase.html#method-help}{\code{sagemaker.common::ModelBase$help()}}\out{</span>}
 }
 \out{</details>}
 }
@@ -127,7 +128,8 @@ Creates a model package for creating SageMaker models or listing on Marketplace.
   metadata_properties = NULL,
   marketplace_cert = FALSE,
   approval_status = NULL,
-  description = NULL
+  description = NULL,
+  drift_check_baselines = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -165,6 +167,8 @@ for AWS Marketplace (default: False).}
 or "PendingManualApproval" (default: "PendingManualApproval").}
 
 \item{\code{description}}{(str): Model Package description (default: None).}
+
+\item{\code{drift_check_baselines}}{(DriftCheckBaselines): DriftCheckBaselines object (default: None).}
 }
 \if{html}{\out{</div>}}
 }

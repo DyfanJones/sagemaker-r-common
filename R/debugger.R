@@ -3,9 +3,13 @@
 
 #' @include r_utils.R
 #' @include utils.R
+#' @include error.R
 
 #' @import R6
-#' @import R6sagemaker.debugger
+#' @import sagemaker.debugger
+#' @importFrom jsonlite toJSON
+
+DEBUGGER_FLAG = "USE_SMDEBUG"
 
 # Return the Debugger rule image URI for the given AWS Region.
 # For a full list of rule image URIs,
@@ -23,7 +27,7 @@ get_rule_container_image_uri <- function(region){
 # Returns:
 #   sagemaker.debugger.ProfilerRule: The instance of the built-in ProfilerRule.
 get_default_profiler_rule <- function(){
-  default_rule = R6sagemaker.debugger::ProfilerReport$new()
+  default_rule = sagemaker.debugger::ProfilerReport$new()
   custom_name = sprintf("%s-%s", default_rule$rule_name, as.integer(Sys.time()))
   return(ProfilerRule$new()$sagemaker(default_rule, name=custom_name))
 }
@@ -86,7 +90,7 @@ RuleBase = R6Class("RuleBase",
                 is.null(instance_type) || is.character(instance_type),
                 is.null(container_local_output_path) || is.character(container_local_output_path),
                 is.null(s3_output_path) || is.character(s3_output_path),
-                is.null(volume_size_in_gb) || is.integer(volume_size_in_gb),
+                is.null(volume_size_in_gb) || is.numeric(volume_size_in_gb),
                 is.null(rule_parameters) || is.list(rule_parameters))
 
       self$name = name
@@ -115,9 +119,8 @@ RuleBase = R6Class("RuleBase",
     .set_rule_parameters = function(source=NULL,
                                     rule_to_invoke=NULL,
                                     rule_parameters=NULL){
-      if (!is.null(source) && !is.null(rule_to_invoke))
-        stop("If you provide a source, you must also provide a rule to invoke (and vice versa).",
-             call. = F)
+      if ((is.null(source) + is.null(rule_to_invoke)) == 1)
+        ValueError$new("If you provide a source, you must also provide a rule to invoke (and vice versa).")
 
       merged_rule_params = list()
       merged_rule_params = c(merged_rule_params, build_dict("source_s3_uri", source))
@@ -132,7 +135,7 @@ RuleBase = R6Class("RuleBase",
 
 .get_rule_config <- function(rule_name){
   rule_config = NULL
-  config_file_path = system.file("rule_config_jsons", "ruleConfigs.json", package= "R6sagemaker.common")
+  config_file_path = system.file("rule_config_jsons", "ruleConfigs.json", package= "sagemaker.common")
   if(file.exists(config_file_path)){
     configs = jsonlite::read_json(config_file_path)
     rule_config = configs[[rule_name]]
@@ -149,13 +152,21 @@ RuleBase = R6Class("RuleBase",
 #'              For example, the debugging rules can detect whether gradients are getting too large or
 #'              too small, or if a model is overfitting.
 #'              For a full list of built-in rules for debugging, see
-#'              `List of Debugger Built-in Rules
-#'              <https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html>`_.
+#'              `List of Debugger Built-in Rules`
+#'              \url{https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html}.
 #'              You can also write your own rules using the custom rule classmethod.
 #' @export
 Rule = R6Class("Rule",
   inherit = RuleBase,
   public = list(
+
+    #' @field collection_configs
+    #' A list of :class:`~sagemaker.debugger.CollectionConfig
+    collection_configs = NULL,
+
+    #' @field actions
+    #' Placeholder
+    actions = NULL,
 
     #' @description Configure the debugging rules using the following classmethods.
     #' @param name (str): The name of the rule.
@@ -168,16 +179,16 @@ Rule = R6Class("Rule",
     #' @param collections_to_save ([sagemaker.debugger.CollectionConfig]): Optional. A list
     #'              of :class:`~sagemaker.debugger.CollectionConfig` objects to be saved.
     #' @param actions :
-    initialize = function(name,
-                          image_uri,
-                          instance_type,
-                          container_local_output_path,
-                          s3_output_path,
-                          volume_size_in_gb,
-                          rule_parameters,
-                          collections_to_save,
+    initialize = function(name=NULL,
+                          image_uri=NULL,
+                          instance_type=NULL,
+                          container_local_output_path=NULL,
+                          s3_output_path=NULL,
+                          volume_size_in_gb=NULL,
+                          rule_parameters=NULL,
+                          collections_to_save=NULL,
                           actions=NULL){
-      super$intialize(
+      super$initialize(
         name,
         image_uri,
         instance_type,
@@ -191,11 +202,11 @@ Rule = R6Class("Rule",
 
     #' @description Initialize a ``Rule`` object for a \code{built-in} debugging rule.
     #' @param base_config (dict): Required. This is the base rule config dictionary returned from the
-    #'              :class:`~sagemaker.debugger.rule_configs` method.
-    #'              For example, ``rule_configs.dead_relu()``.
+    #'              :class:\code{sagemaker.debugger} method.
+    #'              For example, \code{sagemaker.debugger::dead_relu()}.
     #'              For a full list of built-in rules for debugging, see
-    #'              `List of Debugger Built-in Rules
-    #'              <https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html>`_.
+    #'              `List of Debugger Built-in Rules`
+    #'              \url{https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html}.
     #' @param name (str): Optional. The name of the debugger rule. If one is not provided,
     #'              the name of the base_config will be used.
     #' @param container_local_output_path (str): Optional. The local path in the rule processing
@@ -208,9 +219,9 @@ Rule = R6Class("Rule",
     #' @param other_trials_s3_input_paths ([str]): Optional. The Amazon S3 input paths
     #'              of other trials to use the SimilarAcrossRuns rule.
     #' @param rule_parameters (dict): Optional. A dictionary of parameters for the rule.
-    #' @param collections_to_save (:class:`~sagemaker.debugger.CollectionConfig`):
+    #' @param collections_to_save (:class:\code{sagemaker.debugger::CollectionConfig}):
     #'              Optional. A list
-    #'              of :class:`~sagemaker.debugger.CollectionConfig` objects to be saved.
+    #'              of :class:\code{sagemaker.debugger::CollectionConfig} objects to be saved.
     #' @param actions :
     #' @return :class:`~sagemaker.debugger.Rule`: An instance of the built-in rule.
     sagemaker = function(base_config,
@@ -224,17 +235,16 @@ Rule = R6Class("Rule",
       merged_rule_params = list()
 
       if (!is.null(rule_parameters) && !islistempty(rule_parameters$rule_to_invoke))
-        stop("You cannot provide a 'rule_to_invoke' for SageMaker rules.",
-             "Either remove the rule_to_invoke or use a custom rule.",
-             call. = F)
-
-      if (!is.null(actions) && (inherits(actions, "Action") || inherits(actions, "ActionList")))
-        stop("`actions` must be of type `Action` or `ActionList`!", call. = F)
+        RuntimeError$new(
+          "You cannot provide a 'rule_to_invoke' for SageMaker rules.",
+          "Either remove the rule_to_invoke or use a custom rule."
+        )
+      if (!is.null(actions) && !inherits(actions, c("Action", "ActionList")))
+        RuntimeError$new("`actions` must be of type `Action` or `ActionList`!")
 
       if (!is.null(other_trials_s3_input_paths)){
-        s3_in_split = split_str(other_trials_s3_input_paths, "")
-        for (index in seq_along(s3_in_split)){
-          merged_rule_params[[sprintf("other_trial_%s",index)]] = s3_in_split[index]
+        for (index in seq_along(other_trials_s3_input_paths)){
+          merged_rule_params[[sprintf("other_trial_%s",index-1)]] = other_trials_s3_input_paths[index]
         }
       }
 
@@ -257,7 +267,8 @@ Rule = R6Class("Rule",
         base_config_collections = c(
           base_config_collections, CollectionConfig$new(name=collection_name, parameters=collection_parameters))
       }
-      return(self$initialize(
+
+      self$initialize(
         name=name %||% base_config[["DebugRuleConfiguration"]][["RuleConfigurationName"]],
         image_uri="DEFAULT_RULE_EVALUATOR_IMAGE",
         instance_type=NULL,
@@ -266,17 +277,17 @@ Rule = R6Class("Rule",
         volume_size_in_gb=NULL,
         rule_parameters=merged_rule_params,
         collections_to_save=collections_to_save %||% base_config_collections,
-        actions=actions)
+        actions=actions
       )
+      return(self)
     },
 
     #' @description Initialize a ``Rule`` object for a *custom* debugging rule.
     #'              You can create a custom rule that analyzes tensors emitted
     #'              during the training of a model
     #'              and monitors conditions that are critical for the success of a training
-    #'              job. For more information, see `Create Debugger Custom Rules for Training Job
-    #'              Analysis
-    #'              <https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-custom-rules.html>`_.
+    #'              job. For more information, see `Create Debugger Custom Rules for Training Job Analysis`
+    #'              \url{https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-custom-rules.html}.
     #' @param name (str): Required. The name of the debugger rule.
     #' @param image_uri (str): Required. The URI of the image to be used by the debugger rule.
     #' @param instance_type (str): Required. Type of EC2 instance to use, for example,
@@ -314,12 +325,12 @@ Rule = R6Class("Rule",
                       collections_to_save=NULL,
                       actions=NULL){
       if(!is.null(actions) && !(inherits(actions, "Action") || inherits(actions, "ActionList")))
-        stop("`actions` must be of type `Action` or `ActionList`!", call. = F)
+        RuntimeError$new("`actions` must be of type `Action` or `ActionList`!")
 
       merged_rule_params = private$.set_rule_parameters(
         source, rule_to_invoke, other_trials_s3_input_paths, rule_parameters)
 
-      return (self$initialize(
+      self$initialize(
         name=name,
         image_uri=image_uri,
         instance_type=instance_type,
@@ -329,7 +340,7 @@ Rule = R6Class("Rule",
         rule_parameters=merged_rule_params,
         collections_to_save=collections_to_save %||% list(),
         actions=actions)
-      )
+      return(self)
     },
 
     #' @description Prepare actions for Debugger Rule.
@@ -348,7 +359,7 @@ Rule = R6Class("Rule",
 
     #' @description Generates a request dictionary using the parameters provided when initializing object.
     #' @return dict: An portion of an API request as a dictionary.
-    to_debugger_rule_config_dict = function(){
+    to_debugger_rule_config_list = function(){
       debugger_rule_config_request = list(
         "RuleConfigurationName"= self$name,
         "RuleEvaluatorImage"= self$image_uri)
@@ -382,9 +393,8 @@ Rule = R6Class("Rule",
                                     rule_parameters){
       merged_rule_params = list()
       if (!is.null(other_trials_s3_input_paths)){
-        s3_in_split = split_str(other_trials_s3_input_paths, "")
-        for (index in seq_along(s3_in_split)){
-          merged_rule_params[[sprintf("other_trial_%s",index)]] = s3_in_split[index]
+        for (index in seq_along(other_trials_s3_input_paths)){
+          merged_rule_params[[sprintf("other_trial_%s",index-1)]] = other_trials_s3_input_paths[index]
         }
       }
       merged_rule_params = c(
@@ -403,7 +413,8 @@ Rule = R6Class("Rule",
 #'              For example, the profiling rules can detect if GPUs are underutilized due to CPU bottlenecks or
 #'              IO bottlenecks.
 #'              For a full list of built-in rules for debugging, see
-#'              `List of Debugger Built-in Rules <https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html>`_.
+#'              `List of Debugger Built-in Rules`
+#'              \url{https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html}.
 #'              You can also write your own profiling rules using the Amazon SageMaker
 #'              Debugger APIs.
 #' @export
@@ -414,12 +425,12 @@ ProfilerRule = R6Class("ProfilerRule",
     #' @description Initialize a ``ProfilerRule`` object for a *built-in* profiling rule.
     #'              The rule analyzes system and framework metrics of a given
     #'              training job to identify performance bottlenecks.
-    #' @param base_config (rule_configs.ProfilerReport): The base rule configuration object
-    #'              returned from the ``rule_configs`` method.
-    #'              For example, 'rule_configs.ProfilerReport()'.
+    #' @param base_config (\code{sagemaker.debugger::ProfilerReport}): The base rule configuration object
+    #'              returned from the \code{sagemaker.debugger} method.
+    #'              For example, \code{sagemaker.debugger::ProfilerReport$new()}.
     #'              For a full list of built-in rules for debugging, see
-    #'              `List of Debugger Built-in Rules
-    #'              <https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html>`_.
+    #'              `List of Debugger Built-in Rules`
+    #'              \url{https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html}.
     #' @param name (str): The name of the profiler rule. If one is not provided,
     #'              the name of the base_config will be used.
     #' @param container_local_output_path (str): The path in the container.
@@ -495,11 +506,12 @@ ProfilerRule = R6Class("ProfilerRule",
     },
 
     #' @description Generates a request dictionary using the parameters provided when initializing object.
-    #' @return dict: An portion of an API request as a dictionary.
-    to_profiler_rule_config_dict = function(){
+    #' @return lict: An portion of an API request as a dictionary.
+    to_profiler_rule_config_list = function(){
       profiler_rule_config_request = list(
         "RuleConfigurationName"= self$name,
-        "RuleEvaluatorImage"= self$image_uri)
+        "RuleEvaluatorImage"= self$image_uri
+      )
       profiler_rule_config_request = c(profiler_rule_config_request, build_dict("InstanceType", self$instance_type))
       profiler_rule_config_request = c(profiler_rule_config_request, build_dict("VolumeSizeInGB", self$volume_size_in_gb))
       profiler_rule_config_request = c(profiler_rule_config_request,
@@ -511,7 +523,7 @@ ProfilerRule = R6Class("ProfilerRule",
         for (i in seq_along(profiler_rule_config_request[["RuleParameters"]])){
           k = names(profiler_rule_config_request[["RuleParameters"]])[i]
           v = profiler_rule_config_request[["RuleParameters"]][[i]]
-          profiler_rule_config_request[["RuleParameters"]][[k]] = as.character(v)
+          profiler_rule_config_request[["RuleParameters"]][[k]] = to_str(v)
         }
       }
       return(profiler_rule_config_request)
@@ -521,10 +533,10 @@ ProfilerRule = R6Class("ProfilerRule",
 )
 
 #' @title Create a Debugger hook configuration object to save the tensor for debugging.
-#' @description DebuggerHookConfig provides options to customize how debugging
-#'              information is emitted and saved. This high-level DebuggerHookConfig class
+#' @description \code{DebuggerHookConfig} provides options to customize how debugging
+#'              information is emitted and saved. This high-level \code{DebuggerHookConfig} class
 #'              runs based on the `smdebug.SaveConfig
-#'              <https://github.com/awslabs/sagemaker-debugger/blob/master/docs/api.md#saveconfig>`
+#'              \url{https://github.com/awslabs/sagemaker-debugger/blob/master/docs/api.md#saveconfig}
 #'              class.
 #' @export
 DebuggerHookConfig = R6Class("DebuggerHookConfig",
@@ -675,9 +687,9 @@ CollectionConfig = R6Class("CollectionConfig",
 #' @export
 `==.CollectionConfig` <- function(self, other){
   if (!inherits(other, "CollectionConfig"))
-    stop("CollectionConfig is only comparable with other CollectionConfig objects.",
-         call. = F)
-
+    TypeError$new(
+      "CollectionConfig is only comparable with other CollectionConfig objects."
+    )
   eq_name = self$name == other$name
 
   # added an extra step for rebustness of check
@@ -699,8 +711,9 @@ CollectionConfig = R6Class("CollectionConfig",
 #' @export
 `!=.CollectionConfig` <- function(self, other){
   if (!inherits(other, "CollectionConfig"))
-    stop("CollectionConfig is only comparable with other CollectionConfig objects.",
-         call. = F)
+    TypeError$new(
+      "CollectionConfig is only comparable with other CollectionConfig objects."
+    )
   no_eq_name = self$name != other$name
 
   # added an extra step for rebustness of check

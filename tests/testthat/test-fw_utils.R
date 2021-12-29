@@ -3,7 +3,7 @@
 
 library(lgr)
 
-LOGGER = lgr::get_logger("R6sagemaker")
+LOGGER = lgr::get_logger("sagemaker")
 
 test_that("test framework name_from_image_tf_scriptmode", {
   image_uri = "123.dkr.ecr.us-west-2.amazonaws.com/sagemaker-tensorflow-scriptmode:1.12-cpu-py3"
@@ -132,7 +132,7 @@ test_that("test warn if parameter server with multi gpu", {
     training_instance_type=instance_type, distribution=distribution
   )
 
-  expect_equal(R6sagemaker.common:::PARAMETER_SERVER_MULTI_GPU_WARNING, LOGGER$last_event$msg)
+  expect_equal(sagemaker.common:::PARAMETER_SERVER_MULTI_GPU_WARNING, LOGGER$last_event$msg)
 })
 
 test_that("test warn if parameter server with local multi gpu", {
@@ -142,7 +142,7 @@ test_that("test warn if parameter server with local multi gpu", {
   warn_if_parameter_server_with_multi_gpu(
     training_instance_type=instance_type, distribution=distribution
   )
-  expect_equal(R6sagemaker.common:::PARAMETER_SERVER_MULTI_GPU_WARNING, LOGGER$last_event$msg)
+  expect_equal(sagemaker.common:::PARAMETER_SERVER_MULTI_GPU_WARNING, LOGGER$last_event$msg)
 })
 
 test_that("test validate version or image args not raises", {
@@ -164,7 +164,7 @@ test_that("test validate smdistributed not raises", {
     "smdistributed"=list("dataparallel"=list("enabled"=TRUE, "custom_mpi_options"="--verbose"))
   )
   smdataparallel_disabled = list("smdistributed"=list("dataparallel"=list("enabled"=FALSE)))
-  instance_types = R6sagemaker.common:::SM_DATAPARALLEL_SUPPORTED_INSTANCE_TYPES
+  instance_types = sagemaker.common:::SM_DATAPARALLEL_SUPPORTED_INSTANCE_TYPES
 
   good_args =list(
     list(smdataparallel_enabled, "custom-container"),
@@ -196,7 +196,7 @@ test_that("test validate smdistributed raises", {
     list("smdistributed"=list("dummy"="val")),
     list("smdistributed"=list("dummy"=list("enabled"=TRUE)))
   )
-  instance_types = R6sagemaker.common:::SM_DATAPARALLEL_SUPPORTED_INSTANCE_TYPES
+  instance_types = sagemaker.common:::SM_DATAPARALLEL_SUPPORTED_INSTANCE_TYPES
   frameworks = list("tensorflow", "pytorch")
 
   for(framework in frameworks){
@@ -237,7 +237,7 @@ test_that("test validate smdataparallel args raises", {
 
   for (ll in bad_args){
     expect_error(
-      R6sagemaker.common:::.validate_smdataparallel_args(
+      sagemaker.common:::.validate_smdataparallel_args(
         ll[[1]], ll[[2]], ll[[3]], ll[[4]], ll[[5]])
     )
   }
@@ -273,7 +273,7 @@ test_that("test validate smdataparallel args not raises", {
   )
 
   for( ll in good_args){
-    expect_null(R6sagemaker.common:::.validate_smdataparallel_args(
+    expect_null(sagemaker.common:::.validate_smdataparallel_args(
       ll[[1]], ll[[2]], ll[[3]], ll[[4]], ll[[5]])
     )
   }

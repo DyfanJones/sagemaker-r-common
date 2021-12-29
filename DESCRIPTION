@@ -1,4 +1,4 @@
-Package: R6sagemaker.common
+Package: sagemaker.common
 Type: Package
 Title: R6sagemaker lower level api calls
 Version: 0.1.0
@@ -19,16 +19,18 @@ Imports:
     urltools,
     utils,
     zip,
-    R6sagemaker.debugger
+    sagemaker.debugger
 Suggests:
     yaml,
     mockery,
     crayon,
     testthat (>= 3.0.0),
-    R6sagemaker.local,
+    sagemaker.local,
+    sagemaker.mlcore,
     readr
 Remotes:
-    DyfanJones/sagemaker-r-debugger
+    DyfanJones/sagemaker-r-debugger,
+    DyfanJones/sagemaker-r-mlcore
 License: Apache License (>= 2.0)
 Encoding: UTF-8
 RoxygenNote: 7.1.2
@@ -54,6 +56,7 @@ Collate:
     'debugger_framework_profile.R'
     'debugger_profiler_config.R'
     'deprecations.R'
+    'drift_check_baselines.R'
     'input.R'
     'job.R'
     'image_uris.R'
@@ -71,6 +74,7 @@ Collate:
     'lineage_context.R'
     'lineage_visualizer.R'
     'metadata_properties.R'
+    'model_metrics.R'
     'network.R'
     's3.R'
     'processing.R'

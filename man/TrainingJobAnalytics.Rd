@@ -8,7 +8,7 @@ Fetch training curve data from CloudWatch Metrics for a specific training
              job.
 }
 \section{Super class}{
-\code{\link[R6sagemaker.common:AnalyticsMetricsBase]{R6sagemaker.common::AnalyticsMetricsBase}} -> \code{TrainingJobAnalytics}
+\code{\link[sagemaker.common:AnalyticsMetricsBase]{sagemaker.common::AnalyticsMetricsBase}} -> \code{TrainingJobAnalytics}
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -35,9 +35,9 @@ Fetch training curve data from CloudWatch Metrics for a specific training
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="AnalyticsMetricsBase" data-id="dataframe">}\href{../../R6sagemaker.common/html/AnalyticsMetricsBase.html#method-dataframe}{\code{R6sagemaker.common::AnalyticsMetricsBase$dataframe()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="AnalyticsMetricsBase" data-id="export_csv">}\href{../../R6sagemaker.common/html/AnalyticsMetricsBase.html#method-export_csv}{\code{R6sagemaker.common::AnalyticsMetricsBase$export_csv()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="AnalyticsMetricsBase" data-id="format">}\href{../../R6sagemaker.common/html/AnalyticsMetricsBase.html#method-format}{\code{R6sagemaker.common::AnalyticsMetricsBase$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="AnalyticsMetricsBase" data-id="dataframe">}\href{../../sagemaker.common/html/AnalyticsMetricsBase.html#method-dataframe}{\code{sagemaker.common::AnalyticsMetricsBase$dataframe()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="AnalyticsMetricsBase" data-id="export_csv">}\href{../../sagemaker.common/html/AnalyticsMetricsBase.html#method-export_csv}{\code{sagemaker.common::AnalyticsMetricsBase$export_csv()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="AnalyticsMetricsBase" data-id="format">}\href{../../sagemaker.common/html/AnalyticsMetricsBase.html#method-format}{\code{sagemaker.common::AnalyticsMetricsBase$format()}}\out{</span>}
 }
 \out{</details>}
 }

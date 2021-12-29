@@ -43,3 +43,22 @@ iter <- function(...) {
     }
   }
 }
+
+mock_fun = function(return_value=NULL, side_effect = NULL){
+  input_kwargs = list()
+  function(..., ..return_value = FALSE){
+    args = list(...)
+
+    if(..return_value)
+      return(input_kwargs)
+
+    input_kwargs <<- args
+
+    if(!is.null(side_effect)){
+      tmp_fun = function(...) side_effect
+      return(tmp_fun(...))
+    }
+    return(return_value)
+  }
+}
+

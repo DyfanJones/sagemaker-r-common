@@ -311,7 +311,7 @@ ImageUris = R6Class("ImageUris",
       if (!(arg %in% available_options) || is.null(arg))
         ValueError$new(sprintf(paste(
           "Unsupported %s: %s. You may need to upgrade your SDK version",
-          "(remotes::install_github('dyfanjones/R6sagemaker')) for newer %ss.",
+          "(remotes::install_github('DyfanJones/sagemaker-r-common')) for newer %ss.",
           "\nSupported %s(s): {%s}."), arg_name, arg %||% "NULL", arg_name, arg_name,
           paste(available_options, collapse = ", ")))
     },
@@ -335,7 +335,7 @@ ImageUris = R6Class("ImageUris",
 
 # Loads the JSON config for the given framework.
 config_for_framework = function(framework){
-  fname= system.file("image_uri_config", sprintf("%s.json", framework), package=methods::getPackageName())
+  fname= system.file("image_uri_config", sprintf("%s.json", framework), package=pkg_name())
 
   # check if framework json file exists first
   if(!file.exists(fname))

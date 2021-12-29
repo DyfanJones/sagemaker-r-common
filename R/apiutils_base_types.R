@@ -29,6 +29,7 @@ ApiObject = R6Class("ApiObject",
                          ...){
       if (!islistempty(paws_dict))
         return(NULL)
+      kwargs = list(...)
 
       for(ign in private$.paws_ignore()) {
         paws_dict[[ign]] <- NULL
@@ -40,14 +41,14 @@ ApiObject = R6Class("ApiObject",
       } else {
         custom_paws_names_to_member_names = list()
       }
-
       cls_kwargs = PawsFunctions$new()$from_paws(
         paws_dict, custom_paws_names_to_member_names, private$.custom_paws_types
       )
       cls_kwargs = c(cls_kwargs, kwargs)
 
       cls = self$clone()
-      return(do.call(cls$new, cls_kwargs))
+      do.call(cls$new, cls_kwargs)
+      return(cls)
     },
 
     #' @description  Convert an object to a boto representation.

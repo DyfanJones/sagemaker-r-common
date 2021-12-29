@@ -7,7 +7,7 @@
 A SageMaker ``Model`` that can be deployed to an ``Endpoint``.
 }
 \section{Super classes}{
-\code{\link[R6sagemaker.common:ModelBase]{R6sagemaker.common::ModelBase}} -> \code{\link[R6sagemaker.common:Model]{R6sagemaker.common::Model}} -> \code{ModelPackage}
+\code{\link[sagemaker.common:ModelBase]{sagemaker.common::ModelBase}} -> \code{\link[sagemaker.common:Model]{sagemaker.common::Model}} -> \code{ModelPackage}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -21,15 +21,16 @@ A SageMaker ``Model`` that can be deployed to an ``Endpoint``.
 \if{html}{
 \out{<details ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="ModelBase" data-id="format">}\href{../../R6sagemaker.common/html/ModelBase.html#method-format}{\code{R6sagemaker.common::ModelBase$format()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="Model" data-id="check_neo_region">}\href{../../R6sagemaker.common/html/Model.html#method-check_neo_region}{\code{R6sagemaker.common::Model$check_neo_region()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="Model" data-id="compile">}\href{../../R6sagemaker.common/html/Model.html#method-compile}{\code{R6sagemaker.common::Model$compile()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="Model" data-id="delete_model">}\href{../../R6sagemaker.common/html/Model.html#method-delete_model}{\code{R6sagemaker.common::Model$delete_model()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="Model" data-id="deploy">}\href{../../R6sagemaker.common/html/Model.html#method-deploy}{\code{R6sagemaker.common::Model$deploy()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="Model" data-id="package_for_edge">}\href{../../R6sagemaker.common/html/Model.html#method-package_for_edge}{\code{R6sagemaker.common::Model$package_for_edge()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="Model" data-id="prepare_container_def">}\href{../../R6sagemaker.common/html/Model.html#method-prepare_container_def}{\code{R6sagemaker.common::Model$prepare_container_def()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="Model" data-id="register">}\href{../../R6sagemaker.common/html/Model.html#method-register}{\code{R6sagemaker.common::Model$register()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="Model" data-id="transformer">}\href{../../R6sagemaker.common/html/Model.html#method-transformer}{\code{R6sagemaker.common::Model$transformer()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="ModelBase" data-id="format">}\href{../../sagemaker.common/html/ModelBase.html#method-format}{\code{sagemaker.common::ModelBase$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="ModelBase" data-id="help">}\href{../../sagemaker.common/html/ModelBase.html#method-help}{\code{sagemaker.common::ModelBase$help()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="Model" data-id="check_neo_region">}\href{../../sagemaker.common/html/Model.html#method-check_neo_region}{\code{sagemaker.common::Model$check_neo_region()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="Model" data-id="compile">}\href{../../sagemaker.common/html/Model.html#method-compile}{\code{sagemaker.common::Model$compile()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="Model" data-id="delete_model">}\href{../../sagemaker.common/html/Model.html#method-delete_model}{\code{sagemaker.common::Model$delete_model()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="Model" data-id="deploy">}\href{../../sagemaker.common/html/Model.html#method-deploy}{\code{sagemaker.common::Model$deploy()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="Model" data-id="package_for_edge">}\href{../../sagemaker.common/html/Model.html#method-package_for_edge}{\code{sagemaker.common::Model$package_for_edge()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="Model" data-id="prepare_container_def">}\href{../../sagemaker.common/html/Model.html#method-prepare_container_def}{\code{sagemaker.common::Model$prepare_container_def()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="Model" data-id="register">}\href{../../sagemaker.common/html/Model.html#method-register}{\code{sagemaker.common::Model$register()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="Model" data-id="transformer">}\href{../../sagemaker.common/html/Model.html#method-transformer}{\code{sagemaker.common::Model$transformer()}}\out{</span>}
 }
 \out{</details>}
 }

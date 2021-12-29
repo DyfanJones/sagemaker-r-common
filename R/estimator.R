@@ -12,6 +12,7 @@
 #' @include job.R
 #' @include error.R
 #' @include debugger_profiler_config.R
+#' @include debugger.R
 
 #' @import paws
 #' @import jsonlite
@@ -169,8 +170,8 @@ EstimatorBase = R6Class("EstimatorBase",
     #'              (default: ``None``)
     #' @param ... : update any deprecated parameters passed into class.
     initialize = function(role,
-                          instance_count,
-                          instance_type,
+                          instance_count=NULL,
+                          instance_type=NULL,
                           volume_size = 30,
                           volume_kms_key = NULL,
                           max_run = 24 * 60 * 60,
@@ -238,18 +239,17 @@ EstimatorBase = R6Class("EstimatorBase",
       if (self$instance_type %in% c("local", "local_gpu")) {
         if (self$instance_type == "local_gpu" && self$instance_count > 1)
           RuntimeError$new("Distributed Training in Local GPU is not supported")
-        NotImplementedError$new("Currently don't support local sagemaker")
-        self$sagemaker_session = sagemaker_session #%||%  LocalSession()
-        if (!inherist(self$sagemaker_session, c("Session", "LocalSession")))
+        LocalSession = pkg_method("LocalSession" ,"sagemaker.local")
+        self$sagemaker_session = sagemaker_session %||%  LocalSession$new()
+        if (!inherits(self$sagemaker_session, "LocalSession"))
           RuntimeError$new("instance_type local or local_gpu is only supported with an instance of LocalSession")
       } else {
         self$sagemaker_session = sagemaker_session %||% Session$new()
       }
-
       self$base_job_name = base_job_name
       self$.current_job_name = NULL
 
-      if (self$sagemaker_session$local_mode
+      if (!self$sagemaker_session$local_mode
         && !is.null(output_path)
         && startsWith(output_path, "file://")) {
         RuntimeError$new("file:// output paths are only supported in Local Mode")
@@ -295,6 +295,11 @@ EstimatorBase = R6Class("EstimatorBase",
       self$profiler_rule_configs = NULL
       self$profiler_rules = NULL
       self$debugger_rules = NULL
+    },
+
+    #' @description Return class documentation
+    help = function(){
+      cls_help(self)
     },
 
     #' @description Return the Docker image to use for training.
@@ -427,6 +432,21 @@ EstimatorBase = R6Class("EstimatorBase",
           self$sagemaker_session$logs_for_job(job_name = self$latest_training_job, wait=TRUE, log_type=logs)
       } else {
           self$sagemaker_session$wait_for_job(job = self$latest_training_job)}
+    },
+
+    #' @description Returns a response from the DescribeTrainingJob API call.
+    describe = function(){
+      self$sagemaker_session$describe_training_job(self$latest_training_job)
+    },
+
+    #' @description Calls describe_training_job and returns two dictionaries.
+    #' @return list[dict]: A list of DebugRuleEvaluationStatuses and ProfilerRuleEvaluationStatuses
+    #'              dictionary.
+    rule_job_summary = function(){
+      job_summary = self$describe()
+      rule_eval_statuses = job_summary[["DebugRuleEvaluationStatuses"]] %||% list()
+      rule_eval_statuses = c(rule_eval_statuses, job_summary[["ProfilerRuleEvaluationStatuses"]])
+      return(rule_eval_statuses)
     },
 
     #' @description Compile a Neo model using the input model.
@@ -704,6 +724,7 @@ EstimatorBase = R6Class("EstimatorBase",
     #' @param compile_model_family (str): Instance family for compiled model, if specified, a compiled
     #'              model will be used (default: None).
     #' @param model_name (str): User defined model name (default: None).
+    #' @param drift_check_baselines (DriftCheckBaselines): DriftCheckBaselines object (default: None).
     #' @param ... : Passed to invocation of ``create_model()``. Implementations may customize
     #'              ``create_model()`` to accept ``**kwargs`` to customize model creation during
     #'              deploy. For more, see the implementation docs.
@@ -722,16 +743,18 @@ EstimatorBase = R6Class("EstimatorBase",
                         description=NULL,
                         compile_model_family=NULL,
                         model_name=NULL,
+                        drift_check_baselines=NULL,
                         ...){
       kwargs = list(...)
       default_name = name_from_base(self$base_job_name)
       model_name = model_name %||% default_name
-
-      kwargs[["image_uri"]] = image_uri
       if (!is.null(compile_model_family)){
         model = private$.compiled_models[[compile_model_family]]
       } else{
-        model = do.call(self$create_model, kwargs)}
+        if(!("model_kms_key" %in% names(kwargs)))
+          kwargs[["model_kms_key"]] = self$output_kms_key
+        model = do.call(self$create_model, kwargs)
+      }
       model$name = model_name
       return(model$register(
         content_types,
@@ -745,7 +768,8 @@ EstimatorBase = R6Class("EstimatorBase",
         metadata_properties,
         marketplace_cert,
         approval_status,
-        description)
+        description,
+        drift_check_baselines=drift_check_baselines)
       )
     },
 
@@ -870,7 +894,7 @@ EstimatorBase = R6Class("EstimatorBase",
         volume_kms_key=volume_kms_key,
         sagemaker_session=self$sagemaker_session)
       )
-      },
+    },
 
     #' @description Returns VpcConfig dict either from this Estimator's subnets and
     #'              security groups, or else validate and return an optional override value.
@@ -896,7 +920,6 @@ EstimatorBase = R6Class("EstimatorBase",
           self$output_path = ""
         } else {self$output_path = sprintf("s3://%s/",self$sagemaker_session$default_bucket())}
       }
-
       private$.prepare_rules()
       private$.prepare_debugger_for_training()
       private$.prepare_profiler_for_training()
@@ -933,7 +956,7 @@ EstimatorBase = R6Class("EstimatorBase",
       }
 
       self$profiler_rules = list(get_default_profiler_rule())
-      self$profiler_rule_configs = list(private$.prepare_profiler_rules())
+      self$profiler_rule_configs = private$.prepare_profiler_rules()
 
       private$.update(
         self$profiler_rule_configs, self$profiler_config$to_request_list())
@@ -992,14 +1015,13 @@ EstimatorBase = R6Class("EstimatorBase",
         && is.null(system_monitor_interval_millis)
         && is.null(s3_output_path)
         && is.null(framework_profile_params)
-        && is.null(disable_framework_metrics)){
+        && isFALSE(disable_framework_metrics)){
         ValueError$new("Please provide profiler config or profiler rule to be updated.")
       }
-      if (disable_framework_metrics && framework_profile_params){
+      if (isTRUE(disable_framework_metrics) && !is.null(framework_profile_params)){
         ValueError$new(
           "framework_profile_params cannot be set when disable_framework_metrics is True")
       }
-
       profiler_config_request_dict = NULL
       profiler_rule_configs = NULL
 
@@ -1011,13 +1033,13 @@ EstimatorBase = R6Class("EstimatorBase",
           profiler_rule_configs = private$.prepare_profiler_rules()
         }
       }
-      if (disable_framework_metrics){
+      if (isTRUE(disable_framework_metrics)){
         empty_framework_profile_param = FrameworkProfile$new()
-      empty_framework_profile_param$profiling_parameters = list()
-      self$profiler_config = ProfilerConfig$new(
-        s3_output_path=s3_output_path,
-        system_monitor_interval_millis=system_monitor_interval_millis,
-        framework_profile_params=empty_framework_profile_param)
+        empty_framework_profile_param$profiling_parameters = list()
+        self$profiler_config = ProfilerConfig$new(
+          s3_output_path=s3_output_path,
+          system_monitor_interval_millis=system_monitor_interval_millis,
+          framework_profile_params=empty_framework_profile_param)
       } else{
         self$profiler_config = ProfilerConfig$new(
           s3_output_path=s3_output_path,
@@ -1026,7 +1048,6 @@ EstimatorBase = R6Class("EstimatorBase",
       }
 
       profiler_config_request_dict = self$profiler_config$to_request_list()
-
       private$.update(profiler_rule_configs, profiler_config_request_dict)
     },
 
@@ -1036,7 +1057,6 @@ EstimatorBase = R6Class("EstimatorBase",
     }
   ),
   private = list(
-
     # Set ``self.base_job_name`` if it is not set already.
     .ensure_base_job_name = function(){
       # honor supplied base_job_name or generate it
@@ -1066,9 +1086,9 @@ EstimatorBase = R6Class("EstimatorBase",
       if (!is.null(self$rules)){
         for (rule in self$rules){
           if (inherits(rule, "Rule")){
-            self$debugger_rules = c(self$debugger_rules, rule)
+            self$debugger_rules = list.append(self$debugger_rules, rule)
           } else if (inherits(rule, "ProfilerRule")){
-            self$profiler_rules = c(self$profiler_rules, rule)
+            self$profiler_rules = list.append(self$profiler_rules, rule)
           } else {
             RuntimeError$new(
               "Rules list can only contain sagemaker.debugger.Rule ",
@@ -1080,7 +1100,7 @@ EstimatorBase = R6Class("EstimatorBase",
 
     # Prepare debugger rules and debugger configs for training.
     .prepare_debugger_for_training = function(){
-      if (!is.null(self$debugger_rules) && is.null(self$debugger_hook_config)){
+      if (!islistempty(self$debugger_rules) && is.null(self$debugger_hook_config)){
         self$debugger_hook_config = DebuggerHookConfig$new(s3_output_path=self$output_path)
       }
       # If debugger_hook_config was provided without an S3 URI, default it for the customer.
@@ -1092,14 +1112,15 @@ EstimatorBase = R6Class("EstimatorBase",
 
     # Set any necessary values in debugger rules, if they are provided.
     .prepare_debugger_rules = function(){
-      debugger_rule_configs = list()
       if (!islistempty(self$debugger_rules)){
-        for (rule in self$debugger_rules){
+        debugger_rule_configs = lapply(self$debugger_rules, function(rule){
           private$.set_default_rule_config(rule)
           private$.set_source_s3_uri(rule)
           rule$prepare_actions(self$.current_job_name)
-          debugger_rule_configs =c(debugger_rule_configs, rule$to_debugger_rule_config_dict())
-        }
+          rule$to_debugger_rule_config_list()
+        })
+      } else {
+        debugger_rule_configs = list()
       }
       return(debugger_rule_configs)
     },
@@ -1116,7 +1137,8 @@ EstimatorBase = R6Class("EstimatorBase",
       # Add the CollectionConfigs from DebuggerHookConfig to the set.
       if (!islistempty(self$debugger_hook_config))
         self$collection_configs = c(
-          self$collection_configs, self$debugger_hook_config$collection_configs %||% list()
+          self$collection_configs,
+          self$debugger_hook_config$collection_configs %||% list()
         )
     },
 
@@ -1127,15 +1149,15 @@ EstimatorBase = R6Class("EstimatorBase",
     # 2. user only specify debugger rules, i.e., rules=[Rule.sagemaker(...)]
     .prepare_profiler_for_training = function(){
       if (self$disable_profiler){
-        if (!is.null(self$profiler_config))
+        if (!islistempty(self$profiler_config))
           RuntimeError$new("profiler_config cannot be set when disable_profiler is True.")
-        if (!is.null(self$profiler_rules))
+        if (!islistempty(self$profiler_rules))
           RuntimeError$new("ProfilerRule cannot be set when disable_profiler is True.")
       } else if (.region_supports_profiler(self$sagemaker_session$paws_region_name)){
         if (is.null(self$profiler_config))
           self$profiler_config = ProfilerConfig$new(s3_output_path=self$output_path)
         if (is.null(self$rules) || (!is.null(self$rules) && is.null(self$profiler_rules)))
-            self$profiler_rules = list(get_default_profiler_rule())
+          self$profiler_rules = list(get_default_profiler_rule())
       }
 
       if (!is.null(self$profiler_config) && is.null(self$profiler_config$s3_output_path))
@@ -1146,13 +1168,14 @@ EstimatorBase = R6Class("EstimatorBase",
 
     # Set any necessary values in profiler rules, if they are provided.
     .prepare_profiler_rules = function(){
-      profiler_rule_configs = list()
       if (!islistempty(self$profiler_rules)){
-        for (rule in self$profiler_rules){
+        profiler_rule_configs = lapply(self$profiler_rules, function(rule){
           private$.set_default_rule_config(rule)
           private$.set_source_s3_uri(rule)
-          profiler_rule_configs = c(profiler_rule_configs, list(rule$to_profiler_rule_config_dict()))
-        }
+          rule$to_profiler_rule_config_list()
+        })
+      } else {
+        profiler_rule_configs = list()
       }
       return(profiler_rule_configs)
     },
@@ -1161,7 +1184,7 @@ EstimatorBase = R6Class("EstimatorBase",
     # Args:
     #   rule (:class:`~sagemaker.debugger.RuleBase`): Any rule object that derives from RuleBase
     .set_default_rule_config = function(rule){
-      if (!is.null(rule$image_uri) || rule$image_uri == "DEFAULT_RULE_EVALUATOR_IMAGE"){
+      if (rule$image_uri == "DEFAULT_RULE_EVALUATOR_IMAGE"){
         rule$image_uri = get_rule_container_image_uri(self$sagemaker_session$paws_region_name)
         rule$instance_type = NULL
         rule$volume_size_in_gb = NULL
@@ -1172,9 +1195,9 @@ EstimatorBase = R6Class("EstimatorBase",
     # Args:
     #   rule (:class:`~sagemaker.debugger.RuleBase`): Any rule object that derives from RuleBase
     .set_source_s3_uri = function(rule){
-      if ("source_s3_uri" %in% (rule$rule_parameters %||% list())){
+      if ("source_s3_uri" %in% names(rule$rule_parameters) %||% list()){
         parse_result = urltools::url_parse(rule$rule_parameters[["source_s3_uri"]])
-        if (parse_result$scheme != "s3"){
+        if (!identical(parse_result$scheme, "s3")){
           desired_s3_uri = file.path(
             "s3:/",
             self$sagemaker_session$default_bucket(),
@@ -1239,10 +1262,9 @@ EstimatorBase = R6Class("EstimatorBase",
       }
 
       config = .Job$new()$.__enclos_env__$private$.load_config(inputs, self)
-
       current_hyperparameters = self$hyperparameters()
 
-      if (!islistempty(current_hyperparameters)){
+      if (!is.null(current_hyperparameters)){
         hyperparameters=lapply(current_hyperparameters, function(v) {
           if(inherits(v, c("Parameter", "Expression", "Properties","logical")))
             v else as.character(v)})
@@ -1256,33 +1278,34 @@ EstimatorBase = R6Class("EstimatorBase",
       train_args$experiment_config = experiment_config
       train_args$environment = self$environment
 
-      if (inherits(inputs, "TrainingInputs")){
+      if (inherits(inputs, "TrainingInput")){
         if ("InputMode" %in% names(inputs$config)){
-          LOGGER$debug("Selecting TrainingInput's input_mode (%s) for TrainingInputMode.",
-                    inputs$config$InputMode)
-          train_args$input_mode = inputs$config$InputMode}
+          LOGGER$debug(
+            "Selecting TrainingInput's input_mode (%s) for TrainingInputMode.",
+            inputs$config$InputMode)
+          train_args$input_mode = inputs$config$InputMode
+        }
       }
-
       if (self$enable_network_isolation())
         train_args$enable_network_isolation = TRUE
 
-      if (!is.null(self$max_retry_attempts))
+      if (!is.null(self$max_retry_attempts)) {
         train_args[["retry_strategy"]] = list("MaximumRetryAttempts"=self$max_retry_attempts)
-      else
+      } else {
         train_args[["retry_strategy"]] = NULL
-
-      if (self$encrypt_inter_container_traffic)
+      }
+      if (self$encrypt_inter_container_traffic) {
         train_args$encrypt_inter_container_traffic = TRUE
-
+      }
       if (inherits(self, "AlgorithmEstimator")){
         train_args$algorithm_arn = self$algorithm_arn
       } else {
         train_args$image_uri = self$training_image_uri()
       }
-      if (!islistempty(self$debugger_rule_configs))
+      if (!islistempty(self$debugger_rule_configs)) {
         train_args$debugger_rule_configs = self$debugger_rule_configs
-
-      if (!islistempty(self$debugger_hook_config)){
+      }
+      if (!is.logical(self$debugger_hook_config) && !islistempty(self$debugger_hook_config)){
         self$debugger_hook_config$collection_configs = self$collection_configs
         train_args$debugger_hook_config = self$debugger_hook_config$to_request_list()}
 
@@ -1291,7 +1314,7 @@ EstimatorBase = R6Class("EstimatorBase",
 
       train_args = private$.add_spot_checkpoint_args(local_mode, train_args)
 
-      if (!islistempty(self$enable_sagemaker_metrics))
+      if (isTRUE(self$enable_sagemaker_metrics))
         train_args$enable_sagemaker_metrics = self$enable_sagemaker_metrics
 
       if (!islistempty(self$profiler_rule_configs))
@@ -1343,7 +1366,6 @@ EstimatorBase = R6Class("EstimatorBase",
       update_args = list("job_name"= self$latest_training_job)
       update_args = c(update_args, build_dict("profiler_rule_configs", profiler_rule_configs))
       update_args = c(update_args, build_dict("profiler_config", profiler_config))
-
       return(update_args)
     },
 
@@ -1359,7 +1381,7 @@ EstimatorBase = R6Class("EstimatorBase",
     # all information about the updated training job.
     .update = function(profiler_rule_configs=NULL,
                        profiler_config=NULL){
-      update_args = priavte$.get_update_args(estimator, profiler_rule_configs, profiler_config)
+      update_args = private$.get_update_args(profiler_rule_configs, profiler_config)
       do.call(self$sagemaker_session$update_training_job, update_args)
 
       return(self$latest_training_job)
@@ -1424,11 +1446,12 @@ EstimatorBase = R6Class("EstimatorBase",
 
       if ("InputDataConfig" %in% names(job_details) && !is.null(model_channel_name)){
         for(channel in job_details$InputDataConfig){
-         if (channel$ChannelName == model_channel_name){
+          if (channel$ChannelName == model_channel_name){
             init_params$model_channel_name = model_channel_name
             init_params$model_uri = channel$DataSource$S3DataSource$S3Uri
-            break}
+            break
           }
+        }
       }
       if (job_details[["EnableManagedSpotTraining"]] %||% FALSE){
         init_params[["use_spot_instances"]] = TRUE
@@ -1438,7 +1461,7 @@ EstimatorBase = R6Class("EstimatorBase",
       }
 
 
-      if (job_details[["RetryStrategy"]] %||% FALSE){
+      if (!islistempty(job_details[["RetryStrategy"]])){
         init_params[["max_retry_attempts"]] = job_details[["RetryStrategy"]][["MaximumRetryAttempts"]]
         max_wait = job_details[["StoppingCondition"]][["MaxWaitTimeInSeconds"]]
         if (!islistempty(max_wait))
@@ -1628,8 +1651,8 @@ Estimator = R6Class("Estimator",
     #' @param ... : additional arguements for parent class `EstimatorBase`.
     initialize = function(image_uri,
                           role,
-                          instance_count,
-                          instance_type,
+                          instance_count=NULL,
+                          instance_type=NULL,
                           volume_size=30,
                           volume_kms_key=NULL,
                           max_run=24 * 60 * 60,
@@ -1762,6 +1785,7 @@ Estimator = R6Class("Estimator",
         # predict_wrapper = function(endpoint, session){
         #   return(Predictor$new(endpoint, session))
         # }
+        Predictor = pkg_method("Predictor", "sagemaker.mlcore")
         predictor_cls = Predictor
       }
 
@@ -1801,6 +1825,14 @@ Framework = R6Class("Framework",
     #' class metadata
     LAUNCH_MPI_ENV_NAME = "sagemaker_mpi_enabled",
 
+    #' @field LAUNCH_SM_DDP_ENV_NAME
+    #' class metadata
+    LAUNCH_SM_DDP_ENV_NAME = "sagemaker_distributed_dataparallel_enabled",
+
+    #' @field INSTANCE_TYPE
+    #' class metadata
+    INSTANCE_TYPE = "sagemaker_instance_type",
+
     #' @field MPI_NUM_PROCESSES_PER_HOST
     #' class metadata
     MPI_NUM_PROCESSES_PER_HOST = "sagemaker_mpi_num_of_processes_per_host",
@@ -1808,6 +1840,10 @@ Framework = R6Class("Framework",
     #' @field MPI_CUSTOM_MPI_OPTIONS
     #' class metadata
     MPI_CUSTOM_MPI_OPTIONS = "sagemaker_mpi_custom_mpi_options",
+
+    #' @field SM_DDP_CUSTOM_MPI_OPTIONS
+    #' class metadata
+    SM_DDP_CUSTOM_MPI_OPTIONS = "sagemaker_distributed_dataparallel_custom_mpi_options",
 
     #' @field CONTAINER_CODE_CHANNEL_SOURCEDIR_PATH
     #' class metadata
@@ -1953,7 +1989,7 @@ Framework = R6Class("Framework",
     initialize = function(entry_point,
                           source_dir=NULL,
                           hyperparameters=NULL,
-                          container_log_level=c("INFO", "WARN", "ERROR", "FATAL", "CRITICAL"),
+                          container_log_level=c("INFO", "DEBUG", "WARN", "ERROR", "FATAL", "CRITICAL"),
                           code_location=NULL,
                           image_uri=NULL,
                           dependencies=NULL,
@@ -1964,10 +2000,12 @@ Framework = R6Class("Framework",
                           enable_sagemaker_metrics=NULL,
                           ...){
       super$initialize(enable_network_isolation=enable_network_isolation, ...)
-      if (startsWith(entry_point,"s3://")){
+      kwargs = list(...)
+      image_uri = renamed_kwargs("image_name", "image_uri", image_uri, kwargs)
+      if (startsWith(entry_point, "s3://")){
         ValueError$new(sprintf("Invalid entry point script: %s. Must be a path to a local file.",
-            entry_point))}
-
+            entry_point))
+      }
       self$entry_point = entry_point
       self$git_config = git_config
       self$source_dir = source_dir
@@ -1977,6 +2015,7 @@ Framework = R6Class("Framework",
       # Align logging level with python logging
       container_log_level = match.arg(container_log_level)
       container_log_level = switch(container_log_level,
+                                   "DEBUG" = 10,
                                    "INFO" = 20,
                                    "WARN" = 30,
                                    "ERROR" = 40,
@@ -2032,7 +2071,7 @@ Framework = R6Class("Framework",
         code_dir = self$CONTAINER_CODE_CHANNEL_SOURCEDIR_PATH
         script = self$uploaded_code$script_name
         self$code_uri = self$uploaded_code$s3_prefix
-      } else{
+      } else {
         self$uploaded_code = private$.stage_user_code_in_s3()
         code_dir = self$uploaded_code$s3_prefix
         script = self$uploaded_code$script_name
@@ -2053,7 +2092,7 @@ Framework = R6Class("Framework",
     #'              trains the model, calls this method to find the hyperparameters.
     #' @return dict[str, str]: The hyperparameters.
     hyperparameters = function(){
-      return(self$.hyperparameters)
+      return(private$.json_encode_hyperparameters(self$.hyperparameters))
     },
 
     #' @description Return the Docker image to use for training.
@@ -2266,21 +2305,20 @@ Framework = R6Class("Framework",
         parsed_s3$key = sprintf("%s/%s",self$.current_job_name, "source")
         kms_key = NULL
       } else if(is.null(self$code_location)){
-        parsed_s3 = R6sagemaker.common::split_s3_uri(self$output_path)
+        parsed_s3 = parse_s3_url(self$output_path)
         parsed_s3$key = sprintf("%s/%s",self$.current_job_name, "source")
         kms_key = self$output_kms_key
       } else if (local_mode) {
-        parsed_s3 = R6sagemaker.common::split_s3_uri(self$code_location)
-        parsed_s3$key = paste(Filter(Negate(is.null), c(key_prefix, self$.current_job_name, "source")), collapse = "/")
+        parsed_s3 = parse_s3_url(self$code_location)
+        parsed_s3$key = paste(Filter(Negate(is.na), c(parsed_s3$key, self$.current_job_name, "source")), collapse = "/")
         kms_key = NULL
       } else {
-        parsed_s3 = R6sagemaker.common::split_s3_uri(self$code_location)
-        parsed_s3$key = paste(Filter(Negate(is.null), c(key_prefix, self$.current_job_name, "source")), collapse = "/")
+        parsed_s3 = parse_s3_url(self$code_location)
+        parsed_s3$key = paste(Filter(Negate(is.na), c(parsed_s3$key, self$.current_job_name, "source")), collapse = "/")
 
-        output_bucket = R6sagemaker.common::split_s3_uri(self$output_path)$bucket
+        output_bucket = parse_s3_url(self$output_path)$bucket
         kms_key = if (parsed_s3$bucket == output_bucket) self$output_kms_key else NULL
       }
-
       return (tar_and_upload_dir(
         sagemaker_session=self$sagemaker_session,
         bucket=parsed_s3$bucket,
@@ -2290,16 +2328,36 @@ Framework = R6Class("Framework",
         dependencies=self$dependencies,
         kms_key=kms_key)
         )
-      },
+    },
 
     # Set defaults for debugging
     .validate_and_set_debugger_configs = function(){
-      if (!islistempty(self$debugger_hook_config)
-          && .region_supports_debugger(self$sagemaker_session$paws_region_name))
+      if(islistempty(self$debugger_hook_config) && .region_supports_debugger(
+        self$sagemaker_session$paws_region_name)
+      ){
         self$debugger_hook_config = DebuggerHookConfig$new(s3_output_path=self$output_path)
-      else if(islistempty(self$debugger_hook_config))
-        self$debugger_hook_config = NULL
-      },
+      } else if(islistempty(self$debugger_hook_config)){
+        # set hook config to False if _region_supports_debugger is False
+        self$debugger_hook_config = FALSE
+      }
+      # Disable debugger if checkpointing is enabled by the customer
+      if (!is.null(self$checkpoint_s3_uri) && !is.null(self$checkpoint_local_path) && !is.null(self$debugger_hook_config)){
+        if (attr(self, "_framework_name") %in% c("mxnet", "pytorch", "tensorflow")){
+          if (self$instance_count > 1 || !is.null(self$distribution)){
+            LOGGER$info(paste(
+              "SMDebug Does Not Currently Support",
+              "Distributed Training Jobs With Checkpointing Enabled")
+            )
+            self$debugger_hook_config = FALSE
+          }
+        }
+      }
+      if (isFALSE(self$debugger_hook_config)){
+        if (!is.null(self$environment))
+          self$environment = list()
+        self$environment[[DEBUGGER_FLAG]] = "0"
+      }
+    },
 
     # Get the appropriate value to pass as source_dir to model constructor
     # on deploying
@@ -2338,7 +2396,6 @@ Framework = R6Class("Framework",
         job_details, model_channel_name)
 
       init_params$entry_point = init_params$hyperparameters[[model_parameters$SCRIPT_PARAM_NAME]]
-
       init_params$source_dir = init_params$hyperparameters[[model_parameters$DIR_PARAM_NAME]]
       init_params$container_log_level = init_params$hyperparameters[[model_parameters$CONTAINER_LOG_LEVEL_PARAM_NAME]]
 
@@ -2356,8 +2413,17 @@ Framework = R6Class("Framework",
       }
 
       init_params$hyperparameters = hyperparameters
-
       return(init_params)
+    },
+
+    .json_encode_hyperparameters = function(hyperparameters){
+      current_hyperparameters = hyperparameters
+      if (!is.null(current_hyperparameters)){
+        hyperparameters=lapply(current_hyperparameters, function(v) {
+          if(inherits(v, c("Parameter", "Expression", "Properties", "list")))
+            jsonlite::toJSON(v, auto_unbox = TRUE) else as.character(v)})
+      }
+      return(hyperparameters)
     },
 
     .update_init_params = function(hp, tf_arguments){
@@ -2405,6 +2471,11 @@ Framework = R6Class("Framework",
         smdataparallel_enabled = smdistributed[["dataparallel"]][["enabled"]] %||% FALSE
         distribution_config[[self$LAUNCH_SM_DDP_ENV_NAME]] = smdataparallel_enabled
         distribution_config[[self$INSTANCE_TYPE]] = self$instance_type
+        if (!islistempty(smdataparallel_enabled)){
+          distribution_config[[self$SM_DDP_CUSTOM_MPI_OPTIONS]] = smdistributed[[
+            "dataparallel"
+          ]][["custom_mpi_options"]] %||%  ""
+        }
       }
       return(distribution_config)
     }

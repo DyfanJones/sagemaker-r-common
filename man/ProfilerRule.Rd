@@ -11,27 +11,28 @@ SageMaker Debugger profiling rules automatically analyze
              For example, the profiling rules can detect if GPUs are underutilized due to CPU bottlenecks or
              IO bottlenecks.
              For a full list of built-in rules for debugging, see
-             `List of Debugger Built-in Rules <https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html>`_.
+             `List of Debugger Built-in Rules`
+             \url{https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html}.
              You can also write your own profiling rules using the Amazon SageMaker
              Debugger APIs.
 }
 \section{Super class}{
-\code{\link[R6sagemaker.common:RuleBase]{R6sagemaker.common::RuleBase}} -> \code{ProfilerRule}
+\code{\link[sagemaker.common:RuleBase]{sagemaker.common::RuleBase}} -> \code{ProfilerRule}
 }
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-sagemaker}{\code{ProfilerRule$sagemaker()}}
 \item \href{#method-custom}{\code{ProfilerRule$custom()}}
-\item \href{#method-to_profiler_rule_config_dict}{\code{ProfilerRule$to_profiler_rule_config_dict()}}
+\item \href{#method-to_profiler_rule_config_list}{\code{ProfilerRule$to_profiler_rule_config_list()}}
 \item \href{#method-clone}{\code{ProfilerRule$clone()}}
 }
 }
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="RuleBase" data-id="format">}\href{../../R6sagemaker.common/html/RuleBase.html#method-format}{\code{R6sagemaker.common::RuleBase$format()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="RuleBase" data-id="initialize">}\href{../../R6sagemaker.common/html/RuleBase.html#method-initialize}{\code{R6sagemaker.common::RuleBase$initialize()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="RuleBase" data-id="format">}\href{../../sagemaker.common/html/RuleBase.html#method-format}{\code{sagemaker.common::RuleBase$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="RuleBase" data-id="initialize">}\href{../../sagemaker.common/html/RuleBase.html#method-initialize}{\code{sagemaker.common::RuleBase$initialize()}}\out{</span>}
 }
 \out{</details>}
 }
@@ -54,12 +55,12 @@ Initialize a ``ProfilerRule`` object for a *built-in* profiling rule.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{base_config}}{(rule_configs.ProfilerReport): The base rule configuration object
-returned from the ``rule_configs`` method.
-For example, 'rule_configs.ProfilerReport()'.
+\item{\code{base_config}}{(\code{sagemaker.debugger::ProfilerReport}): The base rule configuration object
+returned from the \code{sagemaker.debugger} method.
+For example, \code{sagemaker.debugger::ProfilerReport$new()}.
 For a full list of built-in rules for debugging, see
-`List of Debugger Built-in Rules
-<https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html>`_.}
+`List of Debugger Built-in Rules`
+\url{https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-built-in-rules.html}.}
 
 \item{\code{name}}{(str): The name of the profiler rule. If one is not provided,
 the name of the base_config will be used.}
@@ -140,16 +141,16 @@ s3://sagemaker-<region>-<12digit_account_id>/<training-job-name>/profiler-output
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-to_profiler_rule_config_dict"></a>}}
-\if{latex}{\out{\hypertarget{method-to_profiler_rule_config_dict}{}}}
-\subsection{Method \code{to_profiler_rule_config_dict()}}{
+\if{html}{\out{<a id="method-to_profiler_rule_config_list"></a>}}
+\if{latex}{\out{\hypertarget{method-to_profiler_rule_config_list}{}}}
+\subsection{Method \code{to_profiler_rule_config_list()}}{
 Generates a request dictionary using the parameters provided when initializing object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ProfilerRule$to_profiler_rule_config_dict()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ProfilerRule$to_profiler_rule_config_list()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-dict: An portion of an API request as a dictionary.
+lict: An portion of an API request as a dictionary.
 }
 }
 \if{html}{\out{<hr>}}

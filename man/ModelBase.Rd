@@ -14,6 +14,7 @@ Models can be deployed to compute services like a SageMaker ``Endpoint``
 \item \href{#method-deploy}{\code{ModelBase$deploy()}}
 \item \href{#method-delete_model}{\code{ModelBase$delete_model()}}
 \item \href{#method-format}{\code{ModelBase$format()}}
+\item \href{#method-help}{\code{ModelBase$help()}}
 \item \href{#method-clone}{\code{ModelBase$clone()}}
 }
 }
@@ -58,6 +59,16 @@ Destroy resources associated with this model.
 format class
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ModelBase$format()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-help"></a>}}
+\if{latex}{\out{\hypertarget{method-help}{}}}
+\subsection{Method \code{help()}}{
+Return class documentation
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ModelBase$help()}\if{html}{\out{</div>}}
 }
 
 }

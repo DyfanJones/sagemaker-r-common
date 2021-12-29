@@ -15,7 +15,7 @@ Other Processor:
 }
 \concept{Processor}
 \section{Super class}{
-\code{\link[R6sagemaker.common:Processor]{R6sagemaker.common::Processor}} -> \code{ScriptProcessor}
+\code{\link[sagemaker.common:Processor]{sagemaker.common::Processor}} -> \code{ScriptProcessor}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -29,7 +29,7 @@ Other Processor:
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="R6sagemaker.common" data-topic="Processor" data-id="format">}\href{../../R6sagemaker.common/html/Processor.html#method-format}{\code{R6sagemaker.common::Processor$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="Processor" data-id="format">}\href{../../sagemaker.common/html/Processor.html#method-format}{\code{sagemaker.common::Processor$format()}}\out{</span>}
 }
 \out{</details>}
 }
