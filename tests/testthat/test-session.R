@@ -1,7 +1,7 @@
 # NOTE: This code has been modified from AWS Sagemaker Python:
 # https://github.com/aws/sagemaker-python-sdk/blob/master/tests/unit/test_session.py
 
-lg = lgr::get_logger("R6sagemaker")
+lg = lgr::get_logger("sagemaker")
 
 STATIC_HPs = list("feature_dim"="784")
 SAMPLE_PARAM_RANGES = list(list("Name"="mini_batch_size", "MinValue"="10", "MaxValue"="100"))
@@ -905,8 +905,8 @@ test_that("test stop tuning job", {
 test_that("test stop tuning job client error already stopped", {
   sm = Session$new(paws_session)
 
-  sm$sagemaker$.call_args("stop_hyper_parameter_tuning_job", side_effect = function(...){
-    stop(structure(
+  sm$sagemaker$.call_args("stop_hyper_parameter_tuning_job", side_effect = stop(
+    structure(
       list(
         message = "Operation",
         error_response = list(Code="ValidationException")
@@ -914,7 +914,7 @@ test_that("test stop tuning job client error already stopped", {
       class = c("error", "condition")
       )
     )
-  })
+  )
 
   sm$stop_tuning_job(JOB_NAME)
 
@@ -2273,3 +2273,4 @@ test_that("test_wait_for_athena_query", {
     list(QueryExecutionId="query_id")
   )
 })
+
