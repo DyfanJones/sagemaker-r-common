@@ -241,7 +241,7 @@ EstimatorBase = R6Class("EstimatorBase",
           RuntimeError$new("Distributed Training in Local GPU is not supported")
         LocalSession = pkg_method("LocalSession" ,"sagemaker.local")
         self$sagemaker_session = sagemaker_session %||%  LocalSession$new()
-        if (!inherits(self$sagemaker_session, c("Session", "LocalSession")))
+        if (!inherits(self$sagemaker_session, "LocalSession"))
           RuntimeError$new("instance_type local or local_gpu is only supported with an instance of LocalSession")
       } else {
         self$sagemaker_session = sagemaker_session %||% Session$new()
@@ -295,6 +295,11 @@ EstimatorBase = R6Class("EstimatorBase",
       self$profiler_rule_configs = NULL
       self$profiler_rules = NULL
       self$debugger_rules = NULL
+    },
+
+    #' @description Return class documentation
+    help = function(){
+      cls_help(self)
     },
 
     #' @description Return the Docker image to use for training.
@@ -719,6 +724,7 @@ EstimatorBase = R6Class("EstimatorBase",
     #' @param compile_model_family (str): Instance family for compiled model, if specified, a compiled
     #'              model will be used (default: None).
     #' @param model_name (str): User defined model name (default: None).
+    #' @param drift_check_baselines (DriftCheckBaselines): DriftCheckBaselines object (default: None).
     #' @param ... : Passed to invocation of ``create_model()``. Implementations may customize
     #'              ``create_model()`` to accept ``**kwargs`` to customize model creation during
     #'              deploy. For more, see the implementation docs.
@@ -737,16 +743,18 @@ EstimatorBase = R6Class("EstimatorBase",
                         description=NULL,
                         compile_model_family=NULL,
                         model_name=NULL,
+                        drift_check_baselines=NULL,
                         ...){
       kwargs = list(...)
       default_name = name_from_base(self$base_job_name)
       model_name = model_name %||% default_name
-
-      kwargs[["image_uri"]] = image_uri
       if (!is.null(compile_model_family)){
         model = private$.compiled_models[[compile_model_family]]
       } else{
-        model = do.call(self$create_model, kwargs)}
+        if(!("model_kms_key" %in% names(kwargs)))
+          kwargs[["model_kms_key"]] = self$output_kms_key
+        model = do.call(self$create_model, kwargs)
+      }
       model$name = model_name
       return(model$register(
         content_types,
@@ -760,7 +768,8 @@ EstimatorBase = R6Class("EstimatorBase",
         metadata_properties,
         marketplace_cert,
         approval_status,
-        description)
+        description,
+        drift_check_baselines=drift_check_baselines)
       )
     },
 
@@ -1048,7 +1057,6 @@ EstimatorBase = R6Class("EstimatorBase",
     }
   ),
   private = list(
-
     # Set ``self.base_job_name`` if it is not set already.
     .ensure_base_job_name = function(){
       # honor supplied base_job_name or generate it
@@ -1453,7 +1461,7 @@ EstimatorBase = R6Class("EstimatorBase",
       }
 
 
-      if (job_details[["RetryStrategy"]] %||% FALSE){
+      if (!islistempty(job_details[["RetryStrategy"]])){
         init_params[["max_retry_attempts"]] = job_details[["RetryStrategy"]][["MaximumRetryAttempts"]]
         max_wait = job_details[["StoppingCondition"]][["MaxWaitTimeInSeconds"]]
         if (!islistempty(max_wait))
@@ -1817,6 +1825,14 @@ Framework = R6Class("Framework",
     #' class metadata
     LAUNCH_MPI_ENV_NAME = "sagemaker_mpi_enabled",
 
+    #' @field LAUNCH_SM_DDP_ENV_NAME
+    #' class metadata
+    LAUNCH_SM_DDP_ENV_NAME = "sagemaker_distributed_dataparallel_enabled",
+
+    #' @field INSTANCE_TYPE
+    #' class metadata
+    INSTANCE_TYPE = "sagemaker_instance_type",
+
     #' @field MPI_NUM_PROCESSES_PER_HOST
     #' class metadata
     MPI_NUM_PROCESSES_PER_HOST = "sagemaker_mpi_num_of_processes_per_host",
@@ -1824,6 +1840,10 @@ Framework = R6Class("Framework",
     #' @field MPI_CUSTOM_MPI_OPTIONS
     #' class metadata
     MPI_CUSTOM_MPI_OPTIONS = "sagemaker_mpi_custom_mpi_options",
+
+    #' @field SM_DDP_CUSTOM_MPI_OPTIONS
+    #' class metadata
+    SM_DDP_CUSTOM_MPI_OPTIONS = "sagemaker_distributed_dataparallel_custom_mpi_options",
 
     #' @field CONTAINER_CODE_CHANNEL_SOURCEDIR_PATH
     #' class metadata
@@ -1980,6 +2000,8 @@ Framework = R6Class("Framework",
                           enable_sagemaker_metrics=NULL,
                           ...){
       super$initialize(enable_network_isolation=enable_network_isolation, ...)
+      kwargs = list(...)
+      image_uri = renamed_kwargs("image_name", "image_uri", image_uri, kwargs)
       if (startsWith(entry_point, "s3://")){
         ValueError$new(sprintf("Invalid entry point script: %s. Must be a path to a local file.",
             entry_point))
@@ -2449,6 +2471,11 @@ Framework = R6Class("Framework",
         smdataparallel_enabled = smdistributed[["dataparallel"]][["enabled"]] %||% FALSE
         distribution_config[[self$LAUNCH_SM_DDP_ENV_NAME]] = smdataparallel_enabled
         distribution_config[[self$INSTANCE_TYPE]] = self$instance_type
+        if (!islistempty(smdataparallel_enabled)){
+          distribution_config[[self$SM_DDP_CUSTOM_MPI_OPTIONS]] = smdistributed[[
+            "dataparallel"
+          ]][["custom_mpi_options"]] %||%  ""
+        }
       }
       return(distribution_config)
     }
