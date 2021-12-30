@@ -8,8 +8,6 @@ cls_help(cls)
 }
 \arguments{
 \item{cls}{(R6::R6Class): R6 class}
-
-\item{pkg_name}{(str): package name to get documentation}
 }
 \description{
 Helper function to return help documentation for sagemaker R6 classes.

@@ -217,7 +217,6 @@ list.append = function (.data, ...) {
 
 #' @title Helper function to return help documentation for sagemaker R6 classes.
 #' @param cls (R6::R6Class): R6 class
-#' @param pkg_name (str): package name to get documentation
 #' @export
 cls_help = function(cls){
   cls_name = class(cls)[[1]]

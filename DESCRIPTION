@@ -74,7 +74,6 @@ Collate:
     'lineage_context.R'
     'lineage_visualizer.R'
     'metadata_properties.R'
-    'model_metrics.R'
     'network.R'
     's3.R'
     'processing.R'
