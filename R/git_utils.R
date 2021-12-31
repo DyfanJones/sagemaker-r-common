@@ -62,7 +62,7 @@ git_clone_repo <- function(git_config,
     ValueError$new("Please provide an entry point.")
 
   .valid_git_config(git_config)
-  dest_dir = tempfile()
+  dest_dir = fs::file_temp()
   .generate_and_run_clone_command(git_config, dest_dir)
 
   .checkout_branch_and_commit(git_config, dest_dir)
@@ -229,7 +229,7 @@ git_clone_repo <- function(git_config,
   if (startsWith(repo_url, "https://")){
     processx::run("git", args = c("clone", repo_url, dest_dir), env = c("current", GIT_TERMINAL_PROMPT = "0"))
   } else if (startsWith(repo_url, "git@")){
-    sshnoprompt = tempfile()
+    sshnoprompt = fs::file_temp()
     on.exit(unlink(sshnoprompt))
     writeLines("ssh -oBatchMode=yes $@", sshnoprompt)
     Sys.chmod(sshnoprompt, mode = "511", F)
@@ -275,7 +275,6 @@ git_clone_repo <- function(git_config,
 # dest_dir (str): the directory where the repo is cloned
 .checkout_branch_and_commit <- function(git_config, dest_dir){
   dest_dir = as.character(dest_dir)
-
   if ("branch" %in% names(git_config)){
     processx::run("git", args = c("checkout", git_config$branch), wd = dest_dir)
   }
