@@ -1549,6 +1549,7 @@ test_that("test_attach_no_logs", {
   SagemakerSesion = training_job_description(ll = mod_list)
   f = Estimator$new("dummy", instance_count=10, instance_type="dummy", role = "dummy", sagemaker_session=SagemakerSesion)
   f$attach(training_job_name="job", sagemaker_session=SagemakerSesion)
+  expect_equal(SagemakerSesion$logs_for_job(..count = T), 0)
   expect_null(SagemakerSesion$logs_for_job(..return_value = T))
 })
 
@@ -1690,12 +1691,12 @@ test_that("test_prepare_for_training_force_name_generation", {
 })
 
 test_that("test_git_support_with_branch_and_commit_succeed", {
-  mock_git_clone_repo = mock_fun(side_effect = list(
+  mock_git_clone_repo = mock_fun(side_effect = function(...) list(
     "entry_point"="/tmp/repo_dir/entry_point",
     "source_dir"=NULL,
     "dependencies"=NULL)
   )
-  mock_tar_and_upload_dir = mock_fun(side_effect = list())
+  mock_tar_and_upload_dir = mock_fun(side_effect = function(...) list())
   git_config = list("repo"=GIT_REPO, "branch"=BRANCH, "commit"=COMMIT)
   entry_point = "entry_point"
   sms = sagemaker_session()
@@ -1727,12 +1728,12 @@ test_that("test_git_support_with_branch_and_commit_succeed", {
 })
 
 test_that("test_git_support_with_branch_succeed", {
-  mock_git_clone_repo = mock_fun(side_effect = list(
+  mock_git_clone_repo = mock_fun(side_effect = function(...) list(
     "entry_point"="/tmp/repo_dir/source_dir/entry_point",
     "source_dir"=NULL,
     "dependencies"=NULL)
   )
-  mock_tar_and_upload_dir = mock_fun(side_effect = list())
+  mock_tar_and_upload_dir = mock_fun(side_effect = function(...) list())
   git_config = list("repo"=GIT_REPO, "branch"=BRANCH)
   entry_point = "entry_point"
   sms = sagemaker_session()
@@ -1764,12 +1765,12 @@ test_that("test_git_support_with_branch_succeed", {
 })
 
 test_that("test_git_support_with_dependencies_succeed", {
-  mock_git_clone_repo = mock_fun(side_effect = list(
+  mock_git_clone_repo = mock_fun(side_effect = function(...) list(
     "entry_point"="/tmp/repo_dir/source_dir/entry_point",
     "source_dir"=NULL,
     "dependencies"=list("/tmp/repo_dir/foo", "/tmp/repo_dir/foo/bar"))
   )
-  mock_tar_and_upload_dir = mock_fun(side_effect = list())
+  mock_tar_and_upload_dir = mock_fun(side_effect = function(...) list())
   git_config = list("repo"=GIT_REPO, "branch"=BRANCH,"commit"=COMMIT)
   entry_point = "entry_point"
   sms = sagemaker_session()
@@ -1802,12 +1803,12 @@ test_that("test_git_support_with_dependencies_succeed", {
 })
 
 test_that("test_git_support_without_branch_and_commit_succeed", {
-  mock_git_clone_repo = mock_fun(side_effect = list(
+  mock_git_clone_repo = mock_fun(side_effect = function(...) list(
     "entry_point"="/tmp/repo_dir/source_dir/entry_point",
     "source_dir"=NULL,
     "dependencies"=NULL)
   )
-  mock_tar_and_upload_dir = mock_fun(side_effect = list())
+  mock_tar_and_upload_dir = mock_fun(side_effect = function(...) list())
   git_config = list("repo"=GIT_REPO)
   entry_point = "source_dir/entry_point"
   sms = sagemaker_session()
@@ -1877,7 +1878,7 @@ test_that("test_git_support_bad_repo_url_format", {
 })
 
 test_that("test_git_support_entry_point_not_exist", {
-  mock_git_clone_repo = mock_fun(side_effect = ValueError$new("Entry point does not exist in the repo."))
+  mock_git_clone_repo = mock_fun(side_effect = function(...) ValueError$new("Entry point does not exist in the repo."))
   git_config = list("repo"=GIT_REPO, "branch"=BRANCH, "commit"=COMMIT)
   sms = sagemaker_session()
   fw = DummyFramework$new(
@@ -1901,7 +1902,7 @@ test_that("test_git_support_entry_point_not_exist", {
 })
 
 test_that("test_git_support_source_dir_not_exist", {
-  mock_git_clone_repo = mock_fun(side_effect = ValueError$new("Source directory does not exist in the repo."))
+  mock_git_clone_repo = mock_fun(side_effect = function(...) ValueError$new("Source directory does not exist in the repo."))
   git_config = list("repo"=GIT_REPO, "branch"=BRANCH, "commit"=COMMIT)
   sms = sagemaker_session()
   fw = DummyFramework$new(
@@ -1926,7 +1927,7 @@ test_that("test_git_support_source_dir_not_exist", {
 })
 
 test_that("test_git_support_dependencies_not_exist", {
-  mock_git_clone_repo = mock_fun(side_effect = ValueError$new("Dependency no-such-dir does not exist in the repo."))
+  mock_git_clone_repo = mock_fun(side_effect = function(...) ValueError$new("Dependency no-such-dir does not exist in the repo."))
   git_config = list("repo"=GIT_REPO, "branch"=BRANCH, "commit"=COMMIT)
   sms = sagemaker_session()
   fw = DummyFramework$new(
@@ -1952,12 +1953,12 @@ test_that("test_git_support_dependencies_not_exist", {
 })
 
 test_that("test_git_support_with_username_password_no_2fa", {
-  mock_git_clone_repo = mock_fun(side_effect = list(
+  mock_git_clone_repo = mock_fun(side_effect = function(...) list(
     "entry_point"="/tmp/repo_dir/entry_point",
     "source_dir"=NULL,
     "dependencies"=NULL
   ))
-  mock_tar_and_upload_dir = mock_fun(side_effect = list())
+  mock_tar_and_upload_dir = mock_fun(side_effect = function(...) list())
   git_config = list(
     "repo"=PRIVATE_GIT_REPO,
     "branch"=PRIVATE_BRANCH,
@@ -1991,12 +1992,12 @@ test_that("test_git_support_with_username_password_no_2fa", {
 })
 
 test_that("test_git_support_with_token_2fa", {
-  mock_git_clone_repo = mock_fun(side_effect = list(
+  mock_git_clone_repo = mock_fun(side_effect = function(...) list(
     "entry_point"="/tmp/repo_dir/entry_point",
     "source_dir"=NULL,
     "dependencies"=NULL
   ))
-  mock_tar_and_upload_dir = mock_fun(side_effect = list())
+  mock_tar_and_upload_dir = mock_fun(side_effect = function(...) list())
   git_config = list(
     "repo"=PRIVATE_GIT_REPO,
     "branch"=PRIVATE_BRANCH,
@@ -2030,12 +2031,12 @@ test_that("test_git_support_with_token_2fa", {
 })
 
 test_that("test_git_support_ssh_no_passphrase_needed", {
-  mock_git_clone_repo = mock_fun(side_effect = list(
+  mock_git_clone_repo = mock_fun(side_effect = function(...) list(
     "entry_point"="/tmp/repo_dir/entry_point",
     "source_dir"=NULL,
     "dependencies"=NULL
   ))
-  mock_tar_and_upload_dir = mock_fun(side_effect = list())
+  mock_tar_and_upload_dir = mock_fun(side_effect = function(...) list())
   git_config = list("repo"=PRIVATE_GIT_REPO_SSH, "branch"=PRIVATE_BRANCH, "commit"=PRIVATE_COMMIT)
   sms = sagemaker_session()
   entry_point="entry_point"
@@ -2063,12 +2064,12 @@ test_that("test_git_support_ssh_no_passphrase_needed", {
 })
 
 test_that("test_git_support_codecommit_with_username_and_password_succeed", {
-  mock_git_clone_repo = mock_fun(side_effect = list(
+  mock_git_clone_repo = mock_fun(side_effect = function(...) list(
     "entry_point"="/tmp/repo_dir/entry_point",
     "source_dir"=NULL,
     "dependencies"=NULL
   ))
-  mock_tar_and_upload_dir = mock_fun(side_effect = list())
+  mock_tar_and_upload_dir = mock_fun(side_effect = function(...) list())
   git_config = list(
     "repo"=CODECOMMIT_REPO,
     "branch"=CODECOMMIT_BRANCH,
@@ -2101,12 +2102,12 @@ test_that("test_git_support_codecommit_with_username_and_password_succeed", {
 })
 
 test_that("test_git_support_codecommit_with_ssh_no_passphrase_needed", {
-  mock_git_clone_repo = mock_fun(side_effect = list(
+  mock_git_clone_repo = mock_fun(side_effect = function(...) list(
     "entry_point"="/tmp/repo_dir/entry_point",
     "source_dir"=NULL,
     "dependencies"=NULL
   ))
-  mock_tar_and_upload_dir = mock_fun(side_effect = list())
+  mock_tar_and_upload_dir = mock_fun(side_effect = function(...) list())
   git_config = list("repo"=CODECOMMIT_REPO_SSH, "branch"=CODECOMMIT_BRANCH)
   entry_point = "entry_point"
   sms = sagemaker_session()
@@ -2438,6 +2439,7 @@ test_that("test_wait_without_logs", {
   kwargs = sms$wait_for_job(..return_value = T)
   expect_equal(kwargs[["job"]], "JOB_NAME")
   expect_null(sms$logs_for_job(..return_value = T))
+  expect_equal(sms$logs_for_job(..count = T), 0)
 })
 
 test_that("test_wait_with_logs", {
@@ -2458,6 +2460,7 @@ test_that("test_wait_with_logs", {
     log_type="All"
   ))
   expect_null(sms$wait_for_job(..return_value = T))
+  expect_equal(sms$wait_for_job(..count = T), 0)
 })
 
 #################################################################################
