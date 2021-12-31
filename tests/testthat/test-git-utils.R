@@ -13,34 +13,27 @@ CODECOMMIT_REPO = "https://git-codecommit.us-west-2.amazonaws.com/v1/repos/test-
 CODECOMMIT_REPO_SSH = "ssh://git-codecommit.us-west-2.amazonaws.com/v1/repos/test-repo/"
 CODECOMMIT_BRANCH = "master"
 
-rm_temp_dir = function(dir = REPO_DIR){
-  if(fs::dir_exists(dir))
-    fs::dir_delete(dir)
-}
-
 test_that("test git clone repo succeed", {
-  skip_on_cran()
-  rm_temp_dir()
-
-  mockery::stub(git_clone_repo, "fs::is_file", TRUE)
-  mockery::stub(git_clone_repo, "fs::is_dir", TRUE)
-  mockery::stub(git_clone_repo, "fs::dir_exists", TRUE)
-  mockery::stub(git_clone_repo, "tempfile", REPO_DIR)
   git_config = list("repo"=PUBLIC_GIT_REPO, "branch"=PUBLIC_BRANCH, "commit"=PUBLIC_COMMIT)
   entry_point = "entry_point"
   source_dir = "source_dir"
   dependencies = list("foo", "bar")
-  ret = git_clone_repo(git_config, entry_point, source_dir, dependencies)
-  expect_equal(ret$entry_point, entry_point)
-  expect_equal(ret$source_dir, "/tmp/repo_dir/source_dir")
-  expect_equal(ret$dependencies, list("/tmp/repo_dir/foo", "/tmp/repo_dir/bar"))
-  fs::dir_delete(REPO_DIR)
+
+  with_mock(
+    `fs::is_file` = mock_fun(TRUE),
+    `fs::is_dir` = mock_fun(TRUE),
+    `fs::file_temp` = mock_fun(REPO_DIR),
+    `processx::run` = mock_fun(),
+    {
+      ret = sagemaker.common::git_clone_repo(git_config, entry_point, source_dir, dependencies)
+      expect_equal(ret$entry_point, entry_point)
+      expect_equal(ret$source_dir, "/tmp/repo_dir/source_dir")
+      expect_equal(ret$dependencies, list("/tmp/repo_dir/foo", "/tmp/repo_dir/bar"))
+    }
+  )
 })
 
 test_that("test git clone repo repo not provided", {
-  skip_on_cran()
-  rm_temp_dir()
-
   git_config = list("branch"=PUBLIC_BRANCH, "commit"=PUBLIC_COMMIT)
   entry_point = "entry_point_that_does_not_exist"
   source_dir = "source_dir"
@@ -52,9 +45,6 @@ test_that("test git clone repo repo not provided", {
 })
 
 test_that("test git clone repo git argument wrong format", {
-  skip_on_cran()
-  rm_temp_dir()
-
   git_config = list(
     "repo"=PUBLIC_GIT_REPO,
     "branch"=PUBLIC_BRANCH,
@@ -71,74 +61,134 @@ test_that("test git clone repo git argument wrong format", {
 })
 
 test_that("test git clone repo branch not exist", {
-  skip_on_cran()
-  rm_temp_dir()
-
   git_config = list("repo"=PUBLIC_GIT_REPO, "branch"="banana", "commit"=PUBLIC_COMMIT)
   entry_point = "entry_point"
   source_dir = "source_dir"
   dependencies = list("foo", "bar")
-  expect_error(git_clone_repo(git_config, entry_point, source_dir, dependencies))
+
+  with_mock(
+    `processx::run` = mock_fun(side_effect = function(...) stop()),
+    {
+      expect_error(sagemaker.common::git_clone_repo(git_config, entry_point, source_dir, dependencies))
+    }
+  )
 })
 
 test_that("test git clone repo commit not exist", {
-  skip_on_cran()
-  rm_temp_dir()
-
   mockery::stub(git_clone_repo, "tempfile", REPO_DIR)
   git_config = list("repo"=PUBLIC_GIT_REPO, "branch"=PUBLIC_BRANCH, "commit"="banana")
   entry_point = "entry_point"
   source_dir = "source_dir"
   dependencies = list("foo", "bar")
-  expect_error(git_clone_repo(git_config, entry_point, source_dir, dependencies))
+  with_mock(
+    `processx::run` = mock_fun(side_effect = function(...) stop()),
+    {
+      expect_error(sagemaker.common::git_clone_repo(git_config, entry_point, source_dir, dependencies))
+    }
+  )
 })
 
 test_that("test git clone repo entry point not exist", {
-  skip_on_cran()
-  rm_temp_dir()
-
-  mockery::stub(git_clone_repo, "fs::is_file", FALSE)
-  mockery::stub(git_clone_repo, "fs::is_dir", TRUE)
-  mockery::stub(git_clone_repo, "fs::dir_exists", TRUE)
-  mockery::stub(git_clone_repo, "tempfile", REPO_DIR)
   git_config = list("repo"=PUBLIC_GIT_REPO, "branch"=PUBLIC_BRANCH, "commit"=PUBLIC_COMMIT)
   entry_point = "entry_point_that_does_not_exist"
   source_dir = "source_dir"
   dependencies = list("foo", "bar")
-  expect_error(
-    git_clone_repo(git_config, entry_point, source_dir, dependencies),
-    "Entry point does not exist in the repo."
+
+  with_mock(
+    `fs::is_file` = mock_fun(FALSE),
+    `fs::is_dir` = mock_fun(TRUE),
+    `fs::dir_exists` = mock_fun(TRUE),
+    `fs::file_temp` = mock_fun(REPO_DIR),
+    `processx::run` = mock_fun(),
+    {
+      expect_error(
+        sagemaker.common::git_clone_repo(git_config, entry_point, source_dir, dependencies),
+        "Entry point does not exist in the repo."
+      )
+    }
   )
 })
 
 test_that("test git clone repo source dir not exist", {
-  skip_on_cran()
-  rm_temp_dir()
-
-  mockery::stub(git_clone_repo, "fs::is_file", TRUE)
-  mockery::stub(git_clone_repo, "fs::is_dir", FALSE)
-  mockery::stub(git_clone_repo, "fs::dir_exists", TRUE)
-  mockery::stub(git_clone_repo, "tempfile", REPO_DIR)
   git_config = list("repo"=PUBLIC_GIT_REPO, "branch"=PUBLIC_BRANCH, "commit"=PUBLIC_COMMIT)
   entry_point = "entry_point"
   source_dir = "source_dir_that_does_not_exist"
   dependencies = list("foo", "bar")
-  expect_error(
-    git_clone_repo(git_config, entry_point, source_dir, dependencies),
-    "Source directory does not exist in the repo."
+
+  with_mock(
+    `fs::is_file` = mock_fun(TRUE),
+    `fs::is_dir` = mock_fun(FALSE),
+    `fs::dir_exists` = mock_fun(TRUE),
+    `fs::file_temp` = mock_fun(REPO_DIR),
+    `processx::run` = mock_fun(),
+    {
+      expect_error(
+        sagemaker.common::git_clone_repo(git_config, entry_point, source_dir, dependencies),
+        "Source directory does not exist in the repo."
+      )
+    }
   )
 })
 
 test_that("test git clone repo dependencies not exist", {
-  skip_on_cran()
-  rm_temp_dir()
-
   git_config = list("repo"=PUBLIC_GIT_REPO, "branch"=PUBLIC_BRANCH, "commit"=PUBLIC_COMMIT)
   entry_point = "entry_point"
   source_dir = "source_dir"
   dependencies = list("foo", "dep_that_does_not_exist")
-  expect_error(
-    git_clone_repo(git_config, entry_point, source_dir, dependencies),
-    "does not exist in the repo."
+
+  with_mock(
+    `fs::is_file` = mock_fun(TRUE),
+    `fs::is_dir` = mock_fun(TRUE),
+    `fs::dir_exists` = mock_fun(side_effect = iter(TRUE, FALSE)),
+    `fs::file_temp` = mock_fun(REPO_DIR),
+    `processx::run` = mock_fun(),
+    {
+      expect_error(
+        git_clone_repo(git_config, entry_point, source_dir, dependencies),
+        "does not exist in the repo."
+      )
+    }
+  )
+})
+
+test_that("test_git_clone_repo_with_username_password_no_2fa", {
+  git_config = list(
+    "repo"=PRIVATE_GIT_REPO,
+    "branch"=PRIVATE_BRANCH,
+    "commit"=PRIVATE_COMMIT,
+    "username"="username",
+    "password"="passw0rd!"
+  )
+  entry_point = "entry_point"
+  source_dir = "source_dir"
+  dependencies = list("foo", "dep_that_does_not_exist")
+  entry_point = "entry_point"
+
+  env = c("current", "GIT_TERMINAL_PROMPT" = 0)
+  mock_run = mock_fun()
+  with_mock(
+    `fs::is_file` = mock_fun(TRUE),
+    `fs::is_dir` = mock_fun(TRUE),
+    `fs::dir_exists` = mock_fun(side_effect = iter(TRUE, FALSE)),
+    `fs::file_temp` = mock_fun(REPO_DIR),
+    `processx::run` = mock_run,
+    {
+      ret = sagemaker.common::git_clone_repo(git_config=git_config, entry_point=entry_point)
+      args = mock_run(..return_value_all = T)
+      expect_equal(args[[1]], list(
+        "git",
+        args = c(
+          "clone",
+          "https://username:passw0rd%21@github.com/testAccount/private-repo.git",
+          REPO_DIR
+          ),
+        env = env
+      ))
+      expect_equal(args[[2]], list("git", args = c("checkout", PRIVATE_BRANCH), wd = REPO_DIR))
+      expect_equal(args[[3]], list("git", args = c("checkout", PRIVATE_COMMIT), wd = REPO_DIR))
+      expect_equal(ret$entry_point, "/tmp/repo_dir/entry_point")
+      expect_null(ret$source_dir)
+      expect_null(ret$dependencies)
+    }
   )
 })
