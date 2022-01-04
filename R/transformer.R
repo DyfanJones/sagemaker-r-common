@@ -219,7 +219,7 @@ Transformer = R6Class("Transformer",
     #' @param wait wait for transform job
     stop_transform_job = function(wait=TRUE){
       private$.ensure_last_transform_job()
-      self$sagemaker_session$stop_transform_job(name=self$latest_transform)
+      self$sagemaker_session$stop_transform_job(name=self$latest_transform_job)
       if(wait) self$wait()
     },
 
@@ -241,7 +241,7 @@ Transformer = R6Class("Transformer",
       init_params = private$.prepare_init_params_from_job_description(job_details)
 
       # clone current class
-      transfomer = self$clone()
+      transformer = self$clone()
       init_params$sagemaker_session = sagemaker_session
       do.call(transformer$initialize, init_params)
       transformer$latest_transform_job = init_params$base_transform_job_name
@@ -465,7 +465,7 @@ Transformer = R6Class("Transformer",
       if (!is.null(join_source))
         config[["JoinSource"]] = join_source
 
-      if (length(config))
+      if (length(config) == 0)
         return(NULL)
 
       return(config)

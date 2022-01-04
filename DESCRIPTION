@@ -22,7 +22,7 @@ Imports:
     sagemaker.debugger
 Suggests:
     yaml,
-    mockery,
+    mockthat,
     crayon,
     testthat (>= 3.0.0),
     sagemaker.local,
