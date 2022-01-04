@@ -232,7 +232,7 @@ git_clone_repo <- function(git_config,
     sshnoprompt = fs::file_temp()
     on.exit(unlink(sshnoprompt))
     writeLines("ssh -oBatchMode=yes $@", sshnoprompt)
-    Sys.chmod(sshnoprompt, mode = "511", F)
+    fs::file_chmod(sshnoprompt, mode = "511")
     processx::run("git", args = c("clone", repo_url, dest_dir), env = c("current", GIT_SSH = sshnoprompt))
   }
 }
