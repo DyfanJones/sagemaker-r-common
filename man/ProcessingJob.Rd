@@ -59,10 +59,10 @@ Other Processor:
 Initializes a Processing job.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ProcessingJob$new(
-  sagemaker_session,
-  job_name,
-  inputs,
-  outputs,
+  sagemaker_session = NULL,
+  job_name = NULL,
+  inputs = NULL,
+  outputs = NULL,
   output_kms_key = NULL
 )}\if{html}{\out{</div>}}
 }
