@@ -58,7 +58,7 @@ PawsFunctions = R6Class("PawsFunctions",
           names(sub_ll) <- c("api_type", "is_collection")
           if (sub_ll$is_collection){
             if (is.list(paws_value))
-              member_value = sub_ll$api_type$from_paws(boto_value)
+              member_value = sub_ll$api_type$from_paws(paws_value)
             else
               member_value = lapply(paws_value, function(item) sub_ll$api_type$from_paws(item))
           } else {
@@ -89,16 +89,14 @@ PawsFunctions = R6Class("PawsFunctions",
       # not having a value
       # set, required as API operations can have optional parameters that may not take a null value.
       member_vars = Filter(Negate(is.null), member_vars)
-
       # Iterate over each snake_case name and its value and map to a camel case name. If the value
       # is an ApiObject subclass then recursively map its entries.
-      for (i in member_vars){
-        member_name = names(member_vars)[[i]]
-        member_value = member_vars[[i]]
+      for (member_name in names(member_vars)){
+        member_value = member_vars[[member_name]]
         paws_name = member_name_to_paws_name[[member_name]] %||% self$to_camel_case(member_name)
         sub_ll =  member_name_to_type[[member_name]] %||% list(NULL, NULL)
         names(sub_ll) = c("api_type", "is_api_collection_type")
-        if (sub_ll$is_api_collection_type && is.list(member_value)){
+        if (!is.null(sub_ll$is_api_collection_type) && is.list(member_value)){
           paws_value = lapply(member_value, function(v) if(!is.null(sub_ll$api_type)) sub_ll$api_type$to_paws(v) else v)
           if(!is.null(names(member_value)))
             names(paws_value) = names(member_value)
