@@ -23,7 +23,7 @@ ApiObject = R6Class("ApiObject",
     },
 
     #' @description Construct an instance of this ApiObject from a boto response.
-    #' @param paws_dict (list): A dictionary of a boto response.
+    #' @param paws_dict (list): A dictionary of a paws response.
     #' @param  ... : Arbitrary keyword arguments
     from_paws = function(paws_dict,
                          ...){
@@ -47,24 +47,27 @@ ApiObject = R6Class("ApiObject",
       cls_kwargs = c(cls_kwargs, kwargs)
 
       cls = self$clone()
-      do.call(cls$new, cls_kwargs)
+      do.call(cls$initialize, cls_kwargs)
       return(cls)
     },
 
-    #' @description  Convert an object to a boto representation.
-    #' @param obj (dict): The object to convert to boto.
+    #' @description  Convert an object to a paws representation.
+    #' @param obj (dict): The object to convert to paws.
     to_paws = function(obj){
-      if (!is.list(obj))
+      if(inherits(obj, "ApiObject")){
+        var_dict = as.list(obj)[obj$.__enclos_env__$private$.args]
+      } else if (!is.list(obj)) {
         var_dict = as.list(obj)
-      else
+      } else {
         var_dict = obj
+      }
       return (PawsFunctions$new()$to_paws(var_dict, private$.custom_paws_names, private$.custom_paws_types))
     },
 
     #' @description Return a string representation of this ApiObject.
     format = function(){
       ll = as.list(self)[private$.args]
-      return(sprintf("%s(%s)", class(self)[[1]], paste(names(ll), ll, sep = "=",  collapse = ",")))
+      return(sprintf("%s(%s)", class(self)[[1]], paste(names(ll), ll, sep = "=",  collapse = ", ")))
     }
   ),
   private = list(

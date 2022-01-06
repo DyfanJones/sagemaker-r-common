@@ -48,7 +48,7 @@ Construct an instance of this ApiObject from a boto response.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{paws_dict}}{(list): A dictionary of a boto response.}
+\item{\code{paws_dict}}{(list): A dictionary of a paws response.}
 
 \item{\code{...}}{: Arbitrary keyword arguments}
 }
@@ -59,7 +59,7 @@ Construct an instance of this ApiObject from a boto response.
 \if{html}{\out{<a id="method-to_paws"></a>}}
 \if{latex}{\out{\hypertarget{method-to_paws}{}}}
 \subsection{Method \code{to_paws()}}{
-Convert an object to a boto representation.
+Convert an object to a paws representation.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ApiObject$to_paws(obj)}\if{html}{\out{</div>}}
 }
@@ -67,7 +67,7 @@ Convert an object to a boto representation.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{obj}}{(dict): The object to convert to boto.}
+\item{\code{obj}}{(dict): The object to convert to paws.}
 }
 \if{html}{\out{</div>}}
 }
