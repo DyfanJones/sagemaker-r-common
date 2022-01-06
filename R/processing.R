@@ -12,7 +12,7 @@
 #' @include apiutils_base_types.R
 
 
-#' @importFrom urltools url_parse url_decode
+#' @importFrom urltools url_decode
 #' @import fs
 #' @import R6
 
@@ -199,7 +199,10 @@ Processor = R6Class("Processor",
                    job_name=NULL,
                    experiment_config=NULL){
       if (logs && !wait)
-        ValueError$new("Logs can only be shown if wait is set to True. Please either set wait to True or set logs to False.")
+        ValueError$new(
+          "Logs can only be shown if wait is set to True. ",
+          "Please either set wait to True or set logs to False."
+        )
 
       ll = private$.normalize_args(
         job_name=job_name,
@@ -254,7 +257,6 @@ Processor = R6Class("Processor",
       normalized_inputs = private$.normalize_inputs(inputs_with_code, kms_key)
       normalized_outputs = private$.normalize_outputs(outputs)
       self$arguments = arguments
-
       return(list(
         "normalized_inputs"=normalized_inputs,
         "normalized_outputs"=normalized_outputs)
@@ -331,8 +333,8 @@ Processor = R6Class("Processor",
           }
           # If the source is a local path, upload it to S3
           # and save the S3 uri in the ProcessingInput source.
-          parse_result = url_parse(inputs[[count]]$s3_input$s3_uri)
-          if (parse_result$scheme != "s3"){
+          parse_result = parse_url(inputs[[count]]$s3_input$s3_uri)
+          if (!identical(parse_result$scheme, "s3")){
             desired_s3_uri = s3_path_join(
               "s3://",
               self$sagemaker_session$default_bucket(),
@@ -342,11 +344,11 @@ Processor = R6Class("Processor",
             s3_uri = S3Uploader$new()$upload(
               local_path=inputs[[count]]$s3_input$s3_uri,
               desired_s3_uri=desired_s3_uri,
-              session=self$sagemaker_session,
+              sagemaker_session=self$sagemaker_session,
               kms_key=kms_key)
-            inputs[[count]]$s3_uri = s3_uri
+            inputs[[count]]$s3_input$s3_uri = s3_uri
           }
-          normalized_inputs = c(normalized_inputs, inputs[[count]])
+          normalized_inputs = list.append(normalized_inputs, inputs[[count]])
         }
       }
       return(normalized_inputs)
@@ -362,7 +364,7 @@ Processor = R6Class("Processor",
     # Returns:
     #   list[sagemaker.processing.ProcessingOutput]: The list of normalized
     # ``ProcessingOutput`` objects.
-    .normalize_outputs = function(output = NULL){
+    .normalize_outputs = function(outputs = NULL){
       # Initialize a list of normalized ProcessingOutput objects.
       normalized_outputs = list()
       if (!is.null(outputs)){
@@ -374,12 +376,12 @@ Processor = R6Class("Processor",
           if (islistempty(outputs[[count]]$output_name))
             outputs[[count]]$output_name = sprintf("output-%s",count)
           if (isinstance(outputs[[count]]$destination, c("Parameter", "Expression", "Properties"))){
-            normalized_outputs = c(normalized_outputs, outputs[[count]])
+            normalized_outputs = list.append(normalized_outputs, outputs[[count]])
             next
           }
           # If the output's destination is not an s3_uri, create one.
-          parse_result = url_parse(outputs[[count]]$destination)
-          if (parse_result$scheme != "s3"){
+          parse_result = parse_url(outputs[[count]]$destination)
+          if (!identical(parse_result$scheme, "s3")){
             s3_uri = s3_path_join(
               "s3://",
               self$sagemaker_session$default_bucket(),
@@ -387,7 +389,7 @@ Processor = R6Class("Processor",
               "input",
               outputs[[count]]$output_name)
             outputs[[count]]$destination = s3_uri}
-          normalized_outputs = c(normalized_outputs, outputs[[count]])
+          normalized_outputs = list.append(normalized_outputs, outputs[[count]])
         }
       }
       return(normalized_outputs)
@@ -534,12 +536,11 @@ ScriptProcessor = R6Class("ScriptProcessor",
         outputs=outputs,
         code=code,
         kms_key=kms_key)
-
       self$latest_job = ProcessingJob$new()$start_new(
-        processor=self,
-        inputs=ll$normalized_inputs,
-        outputs=ll$normalized_outputs,
-        experiment_config=experiment_config)
+          processor=self,
+          inputs=ll$normalized_inputs,
+          outputs=ll$normalized_outputs,
+          experiment_config=experiment_config)
       self$jobs = c(self$jobs, self$latest_job)
 
       if (wait) self$latest_job$wait(logs=logs)
@@ -567,7 +568,6 @@ ScriptProcessor = R6Class("ScriptProcessor",
       user_script_name = private$.get_user_code_name(code)
 
       inputs_with_code = private$.convert_code_and_add_to_inputs(inputs, user_code_s3_uri)
-
       private$.set_entrypoint(self$command, user_script_name)
       return(inputs_with_code)
     },
@@ -578,7 +578,7 @@ ScriptProcessor = R6Class("ScriptProcessor",
     # Returns:
     #   str: The basename of the user's code.
     .get_user_code_name = function(code){
-      code_url = url_parse(code)
+      code_url = parse_url(code)
       return (basename(code_url$path))
     },
 
@@ -589,24 +589,32 @@ ScriptProcessor = R6Class("ScriptProcessor",
     #     code (str): A URL to the customer's code.
     # Returns:
     #   str: The S3 URL to the customer's code.
-    .handle_user_code_url = function(code){
-      code_url = url_parse(code)
-      if (code_url$scheme == "s3") {
+    .handle_user_code_url = function(code, kms_key=NULL){
+      code_url = parse_url(code)
+      if (identical(code_url$scheme, "s3")) {
         user_code_s3_uri = code
-      } else if(code_url$scheme == "" || code_url$scheme == "file") {
+      } else if(is.na(code_url$scheme) || identical(code_url$scheme, "file")) {
         # Validate that the file exists locally and is not a directory.
-        cade_path = url_decode(code_url$path)
-        if (!fs::file_exists(code)){
-          ValueError$new(
-            sprintf("code {} wasn't found. Please make sure that the file exists.", code))}
-        if (!fs::is_file(code)){
-          ValueError$new(
-            sprintf("code %s must be a file, not a directory. Please pass a path to a file.", code))}
-        user_code_s3_uri = private$.upload_code(code)
+        code_path = urltools::url_decode(code_url$path)
+        if (!fs::file_exists(code_path)){
+          ValueError$new(sprintf(
+            "code %s wasn't found. Please make sure that the file exists.",
+            code)
+          )
+        }
+        if (!fs::is_file(code_path)){
+          ValueError$new(sprintf(
+            "code %s must be a file, not a directory. Please pass a path to a file.",
+            code)
+          )
+        }
+        user_code_s3_uri = private$.upload_code(code_path, kms_key)
       } else {
-        ValueError$new(
-          sprintf("code %s url scheme %s is not recognized. Please pass a file path or S3 url",
-                  code, code_url$scheme))}
+        ValueError$new(sprintf(
+          "code %s url scheme %s is not recognized. Please pass a file path or S3 url",
+          code, code_url$scheme)
+        )
+      }
       return(user_code_s3_uri)
     },
 
@@ -616,7 +624,7 @@ ScriptProcessor = R6Class("ScriptProcessor",
     #   code (str): A file or directory to be uploaded to S3.
     # Returns:
     #   str: The S3 URI of the uploaded file or directory.
-    .upload_code = function(code){
+    .upload_code = function(code, kms_key=NULL){
       desired_s3_uri = s3_path_join(
         "s3://",
         self$sagemaker_session$default_bucket(),
@@ -626,7 +634,9 @@ ScriptProcessor = R6Class("ScriptProcessor",
       return(S3Uploader$new()$upload(
         local_path=code,
         desired_s3_uri=desired_s3_uri,
-        session=self$sagemaker_session)
+        kms_key=kms_key,
+        sagemaker_session=self$sagemaker_session
+        )
       )
     },
 
@@ -644,9 +654,7 @@ ScriptProcessor = R6Class("ScriptProcessor",
         destination=sprintf("%s%s",
           self$.CODE_CONTAINER_BASE_PATH, self$.CODE_CONTAINER_INPUT_NAME),
         input_name=self$.CODE_CONTAINER_INPUT_NAME)
-
-      output = list(inputs %||% list(), code_file_input)
-      return(output)
+      return(c(inputs, code_file_input))
     },
 
     # Sets the entrypoint based on the user's script and corresponding executable.
@@ -691,10 +699,10 @@ ProcessingJob = R6Class("ProcessingJob",
     #' @param outputs (list[:class:`~sagemaker.processing.ProcessingOutput`]): A list of
     #'              :class:`~sagemaker.processing.ProcessingOutput` objects.
     #' @param output_kms_key (str): The output KMS key associated with the job (default: None).
-    initialize = function(sagemaker_session,
-                          job_name,
-                          inputs,
-                          outputs,
+    initialize = function(sagemaker_session=NULL,
+                          job_name=NULL,
+                          inputs=NULL,
+                          outputs=NULL,
                           output_kms_key=NULL){
       self$inputs = inputs
       self$outputs = outputs
@@ -722,14 +730,14 @@ ProcessingJob = R6Class("ProcessingJob",
 
       # Print the job name and the user's inputs and outputs as lists of dictionaries.
       writeLines("")
-      writeLines(sprintf("Job Name: %s", process_request_args$job_name))
-      writeLines("Inputs: ")
-      print(process_request_args$inputs)
-      writeLines("Outputs: ")
-      print(process_request_args$output_config$Outputs)
+      writeLines(sprintf("Job Name: %s", process_args$job_name))
+      writeLines(sprintf("Inputs: %s",
+        jsonlite::toJSON(process_args$inputs, auto_unbox = T)))
+      writeLines(sprintf("Outputs: %s",
+        jsonlite::toJSON(process_args$output_config$Outputs, auto_unbox = T)))
 
       # Call sagemaker_session.process using the arguments dictionary.
-      do.call(processor$sagemaker_session$process, process_request_args)
+      do.call(processor$sagemaker_session$process, process_args)
 
       cls = self$clone()
       cls$initialize(
@@ -739,7 +747,6 @@ ProcessingJob = R6Class("ProcessingJob",
         outputs,
         processor$output_kms_key
       )
-
       return(cls)
     },
 
@@ -797,7 +804,6 @@ ProcessingJob = R6Class("ProcessingJob",
         outputs=outputs,
         output_kms_key=output_kms_key
       )
-
       return(cls)
     },
 
@@ -935,16 +941,18 @@ ProcessingJob = R6Class("ProcessingJob",
       process_request_args = list()
 
       # Add arguments to the dictionary.
-      process_request_args$inputs = lapply(inputs, function(input) input$.to_request_list())
+      process_request_args[["inputs"]] = lapply(inputs, function(input) input$to_request_list())
 
-      process_request_args$output_config = list("Outputs"= lapply(outputs, function(output) output$.to_request_list()))
+      process_request_args[["output_config"]] = list(
+        "Outputs"= lapply(outputs, function(output) output$to_request_list())
+      )
       if (!islistempty(processor$output_kms_key))
-        process_request_args$output_config$KmsKeyId = processor$output_kms_key
+        process_request_args[["output_config"]][["KmsKeyId"]] = processor$output_kms_key
+      # ensure NULL value is kept
+      process_request_args["experiment_config"] = list(experiment_config)
+      process_request_args[["job_name"]] = processor$.current_job_name
 
-      process_request_args$experiment_config = experiment_config
-      process_request_args$job_name = processor$.current_job_name
-
-      process_request_args$resources = list(
+      process_request_args[["resources"]] = list(
         "ClusterConfig" = list(
           "InstanceType"= processor$instance_type,
           "InstanceCount"= processor$instance_count,
@@ -952,31 +960,35 @@ ProcessingJob = R6Class("ProcessingJob",
         )
       )
 
-      if(!islistempty(processor$volumene_kms_key)){
-        process_request_args$resources$ClusterConfig$VolumeKmsKeyId = processor$volume_kms_key}
-
+      if(!islistempty(processor$volume_kms_key)){
+        process_request_args[["resources"]][["ClusterConfig"]][["VolumeKmsKeyId"]] = processor$volume_kms_key
+      }
       if(!islistempty(processor$max_runtime_in_seconds)){
-        process_request_args$stopping_condition = list(
+        process_request_args[["stopping_condition"]] = list(
           "MaxRuntimeInSeconds"= processor$max_runtime_in_seconds)
       } else {
-        process_request_args = c(process_request_args, list(stopping_condition=NULL))
+        # ensure NULL value is kept
+        process_request_args["stopping_condition"] = list(NULL)
       }
-      process_request_args$app_specification = list("ImageUri"= processor$image_uri)
+      process_request_args[["app_specification"]] = list("ImageUri"= processor$image_uri)
       if (!islistempty(processor$arguments))
-        process_request_args$app_specification$ContainerArguments = processor$arguments
+        process_request_args[["app_specification"]][["ContainerArguments"]] = processor$arguments
       if (!islistempty(processor$entrypoint))
-        process_request_args$app_specification$ContainerEntrypoint = processor$entrypoint
+        process_request_args[["app_specification"]][["ContainerEntrypoint"]] = processor$entrypoint
 
-      process_request_args$environment = processor$env
+      # ensure NULL value is kept
+      process_request_args["environment"] = list(processor$env)
 
       if (!islistempty(processor$network_config)){
-        process_request_args$network_config = processor$network_config$to_request_list()
+        process_request_args[["network_config"]] = processor$network_config$to_request_list()
       } else {
-        process_request_args = c(process_request_args, list(network_config=NULL))
+        # ensure NULL value is kept
+        process_request_args["network_config"] = list(NULL)
       }
-      process_request_args$role_arn = processor$sagemaker_session$expand_role(processor$role)
+      process_request_args[["role_arn"]] = processor$sagemaker_session$expand_role(processor$role)
 
-      process_request_args$tags = processor$tags
+      # ensure NULL value is kept
+      process_request_args["tags"] = list(processor$tags)
 
       return(process_request_args)
     },
@@ -1053,11 +1065,10 @@ ProcessingInput = R6Class("ProcessingInput",
         if (self$s3_compression_type == "Gzip"
             && self$s3_input_mode != "Pipe")
           ValueError$new("Data can only be gzipped when the input mode is Pipe.")
-
         s3_input_request[["S3Input"]] = S3Input$new()$to_paws(self$s3_input)
       }
 
-      if (!is.null(self.dataset_definition))
+      if (!is.null(self$dataset_definition))
         s3_input_request[["DatasetDefinition"]] = DatasetDefinition$new()$to_paws(
           self$dataset_definition)
 
@@ -1079,20 +1090,20 @@ ProcessingInput = R6Class("ProcessingInput",
     .create_s3_input = function(){
       if (!is.null(self$s3_input)){
         # backfill other class members
-        self$source = self$s3_input.s3_uri
+        self$source = self$s3_input$s3_uri
         self$destination = self$s3_input$local_path
         self$s3_data_type = self$s3_input$s3_data_type
         self$s3_input_mode = self$s3_input$s3_input_mode
         self$s3_data_distribution_type = self$s3_input$s3_data_distribution_type
       }else if (!is.null(self$source) && !is.null(self$destination)){
-          self$s3_input = S3Input$new(
-            s3_uri=self$source,
-            local_path=self$destination,
-            s3_data_type=self$s3_data_type,
-            s3_input_mode=self$s3_input_mode,
-            s3_data_distribution_type=self$s3_data_distribution_type,
-            s3_compression_type=self$s3_compression_type
-          )
+        self$s3_input = S3Input$new(
+          s3_uri=self$source,
+          local_path=self$destination,
+          s3_data_type=self$s3_data_type,
+          s3_input_mode=self$s3_input_mode,
+          s3_data_distribution_type=self$s3_data_distribution_type,
+          s3_compression_type=self$s3_compression_type
+        )
       }
     }
   ),
@@ -1570,7 +1581,7 @@ FrameworkProcessor = R6Class("FrameworkProcessor",
       if (self$sagemaker_session$local_mode && local_code)
         RuntimeError$new(
           "SageMaker Processing Local Mode does not currently support 'local code' mode. ",
-          "Please use a LocalSession created with disable_local_code=True, or leave ",
+          "Please use a LocalSession created with disable_local_code=TRUE, or leave ",
           "sagemaker_session unspecified when creating your Processor to have one set up ",
           "automatically."
         )
