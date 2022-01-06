@@ -2050,16 +2050,16 @@ Session = R6Class("Session",
                                                  kms_key=NULL,
                                                  wait=TRUE,
                                                  data_capture_config_list=NULL){
-      if (!.deployment_entity_exists(self$sagemaker$describe_endpoint_config(EndpointConfigName=name))){
-        config_options = list("EndpointConfigName"=name, "ProductionVariants"=production_variants)
-        tags = .append_project_tags(tags)
-        if (!islistempty(tags))
-          config_options[["Tags"]] = tags
-        config_options[["KmsKeyId"]] = kms_key
-        config_options[["DataCaptureConfig"]] = data_capture_config_list
+      config_options = list("EndpointConfigName"=name, "ProductionVariants"=production_variants)
+      tags = .append_project_tags(tags)
+      if (!islistempty(tags))
+        config_options[["Tags"]] = tags
+      config_options[["KmsKeyId"]] = kms_key
+      config_options[["DataCaptureConfig"]] = data_capture_config_list
 
-        do.call(self$sagemaker$create_endpoint_config, config_options)
-      }
+      LOGGER$info("Creating endpoint-config with name %s", name)
+      do.call(self$sagemaker$create_endpoint_config, config_options)
+
       return (self$create_endpoint(endpoint_name=name, config_name=name, tags=tags, wait=wait))
     },
 
