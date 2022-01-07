@@ -33,7 +33,7 @@ Initializes a ``ProcessingOutput`` instance. ``ProcessingOutput`` accepts parame
              those parameters into a dictionary.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ProcessingOutput$new(
-  source,
+  source = NULL,
   destination = NULL,
   output_name = NULL,
   s3_upload_mode = c("EndOfJob", "Continuous"),

@@ -42,13 +42,13 @@ Initialize ApiObject class
 \subsection{Method \code{from_paws()}}{
 Construct an instance of this ApiObject from a boto response.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ApiObject$from_paws(paws_dict, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ApiObject$from_paws(paws_list, ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{paws_dict}}{(list): A dictionary of a paws response.}
+\item{\code{paws_list}}{(list): A dictionary of a paws response.}
 
 \item{\code{...}}{: Arbitrary keyword arguments}
 }
