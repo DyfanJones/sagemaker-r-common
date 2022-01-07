@@ -375,7 +375,7 @@ Processor = R6Class("Processor",
           # Generate a name for the ProcessingOutput if it doesn't have one.
           if (islistempty(outputs[[count]]$output_name))
             outputs[[count]]$output_name = sprintf("output-%s",count)
-          if (isinstance(outputs[[count]]$destination, c("Parameter", "Expression", "Properties"))){
+          if (inherits(outputs[[count]]$destination, c("Parameter", "Expression", "Properties"))){
             normalized_outputs = list.append(normalized_outputs, outputs[[count]])
             next
           }
@@ -782,7 +782,7 @@ ProcessingJob = R6Class("ProcessingJob",
             processing_output = ProcessingOutput$new(
               output_name=processing_output_dict[["OutputName"]],
               app_managed=processing_output_dict[["AppManaged"]] %||% FALSE,
-              feature_store_output=FeatureStoreOutput$new()$new$from_paws(
+              feature_store_output=FeatureStoreOutput$new()$from_paws(
                 processing_output_dict[["FeatureStoreOutput"]]))
 
             if("S3Output" %in% names(processing_output_dict)){
@@ -797,7 +797,7 @@ ProcessingJob = R6Class("ProcessingJob",
         output_kms_key = job_desc$ProcessingOutputConfig$KmsKeyId
 
       cls = self$clone()
-      cls$intialize(
+      cls$initialize(
         sagemaker_session=sagemaker_session,
         job_name=processing_job_name,
         inputs=inputs,
@@ -941,7 +941,9 @@ ProcessingJob = R6Class("ProcessingJob",
       process_request_args = list()
 
       # Add arguments to the dictionary.
-      process_request_args[["inputs"]] = lapply(inputs, function(input) input$to_request_list())
+      process_request_args[["inputs"]] = lapply(inputs, function(input) {
+        input$to_request_list()
+      })
 
       process_request_args[["output_config"]] = list(
         "Outputs"= lapply(outputs, function(output) output$to_request_list())
@@ -1114,6 +1116,7 @@ ProcessingInput = R6Class("ProcessingInput",
 #' @family Processor
 #' @description Accepts parameters that specify an Amazon S3 output for a processing job and provides
 #'              a method to turn those parameters into a dictionary.
+#' @export
 ProcessingOutput = R6Class("ProcessingOutput",
   public = list(
     #' @description Initializes a ``ProcessingOutput`` instance. ``ProcessingOutput`` accepts parameters that
@@ -1130,7 +1133,7 @@ ProcessingOutput = R6Class("ProcessingOutput",
     #' @param app_managed (bool): Whether the input are managed by SageMaker or application
     #' @param feature_store_output (:class:`~sagemaker.processing.FeatureStoreOutput`)
     #'             Configuration for processing job outputs of FeatureStore.
-    initialize = function(source,
+    initialize = function(source=NULL,
                           destination=NULL,
                           output_name=NULL,
                           s3_upload_mode=c("EndOfJob", "Continuous"),
