@@ -38,7 +38,7 @@ NetworkConfig = R6Class("NetworkConfig",
       if (!is.null(self$encrypt_inter_container_traffic))
         network_config_request$EnableInterContainerTrafficEncryption = self$encrypt_inter_container_traffic
 
-      if (!is.null(self.security_group_ids) %||% !is.null(self$subnets))
+      if (!is.null(self$security_group_ids) %||% !is.null(self$subnets))
         network_config_request$VpcConfig = list()
 
       if (!is.null(self$security_group_ids))
