@@ -753,9 +753,14 @@ test_that("test_processing_job_from_processing_arn", {
 
   expect_true(inherits(processing_job, "ProcessingJob"))
   expect_equal(
-    lapply(processing_job$inputs, \(x) x$to_request_list())[[5]],
-    .get_describe_response_inputs_and_ouputs()[["ProcessingInputs"]][[5]]
+    lapply(processing_job$inputs, function(x) x$to_request_list()),
+    .get_describe_response_inputs_and_ouputs()[["ProcessingInputs"]]
+  )
+  expect_equal(
+    lapply(processing_job$outputs, function(x) x$to_request_list()),
+    .get_describe_response_inputs_and_ouputs()[["ProcessingOutputConfig"]][["Outputs"]]
+  )
+  expect_equal(processing_job$output_kms_key,
+    .get_describe_response_inputs_and_ouputs()[["ProcessingOutputConfig"]][["KmsKeyId"]]
   )
 })
-
-
