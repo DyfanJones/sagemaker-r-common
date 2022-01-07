@@ -40,13 +40,12 @@ PawsFunctions = R6Class("PawsFunctions",
     # mapped element is a collection or singleton.
     # Returns:
     #   dict: Boto response in snake case.
-    from_paws = function(paws_dict,
+    from_paws = function(paws_list,
                          paws_name_to_member_name,
                          member_name_to_type){
       from_paws_values = list()
-      for (i in paws_dict){
-        paws_name = names(paws_dict)[i]
-        paws_value = paws_dict[[i]]
+      for (paws_name in names(paws_list)){
+        paws_value = paws_list[[paws_name]]
         # Convert the paws_name to a snake-case name by preferentially looking up the boto name in
         # boto_name_to_member_name before defaulting to the snake case representation
         member_name = paws_name_to_member_name[[paws_name]] %||% self$to_snake_case(paws_name)
@@ -67,9 +66,9 @@ PawsFunctions = R6Class("PawsFunctions",
             # boto value.  Appropriate if the type is simple and requires not further conversion (e.g.
             # a number or list of strings).
           }
-        } else
+        } else {
           member_value = paws_value
-
+        }
         from_paws_values[[member_name]] = member_value
       }
       return(from_paws_values)
