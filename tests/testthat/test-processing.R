@@ -38,6 +38,7 @@ sagemaker_session = function(region=DEFAULT_REGION){
   sms$.call_args("expand_role", ROLE)
   sms$.call_args("process")
   sms$.call_args("logs_for_processing_job")
+  sms$.call_args("wait_for_processing_job")
   sms$.call_args("describe_processing_job", .get_describe_response_inputs_and_ouputs())
   return(sms)
 }
@@ -183,6 +184,87 @@ sagemaker_local_session = function(region=DEFAULT_REGION, config=DEFAULT_CONFIG)
     )
   )
   return(data_input)
+}
+
+.get_data_inputs_all_parameters = function(){
+  return(list(
+    ProcessingInput$new(
+      source="s3://path/to/my/dataset/census.csv",
+      destination="/container/path/",
+      input_name="my_dataset",
+      s3_data_type="S3Prefix",
+      s3_input_mode="File",
+      s3_data_distribution_type="FullyReplicated",
+      s3_compression_type="None"
+    ),
+    ProcessingInput$new(
+      input_name="s3_input",
+      s3_input=S3Input$new(
+        s3_uri="s3://path/to/my/dataset/census.csv",
+        local_path="/container/path/",
+        s3_data_type="S3Prefix",
+        s3_input_mode="File",
+        s3_data_distribution_type="FullyReplicated",
+        s3_compression_type="None"
+      )
+    ),
+    ProcessingInput$new(
+      input_name="redshift_dataset_definition",
+      app_managed=TRUE,
+      dataset_definition=DatasetDefinition$new(
+        data_distribution_type="FullyReplicated",
+        input_mode="File",
+        local_path="/opt/ml/processing/input/dd",
+        redshift_dataset_definition=RedshiftDatasetDefinition$new(
+          cluster_id="cluster_id",
+          database="database",
+          db_user="db_user",
+          query_string="query_string",
+          cluster_role_arn="cluster_role_arn",
+          output_s3_uri="output_s3_uri",
+          kms_key_id="kms_key_id",
+          output_format="CSV",
+          output_compression="SNAPPY"
+        )
+      )
+    ),
+    ProcessingInput$new(
+      input_name="athena_dataset_definition",
+      app_managed=TRUE,
+      dataset_definition=DatasetDefinition$new(
+        data_distribution_type="FullyReplicated",
+        input_mode="File",
+        local_path="/opt/ml/processing/input/dd",
+        athena_dataset_definition=AthenaDatasetDefinition$new(
+          catalog="catalog",
+          database="database",
+          query_string="query_string",
+          output_s3_uri="output_s3_uri",
+          work_group="workgroup",
+          kms_key_id="kms_key_id",
+          output_format="AVRO",
+          output_compression="ZLIB"
+          )
+        )
+      )
+    )
+  )
+}
+
+.get_data_outputs_all_parameters = function(){
+  return(list(
+    ProcessingOutput$new(
+      source="/container/path/",
+      destination="s3://uri/",
+      output_name="my_output",
+      s3_upload_mode="EndOfJob"
+    ),
+    ProcessingOutput$new(
+      output_name="feature_store_output",
+      app_managed=TRUE,
+      feature_store_output=FeatureStoreOutput$new(feature_group_name="FeatureGroupName"),
+    )
+  ))
 }
 
 .get_expected_args_all_parameters = function(job_name){
@@ -445,6 +527,235 @@ test_that("test_script_processor_with_one_input", {
   )
 })
 
+test_that("test_script_processor_with_required_parameters", {
+  sms = sagemaker_session()
+  processor = .get_script_processor(sms)
+  with_mock(
+    `fs::file_exists` = mock_fun(TRUE),
+    `fs::is_file` = mock_fun(TRUE),
+    {
+      processor$run(code="/local/path/to/processing_code.py")
+      expected_args = .get_expected_args(processor$.current_job_name, code_s3_uri=MOCKED_S3_URI)
+      expect_equal(sms$process(..return_value = T), expected_args)
+    }
+  )
+})
 
+test_that("test_script_processor_with_all_parameters", {
+  sms = sagemaker_session()
+  processor = ScriptProcessor$new(
+    role=ROLE,
+    image_uri=CUSTOM_IMAGE_URI,
+    command="python3",
+    instance_type="ml.m4.xlarge",
+    instance_count=1,
+    volume_size_in_gb=100,
+    volume_kms_key="arn:aws:kms:us-west-2:012345678901:key/volume-kms-key",
+    output_kms_key="arn:aws:kms:us-west-2:012345678901:key/output-kms-key",
+    max_runtime_in_seconds=3600,
+    base_job_name="my_sklearn_processor",
+    env=list("my_env_variable"="my_env_variable_value"),
+    tags=list(list("Key"="my-tag", "Value"="my-tag-value")),
+    network_config=NetworkConfig$new(
+      subnets=list("my_subnet_id"),
+      security_group_ids=list("my_security_group_id"),
+      enable_network_isolation=TRUE,
+      encrypt_inter_container_traffic=TRUE
+    ),
+    sagemaker_session=sms
+  )
+  with_mock(
+    `fs::file_exists` = mock_fun(TRUE),
+    `fs::is_file` = mock_fun(TRUE),
+    {
+      processor$run(
+        code="/local/path/to/processing_code.py",
+        inputs=.get_data_inputs_all_parameters(),
+        outputs=.get_data_outputs_all_parameters(),
+        arguments=list("--drop-columns", "'SelfEmployed'"),
+        wait=TRUE,
+        logs=FALSE,
+        job_name="my_job_name",
+        experiment_config=list("ExperimentName"="AnExperiment")
+      )
+      expected_args = .get_expected_args_all_parameters(processor$.current_job_name)
+      expect_equal(
+        sms$process(..return_value = T)[order(names(sms$process(..return_value = T)))],
+        expected_args[order(names(expected_args))]
+      )
+      expect_equal(processor$.current_job_name, "my_job_name")
+    }
+  )
+})
+
+test_that("test_script_processor_with_all_parameters_via_run_args", {
+  sms = sagemaker_session()
+  processor = ScriptProcessor$new(
+    role=ROLE,
+    image_uri=CUSTOM_IMAGE_URI,
+    command="python3",
+    instance_type="ml.m4.xlarge",
+    instance_count=1,
+    volume_size_in_gb=100,
+    volume_kms_key="arn:aws:kms:us-west-2:012345678901:key/volume-kms-key",
+    output_kms_key="arn:aws:kms:us-west-2:012345678901:key/output-kms-key",
+    max_runtime_in_seconds=3600,
+    base_job_name="my_sklearn_processor",
+    env=list("my_env_variable"="my_env_variable_value"),
+    tags=list(list("Key"="my-tag", "Value"="my-tag-value")),
+    network_config=NetworkConfig$new(
+      subnets=list("my_subnet_id"),
+      security_group_ids=list("my_security_group_id"),
+      enable_network_isolation=TRUE,
+      encrypt_inter_container_traffic=TRUE
+    ),
+    sagemaker_session=sms
+  )
+  with_mock(
+    `fs::file_exists` = mock_fun(TRUE),
+    `fs::is_file` = mock_fun(TRUE),
+    {
+      run_args = processor$get_run_args(
+        code="/local/path/to/processing_code.py",
+        inputs=.get_data_inputs_all_parameters(),
+        outputs=.get_data_outputs_all_parameters(),
+        arguments=list("--drop-columns", "'SelfEmployed'")
+      )
+
+      processor$run(
+        code=run_args$code,
+        inputs=run_args$inputs,
+        outputs=run_args$outputs,
+        arguments=run_args$arguments,
+        wait=TRUE,
+        logs=FALSE,
+        job_name="my_job_name",
+        experiment_config=list("ExperimentName"="AnExperiment")
+      )
+
+      expected_args = .get_expected_args_all_parameters(processor$.current_job_name)
+      expect_equal(
+        sms$process(..return_value = T)[order(names(sms$process(..return_value = T)))],
+        expected_args[order(names(expected_args))]
+      )
+      expect_equal(processor$.current_job_name, "my_job_name")
+    }
+  )
+})
+
+test_that("test_processor_with_required_parameters", {
+  sms = sagemaker_session()
+  processor = Processor$new(
+    role=ROLE,
+    image_uri=CUSTOM_IMAGE_URI,
+    instance_count=1,
+    instance_type="ml.m4.xlarge",
+    sagemaker_session=sms
+  )
+
+  processor$run()
+  expected_args = .get_expected_args(processor$.current_job_name)
+  expected_args[["app_specification"]][["ContainerEntrypoint"]] = NULL
+  expected_args[["inputs"]] = list()
+
+  expect_equal(sms$process(..return_value = T), expected_args)
+})
+
+test_that("test_processor_with_missing_network_config_parameters", {
+  sms = sagemaker_session()
+  processor = Processor$new(
+    role=ROLE,
+    image_uri=CUSTOM_IMAGE_URI,
+    instance_count=1,
+    instance_type="ml.m4.xlarge",
+    sagemaker_session=sms,
+    network_config=NetworkConfig$new(enable_network_isolation=TRUE)
+  )
+
+  processor$run()
+  expected_args = .get_expected_args(processor$.current_job_name)
+  expected_args[["app_specification"]][["ContainerEntrypoint"]] = NULL
+  expected_args[["inputs"]] = list()
+  expected_args[["network_config"]] = list("EnableNetworkIsolation"=TRUE)
+
+  expect_equal(sms$process(..return_value = T), expected_args)
+})
+
+test_that("test_processor_with_encryption_parameter_in_network_config", {
+  sms = sagemaker_session()
+  processor = Processor$new(
+    role=ROLE,
+    image_uri=CUSTOM_IMAGE_URI,
+    instance_count=1,
+    instance_type="ml.m4.xlarge",
+    sagemaker_session=sms,
+    network_config=NetworkConfig$new(encrypt_inter_container_traffic=FALSE)
+  )
+
+  processor$run()
+  expected_args = .get_expected_args(processor$.current_job_name)
+  expected_args[["app_specification"]][["ContainerEntrypoint"]] = NULL
+  expected_args[["inputs"]] = list()
+  expected_args[["network_config"]] = list(
+    "EnableNetworkIsolation"=FALSE,
+    "EnableInterContainerTrafficEncryption"=FALSE
+  )
+
+  expect_equal(sms$process(..return_value = T), expected_args)
+})
+
+test_that("test_processor_with_all_parameters", {
+  sms = sagemaker_session()
+  processor = Processor$new(
+    role=ROLE,
+    image_uri=CUSTOM_IMAGE_URI,
+    instance_count=1,
+    instance_type="ml.m4.xlarge",
+    sagemaker_session=sms,
+    entrypoint=list("python3", "/opt/ml/processing/input/code/processing_code.py"),
+    volume_size_in_gb=100,
+    volume_kms_key="arn:aws:kms:us-west-2:012345678901:key/volume-kms-key",
+    output_kms_key="arn:aws:kms:us-west-2:012345678901:key/output-kms-key",
+    max_runtime_in_seconds=3600,
+    base_job_name="processor_base_name",
+    env=list("my_env_variable"="my_env_variable_value"),
+    tags=list(list("Key"="my-tag", "Value"="my-tag-value")),
+    network_config=NetworkConfig$new(
+      subnets=list("my_subnet_id"),
+      security_group_ids=list("my_security_group_id"),
+      enable_network_isolation=TRUE,
+      encrypt_inter_container_traffic=TRUE
+    )
+  )
+
+  processor$run(
+    inputs=.get_data_inputs_all_parameters(),
+    outputs=.get_data_outputs_all_parameters(),
+    arguments=list("--drop-columns", "'SelfEmployed'"),
+    wait=TRUE,
+    logs=FALSE,
+    job_name="my_job_name",
+    experiment_config=list("ExperimentName"="AnExperiment")
+  )
+  expected_args = .get_expected_args_all_parameters(processor$.current_job_name)
+  expected_args[["inputs"]] = expected_args[["inputs"]][-length(expected_args[["inputs"]])]
+
+  actual_args = sms$process(..return_value = T)
+  expect_equal(actual_args[order(names(actual_args))],  expected_args[order(names(expected_args))])
+})
+
+test_that("test_processing_job_from_processing_arn", {
+  sms = sagemaker_session()
+  processing_job = ProcessingJob$new()$from_processing_arn(
+    sagemaker_session=sms,
+    processing_job_arn="arn:aws:sagemaker:dummy-region:dummy-account-number:processing-job/dummy-job-name"
+  )
+
+  expect_true(inherits(processing_job, "ProcessingJob"))
+  expect_equal(
+    lapply(processing_job$inputs, \(x) x$to_request_list())[[5]],
+    .get_describe_response_inputs_and_ouputs()[["ProcessingInputs"]][[5]]
+  )
+})
 
 
