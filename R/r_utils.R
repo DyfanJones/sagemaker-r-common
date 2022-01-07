@@ -241,6 +241,7 @@ pkg_name = function(){
 }
 
 parse_url = function(url){
-  if (!grepl("/", url)) url = sprintf("/%s", url)
+  url = ifelse(is.null(url) | is.logical(url) , "", url)
+  url = ifelse(grepl("/", url), url, sprintf("/%s", url))
   urltools::url_parse(url)
 }
