@@ -23,17 +23,16 @@ ApiObject = R6Class("ApiObject",
     },
 
     #' @description Construct an instance of this ApiObject from a boto response.
-    #' @param paws_dict (list): A dictionary of a boto response.
+    #' @param paws_list (list): A dictionary of a paws response.
     #' @param  ... : Arbitrary keyword arguments
-    from_paws = function(paws_dict,
+    from_paws = function(paws_list,
                          ...){
-      if (!islistempty(paws_dict))
+      if (islistempty(paws_list))
         return(NULL)
-      kwargs = list(...)
 
-      for(ign in private$.paws_ignore()) {
-        paws_dict[[ign]] <- NULL
-      }
+      kwargs = list(...)
+      paws_list_names = names(paws_list)
+      paws_list = paws_list[!(paws_list_names %in% private$.paws_ignore())]
 
       if(!islistempty(private$.custom_paws_names)){
         custom_paws_names_to_member_names = names(private$.custom_paws_names)
@@ -42,29 +41,38 @@ ApiObject = R6Class("ApiObject",
         custom_paws_names_to_member_names = list()
       }
       cls_kwargs = PawsFunctions$new()$from_paws(
-        paws_dict, custom_paws_names_to_member_names, private$.custom_paws_types
+        paws_list, custom_paws_names_to_member_names, private$.custom_paws_types
       )
-      cls_kwargs = c(cls_kwargs, kwargs)
+      cls_kwargs = modifyList(cls_kwargs, kwargs)
 
       cls = self$clone()
-      do.call(cls$new, cls_kwargs)
+      do.call(cls$initialize, cls_kwargs)
       return(cls)
     },
 
-    #' @description  Convert an object to a boto representation.
-    #' @param obj (dict): The object to convert to boto.
+    #' @description  Convert an object to a paws representation.
+    #' @param obj (dict): The object to convert to paws.
     to_paws = function(obj){
-      if (!is.list(obj))
+      if(inherits(obj, "ApiObject")){
+        var_dict = as.list(obj)[obj$.__enclos_env__$private$.args]
+      } else if (!is.list(obj)) {
         var_dict = as.list(obj)
-      else
+      } else {
         var_dict = obj
+      }
       return (PawsFunctions$new()$to_paws(var_dict, private$.custom_paws_names, private$.custom_paws_types))
     },
 
     #' @description Return a string representation of this ApiObject.
     format = function(){
       ll = as.list(self)[private$.args]
-      return(sprintf("%s(%s)", class(self)[[1]], paste(names(ll), ll, sep = "=",  collapse = ",")))
+      ll = lapply(Filter(Negate(is.null), ll), function(x) {
+        ifelse(R6::is.R6(x), format_class(x), sQuote(x))
+      })
+      ll_vars = ifelse(!islistempty(ll),
+        paste0("\n\t", paste(names(ll), ll, sep = "=",  collapse = ",\n\t"), "\n"), ""
+      )
+      return(sprintf("%s(%s)", class(self)[[1]], ll_vars))
     }
   ),
   private = list(

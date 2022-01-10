@@ -1,5 +1,6 @@
 #' @import R6
 #' @importFrom utils getFromNamespace help
+#' @importFrom urltools url_parse
 
 `%||%` <- function(x, y) if (is.null(x)) return(y) else return(x)
 
@@ -141,10 +142,11 @@ split_str <- function(str, split = ",") unlist(strsplit(str, split = split))
 #' @keywords internal
 #' @export
 format_class <- function(self){
-  sprintf(
-    "<%s at %s>\n",
+  return(sprintf(
+    "<%s at %s>",
     class(self)[1],
     data.table::address(self))
+  )
 }
 
 #' @title Create Enum "like" environments
@@ -236,4 +238,10 @@ cls_help = function(cls){
 pkg_name = function(){
   env <- topenv(environment())
   get0(".packageName", envir = env, inherits = FALSE)
+}
+
+parse_url = function(url){
+  url = ifelse(is.null(url) | is.logical(url) , "", url)
+  url = ifelse(grepl("/", url), url, sprintf("/%s", url))
+  urltools::url_parse(url)
 }

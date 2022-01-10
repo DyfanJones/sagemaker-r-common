@@ -142,8 +142,8 @@ DatasetDefinition = R6Class("DatasetDefinition",
   ),
   private = list(
     .custom_paws_types = list(
-      "redshift_dataset_definition"=c(RedshiftDatasetDefinition, TRUE),
-      "athena_dataset_definition"=c(AthenaDatasetDefinition, TRUE)
+      "redshift_dataset_definition"=c(RedshiftDatasetDefinition$new(), TRUE),
+      "athena_dataset_definition"=c(AthenaDatasetDefinition$new(), TRUE)
     )
   ),
   lock_objects=F
