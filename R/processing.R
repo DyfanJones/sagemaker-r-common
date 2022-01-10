@@ -228,6 +228,11 @@ Processor = R6Class("Processor",
   ),
   private = list(
 
+    # Extend inputs and outputs based on extra parameters
+    .extend_processing_args = function(inputs, outputs, ...){
+      return(list(inputs, outputs))
+    },
+
     # Normalizes the arguments so that they can be passed to the job run
     # Args:
     #   job_name (str): Name of the processing job to be created. If not specified, one
