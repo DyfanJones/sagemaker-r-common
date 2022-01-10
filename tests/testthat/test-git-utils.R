@@ -75,7 +75,6 @@ test_that("test git clone repo branch not exist", {
 })
 
 test_that("test git clone repo commit not exist", {
-  mockery::stub(git_clone_repo, "tempfile", REPO_DIR)
   git_config = list("repo"=PUBLIC_GIT_REPO, "branch"=PUBLIC_BRANCH, "commit"="banana")
   entry_point = "entry_point"
   source_dir = "source_dir"
