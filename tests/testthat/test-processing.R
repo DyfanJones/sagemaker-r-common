@@ -764,3 +764,21 @@ test_that("test_processing_job_from_processing_arn", {
     .get_describe_response_inputs_and_ouputs()[["ProcessingOutputConfig"]][["KmsKeyId"]]
   )
 })
+
+test_that("test_extend_processing_args", {
+  inputs = list()
+  outputs = list()
+
+  sms = sagemaker_session()
+  processor = Processor$new(
+    role=ROLE,
+    image_uri=CUSTOM_IMAGE_URI,
+    instance_count=1,
+    instance_type="ml.m4.xlarge",
+    sagemaker_session=sms,
+    network_config=NetworkConfig$new(encrypt_inter_container_traffic=FALSE)
+  )
+
+  ll = processor$.__enclos_env__$private$.extend_processing_args(list(), list())
+  expect_equal(ll, list(inputs, outputs))
+})
