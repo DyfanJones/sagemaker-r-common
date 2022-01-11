@@ -116,8 +116,7 @@ Session = R6Class("Session",
 
       # Upload file to s3
       for (i in 1:length(local_path)){
-        obj <- readBin(local_path[i], "raw", n = file.size(local_path[i]))
-        self$s3$put_object(Body = obj, Bucket = bucket, Key = s3_key[i], ...)
+        s3_upload(self$s3, local_path[i], bucket, s3_key[i], ...)
       }
       s3_uri = sprintf("s3://%s/%s", bucket, key_prefix)
       # If a specific file was used as input (instead of a directory), we return the full S3 key

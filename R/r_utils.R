@@ -89,6 +89,90 @@ base_write_raw <- function(obj,
   }
 }
 
+# Copied from https://github.com/paws-r/paws/blob/main/examples/s3_multipart_upload.R
+# and modified under Apache 2.0.
+# See the NOTICE file at the top of this package for attribution.
+
+KB = 1024
+MB = KB ^ 2
+GB = KB ^ 3
+
+s3_upload <- function(client,
+                      file,
+                      bucket,
+                      key,
+                      # Using 100 MB multipart upload size due to AWS recommendation:
+                      # https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpuoverview.html
+                      multipart_chunksize = 100 * MB,
+                      ...){
+  if(5 * MB > multipart_chunksize)
+    ValueError$new(paste(
+      "`multipart_chunksize` is too small please increase `multipart_chunksize` > 5MB,",
+      "https://docs.aws.amazon.com/AmazonS3/latest/userguide/qfacts.html"
+    ))
+  file_size = file.size(file)
+  multipart = file_size > multipart_chunksize
+  if(isFALSE(multipart)){
+    out <- client$put_object(
+      Body = readBin(file, what = "raw", n = file_size),
+      Key = key,
+      Bucket = bucket,
+      ...
+    )
+  } else {
+    LOGGER$debug("Uploading file %s in multipart to: s3://%s", file, fs::path(bucket, key))
+    multipart <- client$create_multipart_upload(
+      Bucket = bucket,
+      Key = key,
+      ...
+    )
+    tryCatch({
+      parts <- s3_upload_multipart_parts(
+        client, file, file_size, multipart_chunksize, bucket, key, multipart$UploadId
+      )
+      client$complete_multipart_upload(
+        Bucket = bucket,
+        Key = key,
+        MultipartUpload = list(Parts = part),
+        UploadId = multipart$UploadId
+      )
+    },
+    error = function(cond){
+      client$abort_multipart_upload(
+        Bucket = bucket,
+        Key = key,
+        UploadId = multipart$UploadId
+      )
+      LOGGER$error("Failed to Upload file in Multiparts")
+      stop(cond)
+    })
+  }
+}
+
+s3_upload_multipart_parts <- function(client,
+                                      file,
+                                      file_size,
+                                      multipart_chunksize,
+                                      bucket,
+                                      key,
+                                      upload_id) {
+  num_parts <- ceiling(file_size / multipart_chunksize)
+  con <- base::file(file, open = "rb")
+  on.exit({close(con)})
+  parts = lapply(seq_len(num_parts), function(i){
+    LOGGER$debug("Upload %s part %s of %s", file, i, num_parts)
+    part_resp <- client$upload_part(
+      Body = readBin(con, what = "raw", n = multipart_chunksize),
+      Bucket = bucket,
+      Key = key,
+      PartNumber = i,
+      UploadId = upload_id
+    )
+    return(list(ETag = part_resp$ETag, PartNumber = i))
+  })
+  return(parts)
+}
+
 #' @title If api call fails retry call
 #' @param expr (code): AWS code to rety
 #' @param retry (int): number of retries
@@ -245,3 +329,4 @@ parse_url = function(url){
   url = ifelse(grepl("/", url), url, sprintf("/%s", url))
   urltools::url_parse(url)
 }
+
