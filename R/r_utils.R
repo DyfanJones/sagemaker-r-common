@@ -120,7 +120,7 @@ s3_upload <- function(client,
       ...
     )
   } else {
-    LOGGER$debug("Uploading file %s in multipart to: s3://%s", file, fs::path(bucket, key))
+    LOGGER$debug("Uploading file '%s' in multipart to: 's3://%s'", file, fs::path(bucket, key))
     multipart <- client$create_multipart_upload(
       Bucket = bucket,
       Key = key,
@@ -133,7 +133,7 @@ s3_upload <- function(client,
       client$complete_multipart_upload(
         Bucket = bucket,
         Key = key,
-        MultipartUpload = list(Parts = part),
+        MultipartUpload = list(Parts = parts),
         UploadId = multipart$UploadId
       )
     },
