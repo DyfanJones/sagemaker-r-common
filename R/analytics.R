@@ -119,14 +119,14 @@ HyperparameterTuningJobAnalytics = R6Class("HyperparameterTuningJobAnalytics",
 
      next_args = list(HyperParameterTuningJobName=self$name, MaxResults=100)
      for (count in 1:100){
-       raw_result = self$sagemaker_session$sagemaker$list_training_jobs_for_hyper_parameter_tuning_job(
-         HyperParameterTuningJobName = next_args$HyperParameterTuningJobName,
-         MaxResults = next_args$MaxResults,
-         NextToken = next_args$NextToken)
+       LOGGER$debug("Calling list_training_jobs_for_hyper_parameter_tuning_job %d", count)
+       raw_result = do.call(
+         self$sagemaker_session$sagemaker$list_training_jobs_for_hyper_parameter_tuning_job,
+         next_args
+       )
        new_output = raw_result$TrainingJobSummaries
        output = c(output, new_output)
-       LOGGER$debug("Got %d more TrainingJobs. Total so far: %d",
-                 length(new_output), length(output))
+       LOGGER$debug("Got %d more TrainingJobs. Total so far: %d", length(new_output), length(output))
        if (!length(raw_result$NextToken) == 0 && length(new_output) > 0)
          next_args$NextToken = raw_result$NextToken
        else
