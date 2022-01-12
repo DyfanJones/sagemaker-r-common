@@ -30,6 +30,7 @@ Suggests:
     readr
 Remotes:
     DyfanJones/sagemaker-r-debugger,
+    DyfanJones/sagemaker-r-local,
     DyfanJones/sagemaker-r-mlcore
 License: Apache License (>= 2.0)
 Encoding: UTF-8
