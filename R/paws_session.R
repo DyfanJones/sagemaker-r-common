@@ -47,12 +47,14 @@ PawsSession = R6Class("PawsSession",
     #' @param region_name (str): Default region when creating new connections
     #' @param profile_name (str): The name of a profile to use. If not given, then the default profile is used.
     #' @param endpoint (str): The complete URL to use for the constructed client.
+    #' @param config (list): Optional paws configuration of credentials, endpoint, and/or region.
     initialize = function(aws_access_key_id = NULL,
                           aws_secret_access_key = NULL,
                           aws_session_token = NULL,
                           region_name = NULL,
                           profile_name = NULL,
-                          endpoint = NULL){
+                          endpoint = NULL,
+                          config = list()){
       self$aws_access_key_id = aws_access_key_id %||% get_aws_env("AWS_ACCESS_KEY_ID")
       self$aws_secret_access_key = aws_secret_access_key %||% get_aws_env("AWS_SECRET_ACCESS_KEY")
       self$aws_session_token = aws_session_token %||% get_aws_env("AWS_SESSION_TOKEN")
@@ -65,12 +67,13 @@ PawsSession = R6Class("PawsSession",
       )
       self$endpoint = endpoint
       private$.cred_set()
+      self$credentials = modifyList(self$credentials, config)
     },
 
     #' @description Create a low-level service client by name.
     #' @param service_name (str): The name of a service, e.g. 's3' or 'ec2'.
     #'              A list of available services can be found \url{https://paws-r.github.io/docs/}
-    #' @param config (list): Optional configuration of credentials, endpoint, and/or region.
+    #' @param config (list): Optional paws configuration of credentials, endpoint, and/or region.
     client = function(service_name, config = NULL){
       stopifnot(is.character(service_name),
                 is.null(config) || is.list(config))

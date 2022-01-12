@@ -115,19 +115,17 @@ HyperparameterTuningJobAnalytics = R6Class("HyperparameterTuningJobAnalytics",
      if (!is.null(self$.training_job_summaries))
        return(self$.training_job_summaries)
      output = list()
-     next_args = list()
-
      next_args = list(HyperParameterTuningJobName=self$name, MaxResults=100)
      for (count in 1:100){
-       raw_result = self$sagemaker_session$sagemaker$list_training_jobs_for_hyper_parameter_tuning_job(
-         HyperParameterTuningJobName = next_args$HyperParameterTuningJobName,
-         MaxResults = next_args$MaxResults,
-         NextToken = next_args$NextToken)
-       new_output = raw_result$TrainingJobSummaries
+       LOGGER$debug("Calling list_training_jobs_for_hyper_parameter_tuning_job %d", count)
+       raw_result = do.call(
+         self$sagemaker_session$sagemaker$list_training_jobs_for_hyper_parameter_tuning_job,
+         next_args
+       )
+       new_output = raw_result[["TrainingJobSummaries"]]
        output = c(output, new_output)
-       LOGGER$debug("Got %d more TrainingJobs. Total so far: %d",
-                 length(new_output), length(output))
-       if (!length(raw_result$NextToken) == 0 && length(new_output) > 0)
+       LOGGER$debug("Got %d more TrainingJobs. Total so far: %d", length(new_output), length(output))
+       if (!length(raw_result[["NextToken"]]) == 0 && length(new_output) > 0)
          next_args$NextToken = raw_result$NextToken
        else
          break
@@ -142,28 +140,27 @@ HyperparameterTuningJobAnalytics = R6Class("HyperparameterTuningJobAnalytics",
       self$.tuning_job_describe_result = NULL
       self$.training_job_summaries = NULL
     }
- ),
- private = list(
+  ),
+  private = list(
     .fetch_dataframe = function(){
      # Run that helper over all the summaries.
-     df = rbindlist(lapply(self$training_job_summaries(), function(training_summary){
-       end_time = training_summary$TrainingEndTime
-       start_time = training_summary$TrainingStartTime
-       diff_time = if(length(start_time) == 0 || length(start_time) == 0) NULL else as.numeric(end_time - start_time)
-       def_name = if(length(training_summary$TrainingJobDefinitionName) == 0) NA else training_summary$TrainingJobDefinitionName
-       output = data.table(TrainingJobName = training_summary$TrainingJobName,
-                           TrainingJobStatus = training_summary$TrainingJobStatus,
-                           FinalObjectiveValue = training_summary$FinalHyperParameterTuningJobObjectiveMetric$Value,
-                           TrainingStartTime = if(length(start_time) == 0) NULL else start_time,
-                           TrainingEndTime = if(length(end_time) == 0) NULL else end_time,
-                           TrainingElapsedTimeSeconds = diff_time,
-                           TrainingJobDefinitionName = def_name)
-       for (i in seq_along(training_summary$TunedHyperParameters)){
-         k = names(training_summary$TunedHyperParameters)[i]
-         v = type.convert(training_summary$TunedHyperParameters[[i]])
-         output[[k]] = v}
-       output}), fill = TRUE)
-     return(df)
+      reshape = function(training_summary){
+        out = lapply(training_summary[["TunedHyperParameters"]], as.numeric)
+        out[["TrainingJobName"]] = training_summary[["TrainingJobName"]]
+        out[["TrainingJobStatus"]] = training_summary[["TrainingJobStatus"]]
+        out[["FinalObjectiveValue"]] = training_summary[["FinalHyperParameterTuningJobObjectiveMetric"]][["Value"]]
+        start_time = training_summary[["TrainingStartTime"]]
+        end_time = training_summary[["TrainingEndTime"]]
+        out[["TrainingStartTime"]] = start_time
+        out[["TrainingEndTime"]] = end_time
+        if(!is.null(start_time) && !is.null(end_time)){
+          out[["TrainingElapsedTimeSeconds"]] = difftime(end_time, start_time, units = "secs")
+        }
+        out[["TrainingJobDefinitionName"]] = training_summary[["TrainingJobDefinitionName"]]
+        return(out)
+      }
+
+     return(rbindlist(lapply(self$training_job_summaries(), reshape), fill = T))
     },
 
     # Convert parameter ranges a dictionary using the parameter range names as the keys
@@ -176,8 +173,8 @@ HyperparameterTuningJobAnalytics = R6Class("HyperparameterTuningJobAnalytics",
       }
       return(out)
     }
- ),
- active = list(
+  ),
+  active = list(
     #' @field name
     #' Name of the HyperparameterTuningJob being analyzed
     name = function(){
@@ -221,20 +218,18 @@ HyperparameterTuningJobAnalytics = R6Class("HyperparameterTuningJobAnalytics",
     tuning_ranges = function(){
       description = self$description()
 
-      if(!islistempty(description$TrainingJobDefinition))
+      if(!islistempty(description[["TrainingJobDefinition"]])){
         return(private$.prepare_parameter_ranges(
-          description$HyperParameterTuningJobConfig$ParameterRanges))
-
-      output = lapply(description$TrainingJobDefinitions,
-                      function(training_job_definition)
-                        private$.prepare_parameter_ranges(
-                          training_job_definition$HyperParameterRanges))
-      names(output) = sapply(description$TrainingJobDefinitions, function(x) x$DefinitionName)
+          description[["HyperParameterTuningJobConfig"]][["ParameterRanges"]]))
+      }
+      output = lapply(description[["TrainingJobDefinitions"]], function(training_job_definition){
+        private$.prepare_parameter_ranges(training_job_definition[["HyperParameterRanges"]])
+      })
+      names(output) = sapply(description[["TrainingJobDefinitions"]], function(x) x[["DefinitionName"]])
       return (output)
     }
-
- ),
- lock_objects = F
+  ),
+  lock_objects = F
 )
 
 
@@ -243,127 +238,130 @@ HyperparameterTuningJobAnalytics = R6Class("HyperparameterTuningJobAnalytics",
 #'              job.
 #' @export
 TrainingJobAnalytics = R6Class("TrainingJobAnalytics",
- inherit = AnalyticsMetricsBase,
- public = list(
-   #' @field CLOUDWATCH_NAMESPACE
-   #' CloudWatch namespace to return Training Job Analytics data
-   CLOUDWATCH_NAMESPACE = "/aws/sagemaker/TrainingJobs",
+  inherit = AnalyticsMetricsBase,
+  public = list(
+    #' @field CLOUDWATCH_NAMESPACE
+    #' CloudWatch namespace to return Training Job Analytics data
+    CLOUDWATCH_NAMESPACE = "/aws/sagemaker/TrainingJobs",
 
-   #' @description Initialize a ``TrainingJobAnalytics`` instance.
-   #' @param training_job_name (str): name of the TrainingJob to analyze.
-   #' @param metric_names (list, optional): string names of all the metrics to
-   #'              collect for this training job. If not specified, then it will
-   #'              use all metric names configured for this job.
-   #' @param sagemaker_session (sagemaker.session.Session): Session object which
-   #'              manages interactions with Amazon SageMaker APIs and any other
-   #'              AWS services needed. If not specified, one is specified using
-   #'              the default AWS configuration chain.
-   #' @param start_time :
-   #' @param end_time :
-   #' @param period :
-   initialize = function(training_job_name,
-                         metric_names=NULL,
-                         sagemaker_session=NULL,
-                         start_time=NULL,
-                         end_time=NULL,
-                         period=NULL){
-     self$sagemaker_session = sagemaker_session %||% Session$new()
-     self$.cloudwatch = self$sagemaker_session$paws_session$client("cloudwatch")
-     self$.training_job_name = training_job_name
-     self$.start_time = start_time
-     self$.end_time = end_time
-     self$.period = period %||% METRICS_PERIOD_DEFAULT
+    #' @description Initialize a ``TrainingJobAnalytics`` instance.
+    #' @param training_job_name (str): name of the TrainingJob to analyze.
+    #' @param metric_names (list, optional): string names of all the metrics to
+    #'              collect for this training job. If not specified, then it will
+    #'              use all metric names configured for this job.
+    #' @param sagemaker_session (sagemaker.session.Session): Session object which
+    #'              manages interactions with Amazon SageMaker APIs and any other
+    #'              AWS services needed. If not specified, one is specified using
+    #'              the default AWS configuration chain.
+    #' @param start_time :
+    #' @param end_time :
+    #' @param period :
+    initialize = function(training_job_name,
+                          metric_names=NULL,
+                          sagemaker_session=NULL,
+                          start_time=NULL,
+                          end_time=NULL,
+                          period=NULL){
+      self$sagemaker_session = sagemaker_session %||% Session$new()
+      self$.cloudwatch = self$sagemaker_session$paws_session$client("cloudwatch")
+      self$.training_job_name = training_job_name
+      self$.start_time = start_time
+      self$.end_time = end_time
+      self$.period = period %||% METRICS_PERIOD_DEFAULT
 
-     if (!is.null(metric_names))
-       self$.metric_names = metric_names
-     else
-       self$.metric_names = private$.metric_names_for_training_job()
+      if (!is.null(metric_names))
+      self$.metric_names = metric_names
+      else
+      self$.metric_names = private$.metric_names_for_training_job()
 
-     super$initialize()
-     self$clear_cache()
-   },
+      super$initialize()
+      self$clear_cache()
+    },
 
-   #' @description Clear the object of all local caches of API methods, so that the next
-   #'              time any properties are accessed they will be refreshed from the
-   #'              service.
-   clear_cache = function(){
-     super$clear_cache()
-     self$.data = data.table()
-     self$.time_interval = private$.determine_timeinterval()
-   }
- ),
- private = list(
-   # Return a dictionary with two datetime objects, start_time and
-   # end_time, covering the interval of the training job
-   .determine_timeinterval=function(){
-     description = self$sagemaker_session$sagemaker$describe_training_job(TrainingJobName=self$name)
-     start_time = self$.start_time %||% description$TrainingStartTime  # datetime object
-     # Incrementing end time by 1 min since CloudWatch drops seconds before finding the logs.
-     # This results in logs being searched in the time range in which the correct log line was
-     # not present.
-     # Example - Log time - 2018-10-22 08:25:55
-     #       Here calculated end time would also be 2018-10-22 08:25:55 (without 1 min addition)
-     #       CW will consider end time as 2018-10-22 08:25 and will not be able to search the
-     #           correct log.
-     end_time = self$.end_time %||% description$TrainingEndTime + 60 # add 1 minute
+    #' @description Clear the object of all local caches of API methods, so that the next
+    #'              time any properties are accessed they will be refreshed from the
+    #'              service.
+    clear_cache = function(){
+      super$clear_cache()
+      self$.data = data.table()
+      self$.time_interval = private$.determine_timeinterval()
+    }
+  ),
+  private = list(
+    # Return a dictionary with two datetime objects, start_time and
+    # end_time, covering the interval of the training job
+    .determine_timeinterval = function(){
+      description = self$sagemaker_session$sagemaker$describe_training_job(TrainingJobName=self$name)
+      start_time = self$.start_time %||% description[["TrainingStartTime"]]  # datetime object
+      # Incrementing end time by 1 min since CloudWatch drops seconds before finding the logs.
+      # This results in logs being searched in the time range in which the correct log line was
+      # not present.
+      # Example - Log time - 2018-10-22 08:25:55
+      #       Here calculated end time would also be 2018-10-22 08:25:55 (without 1 min addition)
+      #       CW will consider end time as 2018-10-22 08:25 and will not be able to search the
+      #           correct log.
+      end_time = self$.end_time %||% (
+        description[["TrainingEndTime"]] %||% utcnow() + 60 # add 1 minute
+      )
+      return(list("start_time"= start_time, "end_time"= end_time))
+    },
 
-     return(list("start_time"= start_time, "end_time"= end_time))
-   },
+    .fetch_dataframe = function(){
+      self$.data = lapply(self$.metric_names, private$.fetch_metric)
+      return(rbindlist(self$.data, fill = T))
+    },
 
-   .fetch_dataframe = function(){
-     self$.data= lapply(self$.metric_names, private$.fetch_metric)
-     return(rbindlist(self$.data, fill = T))
-   },
+    # Fetch all the values of a named metric, and add them to _data
+    # Args:
+    #   metric_name:
+    .fetch_metric = function(metric_name){
+      request = list(
+        "Namespace"=self$CLOUDWATCH_NAMESPACE,
+        "MetricName"=metric_name,
+        "Dimensions"= list(list("Name"="TrainingJobName", "Value"=self$name)),
+        "StartTime"=self$.time_interval[["start_time"]],
+        "EndTime"=self$.time_interval[["end_time"]],
+        "Period"=self$.period,
+        "Statistics"=list("Average")
+      )
+      raw_cwm_data = do.call(self$.cloudwatch$get_metric_statistics, request)[["Datapoints"]]
+      if (islistempty(raw_cwm_data)){
+        LOGGER$warn("Warning: No metrics called %s found", metric_name)
+        return(NULL)
+      }
+      # Process data: normalize to starting time, and sort.
+      base_time = min(sapply(raw_cwm_data, function(x) x$Timestamp))
 
-   # Fetch all the values of a named metric, and add them to _data
-   # Args:
-   #   metric_name:
-   .fetch_metric = function(metric_name){
-     raw_cwm_data = self$.cloudwatch$get_metric_statistics(
-          Namespace= self$CLOUDWATCH_NAMESPACE,
-          MetricName= metric_name,
-          Dimensions= list(list("Name"= "TrainingJobName", "Value"= self$name)),
-          StartTime= self$.time_interval$start_time,
-          EndTime= self$.time_interval$end_time,
-          Period= self$.period,
-          Statistics= list("Average"))$Datapoints
-     if (islistempty(raw_cwm_data)){
-       LOGGER$warn("Warning: No metrics called %s found", metric_name)
-       return(NULL)}
-     # Process data: normalize to starting time, and sort.
-     base_time = min(sapply(raw_cwm_data, function(x) x$Timestamp))
+      all_xy= rbindlist(lapply(raw_cwm_data, function(pt) list(
+        timestamp = (pt[["Timestamp"]]-base_time),
+        metric_name	= metric_name,
+        value = pt[["Average"]])
+        ),
+        fill = T
+      )
+      setorderv(all_xy, cols = "timestamp")
+      return(all_xy)
+    },
 
-     all_xy= rbindlist(lapply(raw_cwm_data, function(pt)
-       data.table(timestamp = as.numeric(pt$Timestamp - base_time),
-                  metric_name	= metric_name,
-                  value = pt$Average)),
-       fill = T)
+    # Helper method to discover the metrics defined for a training job.
+    .metric_names_for_training_job = function(){
+      training_description = self$sagemaker_session$sagemaker$describe_training_job(
+        TrainingJobName=self$.training_job_name
+      )
+      metric_definitions = training_description$AlgorithmSpecification$MetricDefinitions
+      metric_names = lapply(metric_definitions, function(md) md[["Name"]])
 
-     setorder(all_xy, timestamp)
-     return(all_xy)
-   },
-
-   # Helper method to discover the metrics defined for a training job.
-   .metric_names_for_training_job = function(){
-     training_description = self$sagemaker_session$sagemaker$describe_training_job(
-       TrainingJobName=self$.training_job_name)
-
-     metric_definitions = training_description$AlgorithmSpecification$MetricDefinitions
-     metric_names = lapply(metric_definitions, function(md) md$Name)
-
-     return(metric_names)
-   }
-
- ),
- active = list(
-
-   #' @field name
-   #' Name of the TrainingJob being analyzed
-   name = function(){
+      return(metric_names)
+    }
+  ),
+  active = list(
+    #' @field name
+    #' Name of the TrainingJob being analyzed
+    name = function(){
     return(self$.training_job_name)
-   }
- ),
- lock_objects = F
+    }
+  ),
+  lock_objects = F
 )
 
 
@@ -545,3 +543,9 @@ ExperimentAnalytics = R6Class("ExperimentAnalytics",
     ),
   lock_objects = F
 )
+
+utcnow = function(){
+  now = Sys.time()
+  attr(now, "tzone") <- "UTC"
+  return(now)
+}
