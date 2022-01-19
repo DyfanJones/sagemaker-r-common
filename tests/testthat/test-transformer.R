@@ -231,7 +231,7 @@ test_that("test_transform_with_base_job_name_provided", {
   transformer$base_transform_job_name = base_name
   mock_name_from_base = mock_fun(full_name)
   with_mock(
-    name_from_base = mock_name_from_base,
+    `sagemaker.core::name_from_base` = mock_name_from_base,
     {
       transformer$transform(DATA)
       expect_equal(mock_name_from_base(..return_value = T), list(base_name))
@@ -250,7 +250,7 @@ test_that("test_transform_with_base_name", {
   mock_r6_private(transformer, ".start_new", mock_start_new)
   mock_r6_private(transformer, ".retrieve_base_name", mock_retrieve_base_name)
   with_mock(
-    name_from_base = mock_name_from_base,
+    `sagemaker.core::name_from_base` = mock_name_from_base,
     {
       transformer$transform(DATA)
       expect_equal(mock_name_from_base(..return_value = T), list(IMAGE_URI))
@@ -269,7 +269,7 @@ test_that("test_transform_with_job_name_based_on_containers", {
   mock_start_new = mock_fun("dummy")
   mock_r6_private(transformer, ".start_new", mock_start_new)
   with_mock(
-    name_from_base = mock_name_from_base,
+    `sagemaker.core::name_from_base` = mock_name_from_base,
     {
       transformer$transform(DATA)
       expect_equal(mock_name_from_base(..return_value = T), list(IMAGE_URI))
@@ -289,7 +289,7 @@ test_that("test_transform_with_job_name_based_on_model_name", {
   mock_start_new = mock_fun("dummy")
   mock_r6_private(transformer, ".start_new", mock_start_new)
   with_mock(
-    name_from_base = mock_name_from_base,
+    `sagemaker.core::name_from_base` = mock_name_from_base,
     {
       transformer$transform(DATA)
       expect_equal(sms$sagemaker$describe_model(..return_value = T), list(
