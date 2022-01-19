@@ -1,13 +1,13 @@
 # NOTE: This code has been modified from AWS Sagemaker Python:
 # https://github.com/aws/sagemaker-python-sdk/blob/master/src/sagemaker/debugger/framework_profile.py
 
-#' @include utils.R
 #' @include r_utils.R
 #' @include debugger_metrics_config.R
 #' @include debugger_profiler_constants.R
 #' @include debugger_utils.R
 
 #' @import R6
+#' @import sagemaker.core
 
 ALL_METRIC_CONFIGS <- list(
   DetailedProfilingConfig,

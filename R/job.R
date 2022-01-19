@@ -2,11 +2,9 @@
 # https://github.com/aws/sagemaker-python-sdk/blob/master/src/sagemaker/job.py
 
 #' @include r_utils.R
-#' @include utils.R
-#' @include session.R
-#' @include input.R
 
 #' @import R6
+#' @import sagemaker.core
 
 #' @title .Job Class
 #' @description Handle creating, starting and waiting for Amazon SageMaker jobs to

@@ -1,13 +1,12 @@
 # NOTE: This code has been modified from AWS Sagemaker Python:
 # https://github.com/aws/sagemaker-python-sdk/blob/master/src/sagemaker/lineage/artifact.py
 
-#' @include apiutils_base_types.R
-#' @include apiutils_utils.R
 #' @include lineage_api_types.R
 #' @include lineage_utils.R
 #' @include lineage_association.R
 
 #' @import R6
+#' @import sagemaker.core
 
 # An Amazon SageMaker artifact, which is part of a SageMaker lineage.
 # Examples:

@@ -2,10 +2,9 @@
 # https://github.com/aws/sagemaker-python-sdk/blob/master/src/sagemaker/debugger.py
 
 #' @include r_utils.R
-#' @include utils.R
-#' @include error.R
 
 #' @import R6
+#' @import sagemaker.core
 #' @import sagemaker.debugger
 #' @importFrom jsonlite toJSON
 
@@ -132,16 +131,6 @@ RuleBase = R6Class("RuleBase",
   ),
   lock_objects = F
 )
-
-.get_rule_config <- function(rule_name){
-  rule_config = NULL
-  config_file_path = system.file("rule_config_jsons", "ruleConfigs.json", package= "sagemaker.common")
-  if(file.exists(config_file_path)){
-    configs = jsonlite::read_json(config_file_path)
-    rule_config = configs[[rule_name]]
-  }
-  return(rule_config)
-}
 
 #' @title Debug Rule Class
 #' @description The SageMaker Debugger Rule class configures *debugging* rules to debug your training job.

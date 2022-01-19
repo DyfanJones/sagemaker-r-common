@@ -1,15 +1,14 @@
 # NOTE: This code has been modified from AWS Sagemaker Python:
 # https://github.com/aws/sagemaker-python-sdk/blob/master/src/sagemaker/dataset_definition/inputs.py
 
-#' @include apiutils_base_types.R
-
 #' @import R6
+#' @import sagemaker.core
 
 #' @title DatasetDefinition for Redshift.
 #' @description With this input, SQL queries will be executed using Redshift to generate datasets to S3.
 #' @export
 RedshiftDatasetDefinition = R6Class("RedshiftDatasetDefinition",
-  inherit = ApiObject,
+  inherit = sagemaker.core::ApiObject,
   public = list(
 
     #' @description Initialize RedshiftDatasetDefinition.
@@ -58,7 +57,7 @@ RedshiftDatasetDefinition = R6Class("RedshiftDatasetDefinition",
 #' @description With this input, SQL queries will be executed using Athena to generate datasets to S3.
 #' @export
 AthenaDatasetDefinition = R6Class("AthenaDatasetDefinition",
-  inherit = ApiObject,
+  inherit = sagemaker.core::ApiObject,
   public = list(
 
     #' @description Initialize AthenaDatasetDefinition.
@@ -103,7 +102,7 @@ AthenaDatasetDefinition = R6Class("AthenaDatasetDefinition",
 #' @title DatasetDefinition input.
 #' @export
 DatasetDefinition = R6Class("DatasetDefinition",
-  inherit = ApiObject,
+  inherit = sagemaker.core::ApiObject,
   public = list(
     #' @description Initialize DatasetDefinition.
     #' @param data_distribution_type (str, default="ShardedByS3Key"):
@@ -157,7 +156,7 @@ DatasetDefinition = R6Class("DatasetDefinition",
 #'              Use ManifestFile if strong consistency is required.
 #' @export
 S3Input = R6Class("S3Input",
-  inherit = ApiObject,
+  inherit = sagemaker.core::ApiObject,
   public = list(
     #' @description Initialize S3Input.
     #' @param s3_uri (str, default=None): the path to a specific S3 object or a S3 prefix

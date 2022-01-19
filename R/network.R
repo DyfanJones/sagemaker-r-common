@@ -2,9 +2,9 @@
 # https://github.com/aws/sagemaker-python-sdk/blob/master/src/sagemaker/network.py
 
 #' @include r_utils.R
-#' @include utils.R
 
 #' @import R6
+#' @import sagemaker.core
 
 #' @title NetworkConfig class
 #' @description Accepts network configuration parameters and provides a method to turn these parameters

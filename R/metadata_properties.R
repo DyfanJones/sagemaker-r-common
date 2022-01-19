@@ -6,7 +6,7 @@
 #' @title Accepts metadata properties parameters for conversion to request dict.
 #' @keywords internal
 #' @export
-MetadataProperties = R6Class(
+MetadataProperties = R6Class("MetadataProperties",
   public = list(
 
     #' @description Initialize a ``MetadataProperties`` instance and turn parameters into dict.
