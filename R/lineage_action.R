@@ -1,10 +1,10 @@
 # NOTE: This code has been modified from AWS Sagemaker Python:
 # https://github.com/aws/sagemaker-python-sdk/blob/master/src/sagemaker/lineage/action.py
 
-#' @include apiutils_base_types.R
 #' @include lineage_api_types.R
 
 #' @import R6
+#' @import sagemaker.core
 
 # An Amazon SageMaker action, which is part of a SageMaker lineage.
 # Examples:

@@ -2,11 +2,11 @@
 # https://github.com/aws/sagemaker-python-sdk/blob/master/src/sagemaker/debugger/metrics_config.py
 
 #' @include r_utils.R
-#' @include utils.R
 #' @include debugger_profiler_constants.R
 #' @include debugger_utils.R
 
 #' @import R6
+#' @import sagemaker.core
 #' @importFrom jsonlite toJSON
 
 #' @title Configuration for the range of steps to profile.

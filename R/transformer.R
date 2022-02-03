@@ -1,11 +1,10 @@
 # NOTE: This code has been modified from AWS Sagemaker Python:
 # https://github.com/aws/sagemaker-python-sdk/blob/master/src/sagemaker/transformer.py
 
-#' @include session.R
 #' @include r_utils.R
-#' @include utils.R
 
 #' @import R6
+#' @import sagemaker.core
 
 #' @title Transformer class
 #' @description A class for handling creating and interacting with Amazon SageMaker
@@ -174,7 +173,7 @@ Transformer = R6Class("Transformer",
         if (is.null(base_name)){
           base_name = private$.retrieve_base_name()
         }
-        self$.current_job_name = name_from_base(base_name)
+        self$.current_job_name = sagemaker.core::name_from_base(base_name)
       }
       if (is.null(self$output_path) || self$.reset_output_path){
         self$output_path = sprintf("s3://%s/%s",

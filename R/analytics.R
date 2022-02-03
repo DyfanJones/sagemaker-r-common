@@ -1,13 +1,11 @@
 # NOTE: This code has been modified from AWS Sagemaker Python:
 # https://github.com/aws/sagemaker-python-sdk/blob/master/src/sagemaker/analytics.py
 
-#' @include session.R
 #' @include r_utils.R
-#' @include utils.R
 
 #' @import lgr
 #' @import R6
-#' @import paws
+#' @import sagemaker.core
 #' @import data.table
 
 METRICS_PERIOD_DEFAULT = 60  # seconds

@@ -1,10 +1,10 @@
 # NOTE: This code has been modified from AWS Sagemaker Python:
 # https://github.com/aws/sagemaker-python-sdk/blob/master/src/sagemaker/debugger/utils.py
 
-#' @include r_utils.R
+#' @import sagemaker.core
 
 # Store all possible messages during failures in validation of user arguments.
-ErrorMessages = Enum(
+ErrorMessages = sagemaker.core::Enum(
     INVALID_LOCAL_PATH = "local_path must be a string!",
     INVALID_FILE_MAX_SIZE = "file_max_size must be an integer greater than 0!",
     INVALID_FILE_CLOSE_INTERVAL = "file_close_interval must be a float/integer greater than 0!",
@@ -24,7 +24,7 @@ ErrorMessages = Enum(
 #' @description List the Python profiler options for Python profiling.
 #' @return environment containing [CPROFILE, PYINSTRUMENT]
 #' @export
-PythonProfiler = Enum(
+PythonProfiler = sagemaker.core::Enum(
   CPROFILE = "cprofile",
   PYINSTRUMENT = "pyinstrument",
   .class = "PythonProfiler"
@@ -34,7 +34,7 @@ PythonProfiler = Enum(
 #' @description List the possible cProfile timers for Python profiling.
 #' @return environment containing [TOTAL_TIME, CPU_TIME, OFF_CPU_TIME, DEFAULT]
 #' @export
-cProfileTimer = Enum(
+cProfileTimer = sagemaker.core::Enum(
   TOTAL_TIME = "total_time",
   CPU_TIME = "cpu_time",
   OFF_CPU_TIME = "off_cpu_time",

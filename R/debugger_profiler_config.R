@@ -2,10 +2,10 @@
 # https://github.com/aws/sagemaker-python-sdk/blob/master/src/sagemaker/debugger/profiler_config.py
 
 #' @include r_utils.R
-#' @include utils.R
 #' @include debugger_framework_profile.R
 
 #' @import R6
+#' @import sagemaker.core
 
 #' @title Configuration for collecting system and framework metrics of SageMaker training jobs.
 #' @description SageMaker Debugger collects system and framework profiling

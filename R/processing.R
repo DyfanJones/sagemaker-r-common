@@ -2,19 +2,15 @@
 # https://github.com/aws/sagemaker-python-sdk/blob/master/src/sagemaker/processing.py
 
 #' @include r_utils.R
-#' @include error.R
-#' @include s3.R
 #' @include job.R
-#' @include utils.R
-#' @include session.R
 #' @include network.R
 #' @include dataset_definition_inputs.R
-#' @include apiutils_base_types.R
 
 
-#' @importFrom urltools url_decode
-#' @import fs
 #' @import R6
+#' @import sagemaker.core
+#' @importFrom fs file_exists is_file path
+#' @importFrom urltools url_decode
 
 #' @title Processor Class
 #' @family Processor

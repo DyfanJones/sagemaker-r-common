@@ -2,13 +2,12 @@
 # https://github.com/aws/sagemaker-python-sdk/blob/master/src/sagemaker/lineage/context.py
 
 #' @include r_utils.R
-#' @include utils.R
-#' @include apiutils_base_types.R
 #' @include lineage_api_types.R
 #' @include lineage_utils.R
 #' @include lineage_association.R
 
 #' @import R6
+#' @import sagemaker.core
 
 # An Amazon SageMaker context, which is part of a SageMaker lineage.
 Context = R6Class("Context",

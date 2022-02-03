@@ -7,7 +7,7 @@
 With this input, SQL queries will be executed using Redshift to generate datasets to S3.
 }
 \section{Super class}{
-\code{\link[sagemaker.common:ApiObject]{sagemaker.common::ApiObject}} -> \code{RedshiftDatasetDefinition}
+\code{\link[sagemaker.core:ApiObject]{sagemaker.core::ApiObject}} -> \code{RedshiftDatasetDefinition}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -19,9 +19,9 @@ With this input, SQL queries will be executed using Redshift to generate dataset
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="ApiObject" data-id="format">}\href{../../sagemaker.common/html/ApiObject.html#method-format}{\code{sagemaker.common::ApiObject$format()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="ApiObject" data-id="from_paws">}\href{../../sagemaker.common/html/ApiObject.html#method-from_paws}{\code{sagemaker.common::ApiObject$from_paws()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="ApiObject" data-id="to_paws">}\href{../../sagemaker.common/html/ApiObject.html#method-to_paws}{\code{sagemaker.common::ApiObject$to_paws()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.core" data-topic="ApiObject" data-id="format">}\href{../../sagemaker.core/html/ApiObject.html#method-format}{\code{sagemaker.core::ApiObject$format()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.core" data-topic="ApiObject" data-id="from_paws">}\href{../../sagemaker.core/html/ApiObject.html#method-from_paws}{\code{sagemaker.core::ApiObject$from_paws()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="sagemaker.core" data-topic="ApiObject" data-id="to_paws">}\href{../../sagemaker.core/html/ApiObject.html#method-to_paws}{\code{sagemaker.core::ApiObject$to_paws()}}\out{</span>}
 }
 \out{</details>}
 }

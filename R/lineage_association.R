@@ -2,11 +2,11 @@
 # https://github.com/aws/sagemaker-python-sdk/blob/master/src/sagemaker/lineage/association.py
 
 #' @include r_utils.R
-#' @include apiutils_base_types.R
 #' @include lineage_api_types.R
 
 #' @import R6
 #' @import lgr
+#' @import sagemaker.core
 
 # An Amazon SageMaker artifact, which is part of a SageMaker lineage.
 # Examples:

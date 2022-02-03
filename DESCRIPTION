@@ -6,49 +6,29 @@ Authors@R: c(person("Dyfan", "Jones", email="dyfan.r.jones@gmail.com", role= c("
              person("Amazon.com, Inc.", role = "cph"))
 Description: `R6sagemaker` lower level api calls.
 Imports:
+    data.table,
     lgr,
-    processx,
-    paws,
-    paws.common (>= 0.3.13),
     R6,
     fs,
-    data.table,
     jsonlite,
-    methods,
-    uuid,
     urltools,
     utils,
     zip,
-    sagemaker.debugger
+    sagemaker.debugger,
+    sagemaker.core
 Suggests:
-    yaml,
     mockthat,
     crayon,
-    testthat (>= 3.0.0),
-    sagemaker.local,
-    sagemaker.mlcore,
-    readr
+    testthat (>= 3.0.0)
 Remotes:
     DyfanJones/sagemaker-r-debugger,
-    DyfanJones/sagemaker-r-local,
-    DyfanJones/sagemaker-r-mlcore
+    DyfanJones/sagemaker-r-core
 License: Apache License (>= 2.0)
 Encoding: UTF-8
 RoxygenNote: 7.1.2
 Collate: 
-    'error.R'
     'r_utils.R'
-    'utils.R'
-    'pkg_variables.R'
-    'studio.R'
-    'vpc_utils.R'
-    'paws_session.R'
-    'logs.R'
-    'session.R'
     'analytics.R'
-    'apiutils_paws_functions.R'
-    'apiutils_base_types.R'
-    'apiutils_utils.R'
     'dataset_definition_inputs.R'
     'debugger.R'
     'debugger_utils.R'
@@ -56,16 +36,8 @@ Collate:
     'debugger_metrics_config.R'
     'debugger_framework_profile.R'
     'debugger_profiler_config.R'
-    'deprecations.R'
     'drift_check_baselines.R'
-    'input.R'
     'job.R'
-    'image_uris.R'
-    'git_utils.R'
-    'transformer.R'
-    'fw_utils.R'
-    'model.R'
-    'estimator.R'
     'lambda_helper.R'
     'lineage_api_types.R'
     'lineage_action.R'
@@ -76,7 +48,8 @@ Collate:
     'lineage_visualizer.R'
     'metadata_properties.R'
     'network.R'
-    's3.R'
     'processing.R'
+    'serverless_serverless_inference_config.R'
+    'transformer.R'
     'zzz.R'
 Config/testthat/edition: 3

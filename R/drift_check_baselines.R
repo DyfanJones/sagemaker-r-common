@@ -1,6 +1,8 @@
 # NOTE: This code has been modified from AWS Sagemaker Python:
 # https://github.com/aws/sagemaker-python-sdk/blob/master/src/sagemaker/drift_check_baselines.py
 
+#' @import R6
+
 #' @title DriftCheckBaselines class
 #' @description Accepts drift check baselines parameters for conversion to request dict.
 #' @export

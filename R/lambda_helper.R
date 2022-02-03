@@ -3,9 +3,9 @@
 
 #' @include r_utils.R
 
-#' @import fs
-#' @import paws
 #' @import R6
+#' @import sagemaker.core
+#' @importFrom fs file_size file_temp
 #' @importFrom zip zip
 
 #' @title Lambda class
