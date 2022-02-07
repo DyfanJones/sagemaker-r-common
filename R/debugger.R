@@ -10,21 +10,20 @@
 
 DEBUGGER_FLAG = "USE_SMDEBUG"
 
-# Return the Debugger rule image URI for the given AWS Region.
-# For a full list of rule image URIs,
-# see `Use Debugger Docker Images for Built-in or Custom Rules
-# <https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-docker-images-rules.html>`_.
-# Args:
-#   region (str): A string of AWS Region. For example, ``'us-east-1'``.
-# Returns:
-#   str: Formatted image URI for the given AWS Region and the rule container type.
+#' @title Return the Debugger rule image URI for the given AWS Region.
+#' @description For a full list of rule image URIs,
+#'              see `Use Debugger Docker Images for Built-in or Custom Rules
+#'              \url{https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-docker-images-rules.html}.
+#' @param region (str): A string of AWS Region. For example, ``'us-east-1'``.
+#' @return str : Formatted image URI for the given AWS Region and the rule container type.
+#' @export
 get_rule_container_image_uri <- function(region){
   return(ImageUris$new()$retrieve("debugger", region))
 }
 
-# Return the default built-in profiler rule with a unique name.
-# Returns:
-#   sagemaker.debugger.ProfilerRule: The instance of the built-in ProfilerRule.
+#' @title Return the default built-in profiler rule with a unique name.
+#' @return ProfilerRule: The instance of the built-in ProfilerRule.
+#' @export
 get_default_profiler_rule <- function(){
   default_rule = sagemaker.debugger::ProfilerReport$new()
   custom_name = sprintf("%s-%s", default_rule$rule_name, as.integer(Sys.time()))
