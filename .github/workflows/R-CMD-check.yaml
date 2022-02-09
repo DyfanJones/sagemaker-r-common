@@ -34,6 +34,11 @@ jobs:
           pak::pkg_install("urltools")
           pak::pkg_install("zip")
 
+          # install cran suggest
+          pak::pkg_install("testthat")
+          pak::pkg_install("mockthat")
+          pak::pkg_install("crayon")
+
           # install sageamker dev packages
           pak::pkg_install("dyfanjones/sagemaker-r-core")
           pak::pkg_install("dyfanjones/sagemaker-r-debugger")
