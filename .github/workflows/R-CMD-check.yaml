@@ -21,16 +21,25 @@ jobs:
         with:
           use-public-rspm: true
 
-
       - name: Install Sagemaker Dev package versions
         run: |
           install.packages("pak")
+
+          # install cran dependencies
+          pak::pkg_install("R6")
+          pak::pkg_install("data.table")
+          pak::pkg_install("lgr")
+          pak::pkg_install("fs")
+          pak::pkg_install("jsonlite")
+          pak::pkg_install("urltools")
+          pak::pkg_install("zip")
+
+          # install sageamker dev packages
           pak::pkg_install("dyfanjones/sagemaker-r-core")
           pak::pkg_install("dyfanjones/sagemaker-r-debugger")
-        shell: Rscript {0}
 
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: rcmdcheck
+          # Extra Packages
+          pak::pkg_install("rcmdcheck")
+        shell: Rscript {0}
 
       - uses: r-lib/actions/check-r-package@v1
