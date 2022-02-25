@@ -863,7 +863,7 @@ ProcessingJob = R6Class("ProcessingJob",
         config[["ContainerArguments"]] = container_arguments
       if (!islistempty(container_entrypoint))
         config[["ContainerEntrypoint"]] = container_entrypoint
-        return(invisible())
+      return(config)
     },
 
     #' @description Prepares a dict that represents a ProcessingOutputConfig.
@@ -878,7 +878,7 @@ ProcessingJob = R6Class("ProcessingJob",
       config = list("Outputs"=outputs)
       if (!is.null(kms_key_id))
         config[["KmsKeyId"]] = kms_key_id
-      return(invisible())
+      return(config)
     },
 
     #' @description Prepares a dict that represents the ProcessingResources.
