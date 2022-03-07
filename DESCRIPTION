@@ -1,7 +1,7 @@
 Package: sagemaker.common
 Type: Package
 Title: R6sagemaker lower level api calls
-Version: 0.1.1
+Version: 0.2.0
 Authors@R: c(person("Dyfan", "Jones", email="dyfan.r.jones@gmail.com", role= c("aut", "cre")),
              person("Amazon.com, Inc.", role = "cph"))
 Description: `R6sagemaker` lower level api calls.
@@ -30,6 +30,10 @@ Collate:
     'r_utils.R'
     'analytics.R'
     'dataset_definition_inputs.R'
+    'network.R'
+    'job.R'
+    'processing.R'
+    'clarify.R'
     'debugger.R'
     'debugger_utils.R'
     'debugger_profiler_constants.R'
@@ -37,7 +41,6 @@ Collate:
     'debugger_framework_profile.R'
     'debugger_profiler_config.R'
     'drift_check_baselines.R'
-    'job.R'
     'lambda_helper.R'
     'lineage_api_types.R'
     'lineage_action.R'
@@ -47,8 +50,6 @@ Collate:
     'lineage_context.R'
     'lineage_visualizer.R'
     'metadata_properties.R'
-    'network.R'
-    'processing.R'
     'serverless_serverless_inference_config.R'
     'transformer.R'
     'zzz.R'
