@@ -45,3 +45,13 @@ parse_url = function(url){
   url = ifelse(grepl("/", url), url, sprintf("/%s", url))
   urltools::url_parse(url)
 }
+
+# ascii code converter developed from:
+# https://www.r-bloggers.com/2011/03/ascii-code-table-in-r/
+str_to_ascii_code <- function(str) {
+  lapply(str, function(x) strtoi(charToRaw(x),16L))
+}
+
+ascii_code_to_str <- function(obj){
+  sapply(obj, function(x) rawToChar(as.raw(x)))
+}
