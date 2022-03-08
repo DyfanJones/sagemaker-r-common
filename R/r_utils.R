@@ -53,5 +53,5 @@ str_to_ascii_code <- function(str) {
 }
 
 ascii_code_to_str <- function(obj){
-  sapply(obj, function(x) rawToChar(as.raw(x)))
+  vapply(obj, function(x) {rawToChar(as.raw(x))}, FUN.VALUE = character(1))
 }
