@@ -9,7 +9,6 @@ italian
 japanese
 lithuanian
 multi-language
-norwegian bokmål
 polish
 portuguese
 romanian
