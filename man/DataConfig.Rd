@@ -21,6 +21,8 @@ Config object related to configurations of the input and output dataset.
 
 \item{\code{label}}{Target attribute of the model required by bias metrics}
 
+\item{\code{headers}}{A list of column names in the input dataset.}
+
 \item{\code{features}}{JSONPath for locating the feature columns}
 
 \item{\code{analysis_config}}{Analysis config dictionary}

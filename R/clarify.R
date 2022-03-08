@@ -38,6 +38,10 @@ DataConfig = R6Class("DataConfig",
     #' Target attribute of the model required by bias metrics
     label = NULL,
 
+    #' @field headers
+    #' A list of column names in the input dataset.
+    headers = NULL,
+
     #' @field features
     #' JSONPath for locating the feature columns
     features = NULL,

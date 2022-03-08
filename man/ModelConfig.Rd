@@ -79,7 +79,8 @@ Protocol (HTTP/1.1).}
 endpoint instance for making inferences to the model, see
 \url{https://docs.aws.amazon.com/sagemaker/latest/dg/ei.html}.}
 
-\item{\code{endpoint_name_prefix}}{(str): The endpoint name prefix of a new endpoint. Must follow}
+\item{\code{endpoint_name_prefix}}{(str): The endpoint name prefix of a new endpoint. Must follow
+pattern "^[a-zA-Z0-9](-\*[a-zA-Z0-9]".}
 }
 \if{html}{\out{</div>}}
 }

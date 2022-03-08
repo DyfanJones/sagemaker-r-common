@@ -51,7 +51,7 @@ to, can be "token", "sentence", or "paragraph". Shap values are computed for the
 
 \item{\code{language}}{(str): Specifies the language of the text features, can be "chinese", "danish",
 "dutch", "english", "french", "german", "greek", "italian", "japanese", "lithuanian",
-"multi-language", "norwegian bokmål", "polish", "portuguese", "romanian", "russian",
+"multi-language", "norwegian bokmal", "polish", "portuguese", "romanian", "russian",
 "spanish", "afrikaans", "albanian", "arabic", "armenian", "basque", "bengali", "bulgarian",
 "catalan", "croatian", "czech", "estonian", "finnish", "gujarati", "hebrew", "hindi",
 "hungarian", "icelandic", "indonesian", "irish", "kannada", "kyrgyz", "latvian", "ligurian",
