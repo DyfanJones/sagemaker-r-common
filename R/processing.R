@@ -987,9 +987,9 @@ ProcessingJob = R6Class("ProcessingJob",
         # ensure NULL value is kept
         process_request_args["network_config"] = list(NULL)
       }
-      process_request_args[["role_arn"]] = processor$sagemaker_session$expand_role(processor$role)
 
       # ensure NULL value is kept
+      process_request_args["role_arn"] = list(processor$sagemaker_session$expand_role(processor$role))
       process_request_args["tags"] = list(processor$tags)
 
       return(process_request_args)
