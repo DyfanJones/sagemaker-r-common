@@ -7,6 +7,7 @@
 #' @import R6
 #' @import sagemaker.core
 #' @import jsonlite
+#' @importFrom stats setNames
 
 #' @title DataConfig Class
 #' @description Config object related to configurations of the input and output dataset.
@@ -178,7 +179,7 @@ BiasConfig = R6Class("BiasConfig",
 
     #' @description format class
     format = function(){
-      return(print_class(self))
+      return(format_class(self))
     }
   )
 )
@@ -364,7 +365,7 @@ ModelPredictedLabelConfig = R6Class("ModelPredictedLabelConfig",
 
     #' @description format class
     format = function(){
-      return(print_class(self))
+      return(format_class(self))
     }
   )
 )
@@ -382,7 +383,7 @@ ExplainabilityConfig = R6Class("ExplainabilityConfig",
 
     #' @description format class
     format = function(){
-      return(print_class(self))
+      return(format_class(self))
     }
   )
 )
@@ -867,8 +868,10 @@ SageMakerClarifyProcessor = R6Class("SageMakerClarifyProcessor",
       analysis_config = data_config$get_config()
       analysis_config = modifyList(analysis_config, data_bias_config$get_config())
 
-      ll = model_predicted_label_config$get_predictor_config()
-      names(ll) = c("probability_threshold", "predictor_config")
+      ll = setNames(
+        model_predicted_label_config$get_predictor_config(),
+        c("probability_threshold", "predictor_config")
+      )
 
       ll$predictor_config = modifyList(ll$predictor_config, model_config$get_predictor_config())
       analysis_config[["methods"]] = list("post_training_bias"= list("methods"= methods))
