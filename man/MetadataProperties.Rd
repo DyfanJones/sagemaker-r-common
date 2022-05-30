@@ -12,15 +12,15 @@ Accepts metadata properties parameters for conversion to request dict.
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{MetadataProperties$new()}}
-\item \href{#method-to_request_list}{\code{MetadataProperties$to_request_list()}}
-\item \href{#method-format}{\code{MetadataProperties$format()}}
-\item \href{#method-clone}{\code{MetadataProperties$clone()}}
+\item \href{#method-MetadataProperties-new}{\code{MetadataProperties$new()}}
+\item \href{#method-MetadataProperties-to_request_list}{\code{MetadataProperties$to_request_list()}}
+\item \href{#method-MetadataProperties-format}{\code{MetadataProperties$format()}}
+\item \href{#method-MetadataProperties-clone}{\code{MetadataProperties$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-MetadataProperties-new"></a>}}
+\if{latex}{\out{\hypertarget{method-MetadataProperties-new}{}}}
 \subsection{Method \code{new()}}{
 Initialize a ``MetadataProperties`` instance and turn parameters into dict.
 \subsection{Usage}{
@@ -47,8 +47,8 @@ Initialize a ``MetadataProperties`` instance and turn parameters into dict.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-to_request_list"></a>}}
-\if{latex}{\out{\hypertarget{method-to_request_list}{}}}
+\if{html}{\out{<a id="method-MetadataProperties-to_request_list"></a>}}
+\if{latex}{\out{\hypertarget{method-MetadataProperties-to_request_list}{}}}
 \subsection{Method \code{to_request_list()}}{
 Generates a request dictionary using the parameters provided to the class.
 \subsection{Usage}{
@@ -57,8 +57,8 @@ Generates a request dictionary using the parameters provided to the class.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-format"></a>}}
-\if{latex}{\out{\hypertarget{method-format}{}}}
+\if{html}{\out{<a id="method-MetadataProperties-format"></a>}}
+\if{latex}{\out{\hypertarget{method-MetadataProperties-format}{}}}
 \subsection{Method \code{format()}}{
 format class
 \subsection{Usage}{
@@ -67,8 +67,8 @@ format class
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-MetadataProperties-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-MetadataProperties-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

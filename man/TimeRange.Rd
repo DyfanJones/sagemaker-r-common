@@ -10,15 +10,15 @@ It returns the target time duration in dictionary format that you can pass to th
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{TimeRange$new()}}
-\item \href{#method-to_json}{\code{TimeRange$to_json()}}
-\item \href{#method-format}{\code{TimeRange$format()}}
-\item \href{#method-clone}{\code{TimeRange$clone()}}
+\item \href{#method-TimeRange-new}{\code{TimeRange$new()}}
+\item \href{#method-TimeRange-to_json}{\code{TimeRange$to_json()}}
+\item \href{#method-TimeRange-format}{\code{TimeRange$format()}}
+\item \href{#method-TimeRange-clone}{\code{TimeRange$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-TimeRange-new"></a>}}
+\if{latex}{\out{\hypertarget{method-TimeRange-new}{}}}
 \subsection{Method \code{new()}}{
 Set the start Unix time and duration.
              If the start Unix time is not specified,
@@ -38,8 +38,8 @@ Set the start Unix time and duration.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-to_json"></a>}}
-\if{latex}{\out{\hypertarget{method-to_json}{}}}
+\if{html}{\out{<a id="method-TimeRange-to_json"></a>}}
+\if{latex}{\out{\hypertarget{method-TimeRange-to_json}{}}}
 \subsection{Method \code{to_json()}}{
 Convert the time range into a dictionary.
 \subsection{Usage}{
@@ -51,8 +51,8 @@ dict: The time range as a dictionary.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-format"></a>}}
-\if{latex}{\out{\hypertarget{method-format}{}}}
+\if{html}{\out{<a id="method-TimeRange-format"></a>}}
+\if{latex}{\out{\hypertarget{method-TimeRange-format}{}}}
 \subsection{Method \code{format()}}{
 format class
 \subsection{Usage}{
@@ -68,8 +68,8 @@ format class
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-TimeRange-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-TimeRange-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

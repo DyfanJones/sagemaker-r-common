@@ -12,21 +12,21 @@ The configuration for framework metrics to be collected for detailed profiling.
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{DetailedProfilingConfig$new()}}
-\item \href{#method-clone}{\code{DetailedProfilingConfig$clone()}}
+\item \href{#method-DetailedProfilingConfig-new}{\code{DetailedProfilingConfig$new()}}
+\item \href{#method-DetailedProfilingConfig-clone}{\code{DetailedProfilingConfig$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="MetricsConfigBase" data-id="format">}\href{../../sagemaker.common/html/MetricsConfigBase.html#method-format}{\code{sagemaker.common::MetricsConfigBase$format()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="MetricsConfigBase" data-id="to_json_string">}\href{../../sagemaker.common/html/MetricsConfigBase.html#method-to_json_string}{\code{sagemaker.common::MetricsConfigBase$to_json_string()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="sagemaker.common" data-topic="MetricsConfigBase" data-id="format"><a href='../../sagemaker.common/html/MetricsConfigBase.html#method-MetricsConfigBase-format'><code>sagemaker.common::MetricsConfigBase$format()</code></a></li>
+<li><span class="pkg-link" data-pkg="sagemaker.common" data-topic="MetricsConfigBase" data-id="to_json_string"><a href='../../sagemaker.common/html/MetricsConfigBase.html#method-MetricsConfigBase-to_json_string'><code>sagemaker.common::MetricsConfigBase$to_json_string()</code></a></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-DetailedProfilingConfig-new"></a>}}
+\if{latex}{\out{\hypertarget{method-DetailedProfilingConfig-new}{}}}
 \subsection{Method \code{new()}}{
 Specify target steps or a target duration to profile.
              By default, it profiles step 5
@@ -61,8 +61,8 @@ Specify target steps or a target duration to profile.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-DetailedProfilingConfig-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-DetailedProfilingConfig-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

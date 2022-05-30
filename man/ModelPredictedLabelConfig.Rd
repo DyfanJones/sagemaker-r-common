@@ -22,15 +22,15 @@ Config object to extract a predicted label from the model output.
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{ModelPredictedLabelConfig$new()}}
-\item \href{#method-get_predictor_config}{\code{ModelPredictedLabelConfig$get_predictor_config()}}
-\item \href{#method-format}{\code{ModelPredictedLabelConfig$format()}}
-\item \href{#method-clone}{\code{ModelPredictedLabelConfig$clone()}}
+\item \href{#method-ModelPredictedLabelConfig-new}{\code{ModelPredictedLabelConfig$new()}}
+\item \href{#method-ModelPredictedLabelConfig-get_predictor_config}{\code{ModelPredictedLabelConfig$get_predictor_config()}}
+\item \href{#method-ModelPredictedLabelConfig-format}{\code{ModelPredictedLabelConfig$format()}}
+\item \href{#method-ModelPredictedLabelConfig-clone}{\code{ModelPredictedLabelConfig$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-ModelPredictedLabelConfig-new"></a>}}
+\if{latex}{\out{\hypertarget{method-ModelPredictedLabelConfig-new}{}}}
 \subsection{Method \code{new()}}{
 Initializes a model output config to extract the predicted label.
              The following examples show different parameter configurations depending on the endpoint:
@@ -85,8 +85,8 @@ prediction to a boolean value. Default is 0.5.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_predictor_config"></a>}}
-\if{latex}{\out{\hypertarget{method-get_predictor_config}{}}}
+\if{html}{\out{<a id="method-ModelPredictedLabelConfig-get_predictor_config"></a>}}
+\if{latex}{\out{\hypertarget{method-ModelPredictedLabelConfig-get_predictor_config}{}}}
 \subsection{Method \code{get_predictor_config()}}{
 Returns probability_threshold, predictor config.
 \subsection{Usage}{
@@ -95,8 +95,8 @@ Returns probability_threshold, predictor config.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-format"></a>}}
-\if{latex}{\out{\hypertarget{method-format}{}}}
+\if{html}{\out{<a id="method-ModelPredictedLabelConfig-format"></a>}}
+\if{latex}{\out{\hypertarget{method-ModelPredictedLabelConfig-format}{}}}
 \subsection{Method \code{format()}}{
 format class
 \subsection{Usage}{
@@ -105,8 +105,8 @@ format class
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-ModelPredictedLabelConfig-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-ModelPredictedLabelConfig-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

@@ -31,24 +31,24 @@ The SageMaker Debugger Rule class configures *debugging* rules to debug your tra
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{Rule$new()}}
-\item \href{#method-sagemaker}{\code{Rule$sagemaker()}}
-\item \href{#method-custom}{\code{Rule$custom()}}
-\item \href{#method-prepare_actions}{\code{Rule$prepare_actions()}}
-\item \href{#method-to_debugger_rule_config_list}{\code{Rule$to_debugger_rule_config_list()}}
-\item \href{#method-clone}{\code{Rule$clone()}}
+\item \href{#method-Rule-new}{\code{Rule$new()}}
+\item \href{#method-Rule-sagemaker}{\code{Rule$sagemaker()}}
+\item \href{#method-Rule-custom}{\code{Rule$custom()}}
+\item \href{#method-Rule-prepare_actions}{\code{Rule$prepare_actions()}}
+\item \href{#method-Rule-to_debugger_rule_config_list}{\code{Rule$to_debugger_rule_config_list()}}
+\item \href{#method-Rule-clone}{\code{Rule$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="RuleBase" data-id="format">}\href{../../sagemaker.common/html/RuleBase.html#method-format}{\code{sagemaker.common::RuleBase$format()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="sagemaker.common" data-topic="RuleBase" data-id="format"><a href='../../sagemaker.common/html/RuleBase.html#method-RuleBase-format'><code>sagemaker.common::RuleBase$format()</code></a></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-Rule-new"></a>}}
+\if{latex}{\out{\hypertarget{method-Rule-new}{}}}
 \subsection{Method \code{new()}}{
 Configure the debugging rules using the following classmethods.
 \subsection{Usage}{
@@ -91,8 +91,8 @@ of :class:`~sagemaker.debugger.CollectionConfig` objects to be saved.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-sagemaker"></a>}}
-\if{latex}{\out{\hypertarget{method-sagemaker}{}}}
+\if{html}{\out{<a id="method-Rule-sagemaker"></a>}}
+\if{latex}{\out{\hypertarget{method-Rule-sagemaker}{}}}
 \subsection{Method \code{sagemaker()}}{
 Initialize a ``Rule`` object for a \code{built-in} debugging rule.
 \subsection{Usage}{
@@ -148,8 +148,8 @@ of :class:\code{sagemaker.debugger::CollectionConfig} objects to be saved.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-custom"></a>}}
-\if{latex}{\out{\hypertarget{method-custom}{}}}
+\if{html}{\out{<a id="method-Rule-custom"></a>}}
+\if{latex}{\out{\hypertarget{method-Rule-custom}{}}}
 \subsection{Method \code{custom()}}{
 Initialize a ``Rule`` object for a *custom* debugging rule.
              You can create a custom rule that analyzes tensors emitted
@@ -219,8 +219,8 @@ of :class:`~sagemaker.debugger.CollectionConfig` objects to be saved.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-prepare_actions"></a>}}
-\if{latex}{\out{\hypertarget{method-prepare_actions}{}}}
+\if{html}{\out{<a id="method-Rule-prepare_actions"></a>}}
+\if{latex}{\out{\hypertarget{method-Rule-prepare_actions}{}}}
 \subsection{Method \code{prepare_actions()}}{
 Prepare actions for Debugger Rule.
 \subsection{Usage}{
@@ -237,8 +237,8 @@ prefix for the StopTraining action if it is specified.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-to_debugger_rule_config_list"></a>}}
-\if{latex}{\out{\hypertarget{method-to_debugger_rule_config_list}{}}}
+\if{html}{\out{<a id="method-Rule-to_debugger_rule_config_list"></a>}}
+\if{latex}{\out{\hypertarget{method-Rule-to_debugger_rule_config_list}{}}}
 \subsection{Method \code{to_debugger_rule_config_list()}}{
 Generates a request dictionary using the parameters provided when initializing object.
 \subsection{Usage}{
@@ -250,8 +250,8 @@ dict: An portion of an API request as a dictionary.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-Rule-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-Rule-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

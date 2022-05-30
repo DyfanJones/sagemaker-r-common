@@ -19,22 +19,22 @@ Handles Amazon SageMaker processing tasks for jobs using a machine learning fram
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{FrameworkProcessor$new()}}
-\item \href{#method-get_run_args}{\code{FrameworkProcessor$get_run_args()}}
-\item \href{#method-run}{\code{FrameworkProcessor$run()}}
-\item \href{#method-clone}{\code{FrameworkProcessor$clone()}}
+\item \href{#method-FrameworkProcessor-new}{\code{FrameworkProcessor$new()}}
+\item \href{#method-FrameworkProcessor-get_run_args}{\code{FrameworkProcessor$get_run_args()}}
+\item \href{#method-FrameworkProcessor-run}{\code{FrameworkProcessor$run()}}
+\item \href{#method-FrameworkProcessor-clone}{\code{FrameworkProcessor$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="Processor" data-id="format">}\href{../../sagemaker.common/html/Processor.html#method-format}{\code{sagemaker.common::Processor$format()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="sagemaker.common" data-topic="Processor" data-id="format"><a href='../../sagemaker.common/html/Processor.html#method-Processor-format'><code>sagemaker.common::Processor$format()</code></a></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-FrameworkProcessor-new"></a>}}
+\if{latex}{\out{\hypertarget{method-FrameworkProcessor-new}{}}}
 \subsection{Method \code{new()}}{
 Initializes a ``FrameworkProcessor`` instance.
              The ``FrameworkProcessor`` handles Amazon SageMaker Processing tasks for jobs
@@ -133,8 +133,8 @@ inter-container traffic, security group IDs, and subnets (default: None).}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_run_args"></a>}}
-\if{latex}{\out{\hypertarget{method-get_run_args}{}}}
+\if{html}{\out{<a id="method-FrameworkProcessor-get_run_args"></a>}}
+\if{latex}{\out{\hypertarget{method-FrameworkProcessor-get_run_args}{}}}
 \subsection{Method \code{get_run_args()}}{
 This object contains the normalized inputs, outputs and arguments needed
              when using a ``FrameworkProcessor`` in a :class:`~sagemaker.workflow.steps.ProcessingStep`.
@@ -192,8 +192,8 @@ Returns a RunArgs object.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-run"></a>}}
-\if{latex}{\out{\hypertarget{method-run}{}}}
+\if{html}{\out{<a id="method-FrameworkProcessor-run"></a>}}
+\if{latex}{\out{\hypertarget{method-FrameworkProcessor-run}{}}}
 \subsection{Method \code{run()}}{
 Runs a processing job.
 \subsection{Usage}{
@@ -307,8 +307,8 @@ user code file (default: None).}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-FrameworkProcessor-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-FrameworkProcessor-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

@@ -11,8 +11,6 @@ is_valid_regex(regex)
 }
 \value{
 bool: Indicates whether the provided regex was valid or not.
-
-
 }
 \description{
 Helper function to determine whether the provided regex is valid.

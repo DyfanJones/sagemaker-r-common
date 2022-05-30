@@ -21,22 +21,22 @@ The SHAP analysis will break down longer text into chunks (e.g. tokens, sentence
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{TextConfig$new()}}
-\item \href{#method-get_text_config}{\code{TextConfig$get_text_config()}}
-\item \href{#method-clone}{\code{TextConfig$clone()}}
+\item \href{#method-TextConfig-new}{\code{TextConfig$new()}}
+\item \href{#method-TextConfig-get_text_config}{\code{TextConfig$get_text_config()}}
+\item \href{#method-TextConfig-clone}{\code{TextConfig$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="ExplainabilityConfig" data-id="format">}\href{../../sagemaker.common/html/ExplainabilityConfig.html#method-format}{\code{sagemaker.common::ExplainabilityConfig$format()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="ExplainabilityConfig" data-id="get_explainability_config">}\href{../../sagemaker.common/html/ExplainabilityConfig.html#method-get_explainability_config}{\code{sagemaker.common::ExplainabilityConfig$get_explainability_config()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="sagemaker.common" data-topic="ExplainabilityConfig" data-id="format"><a href='../../sagemaker.common/html/ExplainabilityConfig.html#method-ExplainabilityConfig-format'><code>sagemaker.common::ExplainabilityConfig$format()</code></a></li>
+<li><span class="pkg-link" data-pkg="sagemaker.common" data-topic="ExplainabilityConfig" data-id="get_explainability_config"><a href='../../sagemaker.common/html/ExplainabilityConfig.html#method-ExplainabilityConfig-get_explainability_config'><code>sagemaker.common::ExplainabilityConfig$get_explainability_config()</code></a></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-TextConfig-new"></a>}}
+\if{latex}{\out{\hypertarget{method-TextConfig-new}{}}}
 \subsection{Method \code{new()}}{
 Initializes a text configuration.
 \subsection{Usage}{
@@ -64,8 +64,8 @@ to, can be "token", "sentence", or "paragraph". Shap values are computed for the
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_text_config"></a>}}
-\if{latex}{\out{\hypertarget{method-get_text_config}{}}}
+\if{html}{\out{<a id="method-TextConfig-get_text_config"></a>}}
+\if{latex}{\out{\hypertarget{method-TextConfig-get_text_config}{}}}
 \subsection{Method \code{get_text_config()}}{
 Returns part of an analysis config dictionary.
 \subsection{Usage}{
@@ -74,8 +74,8 @@ Returns part of an analysis config dictionary.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-TextConfig-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-TextConfig-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

@@ -52,14 +52,14 @@ profiler_config=ProfilerConfig$new(
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{FrameworkProfile$new()}}
-\item \href{#method-format}{\code{FrameworkProfile$format()}}
-\item \href{#method-clone}{\code{FrameworkProfile$clone()}}
+\item \href{#method-FrameworkProfile-new}{\code{FrameworkProfile$new()}}
+\item \href{#method-FrameworkProfile-format}{\code{FrameworkProfile$format()}}
+\item \href{#method-FrameworkProfile-clone}{\code{FrameworkProfile$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-FrameworkProfile-new"></a>}}
+\if{latex}{\out{\hypertarget{method-FrameworkProfile-new}{}}}
 \subsection{Method \code{new()}}{
 Initialize the FrameworkProfile class object.
 \subsection{Usage}{
@@ -123,8 +123,8 @@ Pass ``PythonProfilingConfig()`` to use the default configuration.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-format"></a>}}
-\if{latex}{\out{\hypertarget{method-format}{}}}
+\if{html}{\out{<a id="method-FrameworkProfile-format"></a>}}
+\if{latex}{\out{\hypertarget{method-FrameworkProfile-format}{}}}
 \subsection{Method \code{format()}}{
 format class
 \subsection{Usage}{
@@ -133,8 +133,8 @@ format class
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-FrameworkProfile-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-FrameworkProfile-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

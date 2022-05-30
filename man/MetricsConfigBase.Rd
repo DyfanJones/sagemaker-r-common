@@ -14,15 +14,15 @@ It determines the step or time range that needs to be
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{MetricsConfigBase$new()}}
-\item \href{#method-to_json_string}{\code{MetricsConfigBase$to_json_string()}}
-\item \href{#method-format}{\code{MetricsConfigBase$format()}}
-\item \href{#method-clone}{\code{MetricsConfigBase$clone()}}
+\item \href{#method-MetricsConfigBase-new}{\code{MetricsConfigBase$new()}}
+\item \href{#method-MetricsConfigBase-to_json_string}{\code{MetricsConfigBase$to_json_string()}}
+\item \href{#method-MetricsConfigBase-format}{\code{MetricsConfigBase$format()}}
+\item \href{#method-MetricsConfigBase-clone}{\code{MetricsConfigBase$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-MetricsConfigBase-new"></a>}}
+\if{latex}{\out{\hypertarget{method-MetricsConfigBase-new}{}}}
 \subsection{Method \code{new()}}{
 Validate the provided range fields and set the range to be profiled accordingly.
 \subsection{Usage}{
@@ -52,8 +52,8 @@ Validate the provided range fields and set the range to be profiled accordingly.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-to_json_string"></a>}}
-\if{latex}{\out{\hypertarget{method-to_json_string}{}}}
+\if{html}{\out{<a id="method-MetricsConfigBase-to_json_string"></a>}}
+\if{latex}{\out{\hypertarget{method-MetricsConfigBase-to_json_string}{}}}
 \subsection{Method \code{to_json_string()}}{
 Convert this metrics configuration to dictionary formatted as a string.
              Calling eval on the
@@ -67,8 +67,8 @@ str: This metrics configuration as a dictionary and formatted as a string.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-format"></a>}}
-\if{latex}{\out{\hypertarget{method-format}{}}}
+\if{html}{\out{<a id="method-MetricsConfigBase-format"></a>}}
+\if{latex}{\out{\hypertarget{method-MetricsConfigBase-format}{}}}
 \subsection{Method \code{format()}}{
 format class
 \subsection{Usage}{
@@ -77,8 +77,8 @@ format class
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-MetricsConfigBase-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-MetricsConfigBase-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

@@ -19,22 +19,22 @@ Configuration for processing job outputs in Amazon SageMaker Feature Store
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-clone}{\code{FeatureStoreOutput$clone()}}
+\item \href{#method-FeatureStoreOutput-clone}{\code{FeatureStoreOutput$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="sagemaker.core" data-topic="ApiObject" data-id="format">}\href{../../sagemaker.core/html/ApiObject.html#method-format}{\code{sagemaker.core::ApiObject$format()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="sagemaker.core" data-topic="ApiObject" data-id="from_paws">}\href{../../sagemaker.core/html/ApiObject.html#method-from_paws}{\code{sagemaker.core::ApiObject$from_paws()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="sagemaker.core" data-topic="ApiObject" data-id="initialize">}\href{../../sagemaker.core/html/ApiObject.html#method-initialize}{\code{sagemaker.core::ApiObject$initialize()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="sagemaker.core" data-topic="ApiObject" data-id="to_paws">}\href{../../sagemaker.core/html/ApiObject.html#method-to_paws}{\code{sagemaker.core::ApiObject$to_paws()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="sagemaker.core" data-topic="ApiObject" data-id="format"><a href='../../sagemaker.core/html/ApiObject.html#method-ApiObject-format'><code>sagemaker.core::ApiObject$format()</code></a></li>
+<li><span class="pkg-link" data-pkg="sagemaker.core" data-topic="ApiObject" data-id="from_paws"><a href='../../sagemaker.core/html/ApiObject.html#method-ApiObject-from_paws'><code>sagemaker.core::ApiObject$from_paws()</code></a></li>
+<li><span class="pkg-link" data-pkg="sagemaker.core" data-topic="ApiObject" data-id="initialize"><a href='../../sagemaker.core/html/ApiObject.html#method-ApiObject-initialize'><code>sagemaker.core::ApiObject$initialize()</code></a></li>
+<li><span class="pkg-link" data-pkg="sagemaker.core" data-topic="ApiObject" data-id="to_paws"><a href='../../sagemaker.core/html/ApiObject.html#method-ApiObject-to_paws'><code>sagemaker.core::ApiObject$to_paws()</code></a></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-FeatureStoreOutput-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-FeatureStoreOutput-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

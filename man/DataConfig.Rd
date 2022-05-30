@@ -32,15 +32,15 @@ Config object related to configurations of the input and output dataset.
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{DataConfig$new()}}
-\item \href{#method-get_config}{\code{DataConfig$get_config()}}
-\item \href{#method-format}{\code{DataConfig$format()}}
-\item \href{#method-clone}{\code{DataConfig$clone()}}
+\item \href{#method-DataConfig-new}{\code{DataConfig$new()}}
+\item \href{#method-DataConfig-get_config}{\code{DataConfig$get_config()}}
+\item \href{#method-DataConfig-format}{\code{DataConfig$format()}}
+\item \href{#method-DataConfig-clone}{\code{DataConfig$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-DataConfig-new"></a>}}
+\if{latex}{\out{\hypertarget{method-DataConfig-new}{}}}
 \subsection{Method \code{new()}}{
 Initializes a configuration of both input and output datasets.
 \subsection{Usage}{
@@ -96,8 +96,8 @@ and `save_local_shap_values` is set to true in SHAPConfig.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_config"></a>}}
-\if{latex}{\out{\hypertarget{method-get_config}{}}}
+\if{html}{\out{<a id="method-DataConfig-get_config"></a>}}
+\if{latex}{\out{\hypertarget{method-DataConfig-get_config}{}}}
 \subsection{Method \code{get_config()}}{
 Returns part of an analysis config dictionary.
 \subsection{Usage}{
@@ -106,8 +106,8 @@ Returns part of an analysis config dictionary.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-format"></a>}}
-\if{latex}{\out{\hypertarget{method-format}{}}}
+\if{html}{\out{<a id="method-DataConfig-format"></a>}}
+\if{latex}{\out{\hypertarget{method-DataConfig-format}{}}}
 \subsection{Method \code{format()}}{
 format class
 \subsection{Usage}{
@@ -116,8 +116,8 @@ format class
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-DataConfig-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-DataConfig-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

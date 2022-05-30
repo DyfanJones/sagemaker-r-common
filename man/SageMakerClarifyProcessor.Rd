@@ -19,25 +19,25 @@ Handles SageMaker Processing task to compute bias metrics and explain a model.
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{SageMakerClarifyProcessor$new()}}
-\item \href{#method-run}{\code{SageMakerClarifyProcessor$run()}}
-\item \href{#method-run_pre_training_bias}{\code{SageMakerClarifyProcessor$run_pre_training_bias()}}
-\item \href{#method-run_post_training_bias}{\code{SageMakerClarifyProcessor$run_post_training_bias()}}
-\item \href{#method-run_bias}{\code{SageMakerClarifyProcessor$run_bias()}}
-\item \href{#method-run_explainability}{\code{SageMakerClarifyProcessor$run_explainability()}}
-\item \href{#method-clone}{\code{SageMakerClarifyProcessor$clone()}}
+\item \href{#method-SageMakerClarifyProcessor-new}{\code{SageMakerClarifyProcessor$new()}}
+\item \href{#method-SageMakerClarifyProcessor-run}{\code{SageMakerClarifyProcessor$run()}}
+\item \href{#method-SageMakerClarifyProcessor-run_pre_training_bias}{\code{SageMakerClarifyProcessor$run_pre_training_bias()}}
+\item \href{#method-SageMakerClarifyProcessor-run_post_training_bias}{\code{SageMakerClarifyProcessor$run_post_training_bias()}}
+\item \href{#method-SageMakerClarifyProcessor-run_bias}{\code{SageMakerClarifyProcessor$run_bias()}}
+\item \href{#method-SageMakerClarifyProcessor-run_explainability}{\code{SageMakerClarifyProcessor$run_explainability()}}
+\item \href{#method-SageMakerClarifyProcessor-clone}{\code{SageMakerClarifyProcessor$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="Processor" data-id="format">}\href{../../sagemaker.common/html/Processor.html#method-format}{\code{sagemaker.common::Processor$format()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="sagemaker.common" data-topic="Processor" data-id="format"><a href='../../sagemaker.common/html/Processor.html#method-Processor-format'><code>sagemaker.common::Processor$format()</code></a></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-SageMakerClarifyProcessor-new"></a>}}
+\if{latex}{\out{\hypertarget{method-SageMakerClarifyProcessor-new}{}}}
 \subsection{Method \code{new()}}{
 Initializes a ``Processor`` instance, computing bias metrics and model explanations.
 \subsection{Usage}{
@@ -109,8 +109,8 @@ inter-container traffic, security group IDs, and subnets.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-run"></a>}}
-\if{latex}{\out{\hypertarget{method-run}{}}}
+\if{html}{\out{<a id="method-SageMakerClarifyProcessor-run"></a>}}
+\if{latex}{\out{\hypertarget{method-SageMakerClarifyProcessor-run}{}}}
 \subsection{Method \code{run()}}{
 Overriding the base class method but deferring to specific run_* methods.
 \subsection{Usage}{
@@ -119,8 +119,8 @@ Overriding the base class method but deferring to specific run_* methods.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-run_pre_training_bias"></a>}}
-\if{latex}{\out{\hypertarget{method-run_pre_training_bias}{}}}
+\if{html}{\out{<a id="method-SageMakerClarifyProcessor-run_pre_training_bias"></a>}}
+\if{latex}{\out{\hypertarget{method-SageMakerClarifyProcessor-run_pre_training_bias}{}}}
 \subsection{Method \code{run_pre_training_bias()}}{
 Runs a ProcessingJob to compute the requested bias 'methods' of the input data.
              Computes the requested methods that compare 'methods' (e.g. fraction of examples) for the
@@ -177,8 +177,8 @@ Dictionary contains three optional keys:
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-run_post_training_bias"></a>}}
-\if{latex}{\out{\hypertarget{method-run_post_training_bias}{}}}
+\if{html}{\out{<a id="method-SageMakerClarifyProcessor-run_post_training_bias"></a>}}
+\if{latex}{\out{\hypertarget{method-SageMakerClarifyProcessor-run_post_training_bias}{}}}
 \subsection{Method \code{run_post_training_bias()}}{
 Runs a ProcessingJob to compute the requested bias 'methods' of the model predictions.
              Spins up a model endpoint, runs inference over the input example in the
@@ -245,8 +245,8 @@ Dictionary contains three optional keys:
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-run_bias"></a>}}
-\if{latex}{\out{\hypertarget{method-run_bias}{}}}
+\if{html}{\out{<a id="method-SageMakerClarifyProcessor-run_bias"></a>}}
+\if{latex}{\out{\hypertarget{method-SageMakerClarifyProcessor-run_bias}{}}}
 \subsection{Method \code{run_bias()}}{
 Runs a ProcessingJob to compute the requested bias 'methods' of the model predictions.
              Spins up a model endpoint, runs inference over the input example in the
@@ -330,8 +330,8 @@ Dictionary contains three optional keys:
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-run_explainability"></a>}}
-\if{latex}{\out{\hypertarget{method-run_explainability}{}}}
+\if{html}{\out{<a id="method-SageMakerClarifyProcessor-run_explainability"></a>}}
+\if{latex}{\out{\hypertarget{method-SageMakerClarifyProcessor-run_explainability}{}}}
 \subsection{Method \code{run_explainability()}}{
 Runs a ProcessingJob computing for each example in the input the feature importance.
              Currently, only SHAP is supported as explainability method.
@@ -389,8 +389,8 @@ Dictionary contains three optional keys:
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-SageMakerClarifyProcessor-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-SageMakerClarifyProcessor-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

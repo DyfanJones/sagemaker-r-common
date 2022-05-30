@@ -18,15 +18,15 @@ Creates tensor collections for SageMaker Debugger
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{CollectionConfig$new()}}
-\item \href{#method-to_request_list}{\code{CollectionConfig$to_request_list()}}
-\item \href{#method-format}{\code{CollectionConfig$format()}}
-\item \href{#method-clone}{\code{CollectionConfig$clone()}}
+\item \href{#method-CollectionConfig-new}{\code{CollectionConfig$new()}}
+\item \href{#method-CollectionConfig-to_request_list}{\code{CollectionConfig$to_request_list()}}
+\item \href{#method-CollectionConfig-format}{\code{CollectionConfig$format()}}
+\item \href{#method-CollectionConfig-clone}{\code{CollectionConfig$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-CollectionConfig-new"></a>}}
+\if{latex}{\out{\hypertarget{method-CollectionConfig-new}{}}}
 \subsection{Method \code{new()}}{
 Constructor for collection configuration.
 \subsection{Usage}{
@@ -45,8 +45,8 @@ configuration.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-to_request_list"></a>}}
-\if{latex}{\out{\hypertarget{method-to_request_list}{}}}
+\if{html}{\out{<a id="method-CollectionConfig-to_request_list"></a>}}
+\if{latex}{\out{\hypertarget{method-CollectionConfig-to_request_list}{}}}
 \subsection{Method \code{to_request_list()}}{
 Generate a request dictionary using the parameters initializing the object.
 \subsection{Usage}{
@@ -58,8 +58,8 @@ dict: A portion of an API request as a dictionary.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-format"></a>}}
-\if{latex}{\out{\hypertarget{method-format}{}}}
+\if{html}{\out{<a id="method-CollectionConfig-format"></a>}}
+\if{latex}{\out{\hypertarget{method-CollectionConfig-format}{}}}
 \subsection{Method \code{format()}}{
 format class
 \subsection{Usage}{
@@ -68,8 +68,8 @@ format class
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-CollectionConfig-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-CollectionConfig-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

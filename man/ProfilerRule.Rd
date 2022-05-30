@@ -22,23 +22,23 @@ SageMaker Debugger profiling rules automatically analyze
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-sagemaker}{\code{ProfilerRule$sagemaker()}}
-\item \href{#method-custom}{\code{ProfilerRule$custom()}}
-\item \href{#method-to_profiler_rule_config_list}{\code{ProfilerRule$to_profiler_rule_config_list()}}
-\item \href{#method-clone}{\code{ProfilerRule$clone()}}
+\item \href{#method-ProfilerRule-sagemaker}{\code{ProfilerRule$sagemaker()}}
+\item \href{#method-ProfilerRule-custom}{\code{ProfilerRule$custom()}}
+\item \href{#method-ProfilerRule-to_profiler_rule_config_list}{\code{ProfilerRule$to_profiler_rule_config_list()}}
+\item \href{#method-ProfilerRule-clone}{\code{ProfilerRule$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="RuleBase" data-id="format">}\href{../../sagemaker.common/html/RuleBase.html#method-format}{\code{sagemaker.common::RuleBase$format()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="RuleBase" data-id="initialize">}\href{../../sagemaker.common/html/RuleBase.html#method-initialize}{\code{sagemaker.common::RuleBase$initialize()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="sagemaker.common" data-topic="RuleBase" data-id="format"><a href='../../sagemaker.common/html/RuleBase.html#method-RuleBase-format'><code>sagemaker.common::RuleBase$format()</code></a></li>
+<li><span class="pkg-link" data-pkg="sagemaker.common" data-topic="RuleBase" data-id="initialize"><a href='../../sagemaker.common/html/RuleBase.html#method-RuleBase-initialize'><code>sagemaker.common::RuleBase$initialize()</code></a></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-sagemaker"></a>}}
-\if{latex}{\out{\hypertarget{method-sagemaker}{}}}
+\if{html}{\out{<a id="method-ProfilerRule-sagemaker"></a>}}
+\if{latex}{\out{\hypertarget{method-ProfilerRule-sagemaker}{}}}
 \subsection{Method \code{sagemaker()}}{
 Initialize a ``ProfilerRule`` object for a *built-in* profiling rule.
              The rule analyzes system and framework metrics of a given
@@ -81,8 +81,8 @@ s3://sagemaker-<region>-<12digit_account_id>/<training-job-name>/profiler-output
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-custom"></a>}}
-\if{latex}{\out{\hypertarget{method-custom}{}}}
+\if{html}{\out{<a id="method-ProfilerRule-custom"></a>}}
+\if{latex}{\out{\hypertarget{method-ProfilerRule-custom}{}}}
 \subsection{Method \code{custom()}}{
 Initialize a ``ProfilerRule`` object for a *custom* profiling rule.
              You can create a rule that
@@ -141,8 +141,8 @@ s3://sagemaker-<region>-<12digit_account_id>/<training-job-name>/profiler-output
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-to_profiler_rule_config_list"></a>}}
-\if{latex}{\out{\hypertarget{method-to_profiler_rule_config_list}{}}}
+\if{html}{\out{<a id="method-ProfilerRule-to_profiler_rule_config_list"></a>}}
+\if{latex}{\out{\hypertarget{method-ProfilerRule-to_profiler_rule_config_list}{}}}
 \subsection{Method \code{to_profiler_rule_config_list()}}{
 Generates a request dictionary using the parameters provided when initializing object.
 \subsection{Usage}{
@@ -154,8 +154,8 @@ lict: An portion of an API request as a dictionary.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-ProfilerRule-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-ProfilerRule-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

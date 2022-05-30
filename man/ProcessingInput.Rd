@@ -18,15 +18,15 @@ Other Processor:
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{ProcessingInput$new()}}
-\item \href{#method-to_request_list}{\code{ProcessingInput$to_request_list()}}
-\item \href{#method-format}{\code{ProcessingInput$format()}}
-\item \href{#method-clone}{\code{ProcessingInput$clone()}}
+\item \href{#method-ProcessingInput-new}{\code{ProcessingInput$new()}}
+\item \href{#method-ProcessingInput-to_request_list}{\code{ProcessingInput$to_request_list()}}
+\item \href{#method-ProcessingInput-format}{\code{ProcessingInput$format()}}
+\item \href{#method-ProcessingInput-clone}{\code{ProcessingInput$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-ProcessingInput-new"></a>}}
+\if{latex}{\out{\hypertarget{method-ProcessingInput-new}{}}}
 \subsection{Method \code{new()}}{
 Initializes a ``ProcessingInput`` instance. ``ProcessingInput`` accepts parameters
              that specify an Amazon S3 input for a processing job and provides a method
@@ -79,8 +79,8 @@ DatasetDefinition input}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-to_request_list"></a>}}
-\if{latex}{\out{\hypertarget{method-to_request_list}{}}}
+\if{html}{\out{<a id="method-ProcessingInput-to_request_list"></a>}}
+\if{latex}{\out{\hypertarget{method-ProcessingInput-to_request_list}{}}}
 \subsection{Method \code{to_request_list()}}{
 Generates a request dictionary using the parameters provided to the class.
 \subsection{Usage}{
@@ -89,8 +89,8 @@ Generates a request dictionary using the parameters provided to the class.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-format"></a>}}
-\if{latex}{\out{\hypertarget{method-format}{}}}
+\if{html}{\out{<a id="method-ProcessingInput-format"></a>}}
+\if{latex}{\out{\hypertarget{method-ProcessingInput-format}{}}}
 \subsection{Method \code{format()}}{
 format class
 \subsection{Usage}{
@@ -99,8 +99,8 @@ format class
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-ProcessingInput-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-ProcessingInput-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

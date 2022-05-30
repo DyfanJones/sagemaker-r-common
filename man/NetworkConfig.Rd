@@ -10,15 +10,15 @@ Accepts network configuration parameters and provides a method to turn these par
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{NetworkConfig$new()}}
-\item \href{#method-to_request_list}{\code{NetworkConfig$to_request_list()}}
-\item \href{#method-format}{\code{NetworkConfig$format()}}
-\item \href{#method-clone}{\code{NetworkConfig$clone()}}
+\item \href{#method-NetworkConfig-new}{\code{NetworkConfig$new()}}
+\item \href{#method-NetworkConfig-to_request_list}{\code{NetworkConfig$to_request_list()}}
+\item \href{#method-NetworkConfig-format}{\code{NetworkConfig$format()}}
+\item \href{#method-NetworkConfig-clone}{\code{NetworkConfig$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-NetworkConfig-new"></a>}}
+\if{latex}{\out{\hypertarget{method-NetworkConfig-new}{}}}
 \subsection{Method \code{new()}}{
 Initialize a ``NetworkConfig`` instance. NetworkConfig accepts network configuration
              parameters and provides a method to turn these parameters into a dictionary.
@@ -48,8 +48,8 @@ encrypt inter-container traffic. Default value is None.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-to_request_list"></a>}}
-\if{latex}{\out{\hypertarget{method-to_request_list}{}}}
+\if{html}{\out{<a id="method-NetworkConfig-to_request_list"></a>}}
+\if{latex}{\out{\hypertarget{method-NetworkConfig-to_request_list}{}}}
 \subsection{Method \code{to_request_list()}}{
 Generates a request dictionary using the parameters provided to the class.
 \subsection{Usage}{
@@ -58,8 +58,8 @@ Generates a request dictionary using the parameters provided to the class.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-format"></a>}}
-\if{latex}{\out{\hypertarget{method-format}{}}}
+\if{html}{\out{<a id="method-NetworkConfig-format"></a>}}
+\if{latex}{\out{\hypertarget{method-NetworkConfig-format}{}}}
 \subsection{Method \code{format()}}{
 format class
 \subsection{Usage}{
@@ -68,8 +68,8 @@ format class
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-NetworkConfig-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-NetworkConfig-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

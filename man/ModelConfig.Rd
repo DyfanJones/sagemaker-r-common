@@ -16,15 +16,15 @@ Config object related to a model and its endpoint to be created.
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{ModelConfig$new()}}
-\item \href{#method-get_predictor_config}{\code{ModelConfig$get_predictor_config()}}
-\item \href{#method-format}{\code{ModelConfig$format()}}
-\item \href{#method-clone}{\code{ModelConfig$clone()}}
+\item \href{#method-ModelConfig-new}{\code{ModelConfig$new()}}
+\item \href{#method-ModelConfig-get_predictor_config}{\code{ModelConfig$get_predictor_config()}}
+\item \href{#method-ModelConfig-format}{\code{ModelConfig$format()}}
+\item \href{#method-ModelConfig-clone}{\code{ModelConfig$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-ModelConfig-new"></a>}}
+\if{latex}{\out{\hypertarget{method-ModelConfig-new}{}}}
 \subsection{Method \code{new()}}{
 Initializes a configuration of a model and the endpoint to be created for it.
 \subsection{Usage}{
@@ -86,8 +86,8 @@ pattern "^[a-zA-Z0-9](-\*[a-zA-Z0-9]".}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_predictor_config"></a>}}
-\if{latex}{\out{\hypertarget{method-get_predictor_config}{}}}
+\if{html}{\out{<a id="method-ModelConfig-get_predictor_config"></a>}}
+\if{latex}{\out{\hypertarget{method-ModelConfig-get_predictor_config}{}}}
 \subsection{Method \code{get_predictor_config()}}{
 Returns part of the predictor dictionary of the analysis config.
 \subsection{Usage}{
@@ -96,8 +96,8 @@ Returns part of the predictor dictionary of the analysis config.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-format"></a>}}
-\if{latex}{\out{\hypertarget{method-format}{}}}
+\if{html}{\out{<a id="method-ModelConfig-format"></a>}}
+\if{latex}{\out{\hypertarget{method-ModelConfig-format}{}}}
 \subsection{Method \code{format()}}{
 format class
 \subsection{Usage}{
@@ -106,8 +106,8 @@ format class
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-ModelConfig-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-ModelConfig-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

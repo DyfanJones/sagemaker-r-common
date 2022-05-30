@@ -20,21 +20,21 @@ corresponding values will be included in the analysis output.
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{PDPConfig$new()}}
-\item \href{#method-get_explainability_config}{\code{PDPConfig$get_explainability_config()}}
-\item \href{#method-clone}{\code{PDPConfig$clone()}}
+\item \href{#method-PDPConfig-new}{\code{PDPConfig$new()}}
+\item \href{#method-PDPConfig-get_explainability_config}{\code{PDPConfig$get_explainability_config()}}
+\item \href{#method-PDPConfig-clone}{\code{PDPConfig$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="ExplainabilityConfig" data-id="format">}\href{../../sagemaker.common/html/ExplainabilityConfig.html#method-format}{\code{sagemaker.common::ExplainabilityConfig$format()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="sagemaker.common" data-topic="ExplainabilityConfig" data-id="format"><a href='../../sagemaker.common/html/ExplainabilityConfig.html#method-ExplainabilityConfig-format'><code>sagemaker.common::ExplainabilityConfig$format()</code></a></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-PDPConfig-new"></a>}}
+\if{latex}{\out{\hypertarget{method-PDPConfig-new}{}}}
 \subsection{Method \code{new()}}{
 Initializes config for PDP.
 \subsection{Usage}{
@@ -61,8 +61,8 @@ partial dependence plots.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_explainability_config"></a>}}
-\if{latex}{\out{\hypertarget{method-get_explainability_config}{}}}
+\if{html}{\out{<a id="method-PDPConfig-get_explainability_config"></a>}}
+\if{latex}{\out{\hypertarget{method-PDPConfig-get_explainability_config}{}}}
 \subsection{Method \code{get_explainability_config()}}{
 Returns config.
 \subsection{Usage}{
@@ -71,8 +71,8 @@ Returns config.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-PDPConfig-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-PDPConfig-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

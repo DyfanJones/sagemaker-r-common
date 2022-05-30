@@ -18,15 +18,15 @@ Create a tensor ouput configuration object for debugging visualizations on Tenso
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{TensorBoardOutputConfig$new()}}
-\item \href{#method-to_request_list}{\code{TensorBoardOutputConfig$to_request_list()}}
-\item \href{#method-format}{\code{TensorBoardOutputConfig$format()}}
-\item \href{#method-clone}{\code{TensorBoardOutputConfig$clone()}}
+\item \href{#method-TensorBoardOutputConfig-new}{\code{TensorBoardOutputConfig$new()}}
+\item \href{#method-TensorBoardOutputConfig-to_request_list}{\code{TensorBoardOutputConfig$to_request_list()}}
+\item \href{#method-TensorBoardOutputConfig-format}{\code{TensorBoardOutputConfig$format()}}
+\item \href{#method-TensorBoardOutputConfig-clone}{\code{TensorBoardOutputConfig$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-TensorBoardOutputConfig-new"></a>}}
+\if{latex}{\out{\hypertarget{method-TensorBoardOutputConfig-new}{}}}
 \subsection{Method \code{new()}}{
 Initialize the TensorBoardOutputConfig instance.
 \subsection{Usage}{
@@ -44,8 +44,8 @@ Initialize the TensorBoardOutputConfig instance.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-to_request_list"></a>}}
-\if{latex}{\out{\hypertarget{method-to_request_list}{}}}
+\if{html}{\out{<a id="method-TensorBoardOutputConfig-to_request_list"></a>}}
+\if{latex}{\out{\hypertarget{method-TensorBoardOutputConfig-to_request_list}{}}}
 \subsection{Method \code{to_request_list()}}{
 Generate a request dictionary using the instances attributes.
 \subsection{Usage}{
@@ -57,8 +57,8 @@ dict: An portion of an API request as a dictionary.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-format"></a>}}
-\if{latex}{\out{\hypertarget{method-format}{}}}
+\if{html}{\out{<a id="method-TensorBoardOutputConfig-format"></a>}}
+\if{latex}{\out{\hypertarget{method-TensorBoardOutputConfig-format}{}}}
 \subsection{Method \code{format()}}{
 format class
 \subsection{Usage}{
@@ -67,8 +67,8 @@ format class
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-TensorBoardOutputConfig-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-TensorBoardOutputConfig-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

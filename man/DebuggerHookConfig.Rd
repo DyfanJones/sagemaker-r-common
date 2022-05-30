@@ -26,15 +26,15 @@
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{DebuggerHookConfig$new()}}
-\item \href{#method-to_request_list}{\code{DebuggerHookConfig$to_request_list()}}
-\item \href{#method-format}{\code{DebuggerHookConfig$format()}}
-\item \href{#method-clone}{\code{DebuggerHookConfig$clone()}}
+\item \href{#method-DebuggerHookConfig-new}{\code{DebuggerHookConfig$new()}}
+\item \href{#method-DebuggerHookConfig-to_request_list}{\code{DebuggerHookConfig$to_request_list()}}
+\item \href{#method-DebuggerHookConfig-format}{\code{DebuggerHookConfig$format()}}
+\item \href{#method-DebuggerHookConfig-clone}{\code{DebuggerHookConfig$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-DebuggerHookConfig-new"></a>}}
+\if{latex}{\out{\hypertarget{method-DebuggerHookConfig-new}{}}}
 \subsection{Method \code{new()}}{
 Initialize the DebuggerHookConfig instance.
 \subsection{Usage}{
@@ -67,8 +67,8 @@ at the \code{s3_output_path}.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-to_request_list"></a>}}
-\if{latex}{\out{\hypertarget{method-to_request_list}{}}}
+\if{html}{\out{<a id="method-DebuggerHookConfig-to_request_list"></a>}}
+\if{latex}{\out{\hypertarget{method-DebuggerHookConfig-to_request_list}{}}}
 \subsection{Method \code{to_request_list()}}{
 Generate a request dictionary using the parameters when initializing the object.
 \subsection{Usage}{
@@ -80,8 +80,8 @@ dict: An portion of an API request as a dictionary.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-format"></a>}}
-\if{latex}{\out{\hypertarget{method-format}{}}}
+\if{html}{\out{<a id="method-DebuggerHookConfig-format"></a>}}
+\if{latex}{\out{\hypertarget{method-DebuggerHookConfig-format}{}}}
 \subsection{Method \code{format()}}{
 format class
 \subsection{Usage}{
@@ -90,8 +90,8 @@ format class
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-DebuggerHookConfig-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-DebuggerHookConfig-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

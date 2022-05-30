@@ -10,15 +10,15 @@ It returns the target steps in dictionary format that you can pass to the
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{StepRange$new()}}
-\item \href{#method-to_json}{\code{StepRange$to_json()}}
-\item \href{#method-format}{\code{StepRange$format()}}
-\item \href{#method-clone}{\code{StepRange$clone()}}
+\item \href{#method-StepRange-new}{\code{StepRange$new()}}
+\item \href{#method-StepRange-to_json}{\code{StepRange$to_json()}}
+\item \href{#method-StepRange-format}{\code{StepRange$format()}}
+\item \href{#method-StepRange-clone}{\code{StepRange$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-StepRange-new"></a>}}
+\if{latex}{\out{\hypertarget{method-StepRange-new}{}}}
 \subsection{Method \code{new()}}{
 Set the start step and num steps.
              If the start step is not specified,
@@ -39,8 +39,8 @@ Set the start step and num steps.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-to_json"></a>}}
-\if{latex}{\out{\hypertarget{method-to_json}{}}}
+\if{html}{\out{<a id="method-StepRange-to_json"></a>}}
+\if{latex}{\out{\hypertarget{method-StepRange-to_json}{}}}
 \subsection{Method \code{to_json()}}{
 Convert the step range into a dictionary.
 \subsection{Usage}{
@@ -52,8 +52,8 @@ list: The step range as a dictionary.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-format"></a>}}
-\if{latex}{\out{\hypertarget{method-format}{}}}
+\if{html}{\out{<a id="method-StepRange-format"></a>}}
+\if{latex}{\out{\hypertarget{method-StepRange-format}{}}}
 \subsection{Method \code{format()}}{
 format class
 \subsection{Usage}{
@@ -62,8 +62,8 @@ format class
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-StepRange-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-StepRange-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{
