@@ -34,6 +34,7 @@ jobs:
           pak::pkg_install("urltools")
           pak::pkg_install("zip")
           pak::pkg_install("listenv")
+          pak::pkg_install("paws")
 
           # install cran suggest
           pak::pkg_install("testthat")

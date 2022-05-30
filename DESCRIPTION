@@ -15,9 +15,10 @@ Imports:
     utils,
     listenv,
     zip,
+    paws,
     stats,
     sagemaker.debugger,
-    sagemaker.core,
+    sagemaker.core
 Suggests:
     mockthat,
     crayon,
@@ -64,7 +65,6 @@ Collate:
     'lineage_context.R'
     'lineage_visualizer.R'
     'metadata_properties.R'
-    'serverless_serverless_inference_config.R'
     'transformer.R'
     'zzz.R'
 Config/testthat/edition: 3
