@@ -13,9 +13,7 @@ Imports:
     jsonlite,
     urltools,
     utils,
-    listenv,
     zip,
-    paws,
     stats,
     sagemaker.debugger,
     sagemaker.core
