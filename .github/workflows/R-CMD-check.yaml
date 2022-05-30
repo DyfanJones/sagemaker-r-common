@@ -33,6 +33,7 @@ jobs:
           pak::pkg_install("jsonlite")
           pak::pkg_install("urltools")
           pak::pkg_install("zip")
+          pak::pkg_install("listenv")
 
           # install cran suggest
           pak::pkg_install("testthat")
