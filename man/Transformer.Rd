@@ -10,19 +10,19 @@ A class for handling creating and interacting with Amazon SageMaker
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{Transformer$new()}}
-\item \href{#method-transform}{\code{Transformer$transform()}}
-\item \href{#method-delete_model}{\code{Transformer$delete_model()}}
-\item \href{#method-wait}{\code{Transformer$wait()}}
-\item \href{#method-stop_transform_job}{\code{Transformer$stop_transform_job()}}
-\item \href{#method-attach}{\code{Transformer$attach()}}
-\item \href{#method-format}{\code{Transformer$format()}}
-\item \href{#method-clone}{\code{Transformer$clone()}}
+\item \href{#method-Transformer-new}{\code{Transformer$new()}}
+\item \href{#method-Transformer-transform}{\code{Transformer$transform()}}
+\item \href{#method-Transformer-delete_model}{\code{Transformer$delete_model()}}
+\item \href{#method-Transformer-wait}{\code{Transformer$wait()}}
+\item \href{#method-Transformer-stop_transform_job}{\code{Transformer$stop_transform_job()}}
+\item \href{#method-Transformer-attach}{\code{Transformer$attach()}}
+\item \href{#method-Transformer-format}{\code{Transformer$format()}}
+\item \href{#method-Transformer-clone}{\code{Transformer$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-Transformer-new"></a>}}
+\if{latex}{\out{\hypertarget{method-Transformer-new}{}}}
 \subsection{Method \code{new()}}{
 Initialize a ``Transformer``.
 \subsection{Usage}{
@@ -104,8 +104,8 @@ attached to the ML compute instance (default: None).}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-transform"></a>}}
-\if{latex}{\out{\hypertarget{method-transform}{}}}
+\if{html}{\out{<a id="method-Transformer-transform"></a>}}
+\if{latex}{\out{\hypertarget{method-Transformer-transform}{}}}
 \subsection{Method \code{transform()}}{
 Start a new transform job.
 \subsection{Usage}{
@@ -204,8 +204,8 @@ NULL invisible
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-delete_model"></a>}}
-\if{latex}{\out{\hypertarget{method-delete_model}{}}}
+\if{html}{\out{<a id="method-Transformer-delete_model"></a>}}
+\if{latex}{\out{\hypertarget{method-Transformer-delete_model}{}}}
 \subsection{Method \code{delete_model()}}{
 Delete the corresponding SageMaker model for this Transformer.
 \subsection{Usage}{
@@ -214,8 +214,8 @@ Delete the corresponding SageMaker model for this Transformer.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-wait"></a>}}
-\if{latex}{\out{\hypertarget{method-wait}{}}}
+\if{html}{\out{<a id="method-Transformer-wait"></a>}}
+\if{latex}{\out{\hypertarget{method-Transformer-wait}{}}}
 \subsection{Method \code{wait()}}{
 Wait for latest running batch transform job
 \subsection{Usage}{
@@ -231,8 +231,8 @@ Wait for latest running batch transform job
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-stop_transform_job"></a>}}
-\if{latex}{\out{\hypertarget{method-stop_transform_job}{}}}
+\if{html}{\out{<a id="method-Transformer-stop_transform_job"></a>}}
+\if{latex}{\out{\hypertarget{method-Transformer-stop_transform_job}{}}}
 \subsection{Method \code{stop_transform_job()}}{
 Stop latest running batch transform job.
 \subsection{Usage}{
@@ -248,8 +248,8 @@ Stop latest running batch transform job.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-attach"></a>}}
-\if{latex}{\out{\hypertarget{method-attach}{}}}
+\if{html}{\out{<a id="method-Transformer-attach"></a>}}
+\if{latex}{\out{\hypertarget{method-Transformer-attach}{}}}
 \subsection{Method \code{attach()}}{
 Attach an existing transform job to a new Transformer instance
 \subsection{Usage}{
@@ -274,8 +274,8 @@ Transformer (class): The Transformer instance with the
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-format"></a>}}
-\if{latex}{\out{\hypertarget{method-format}{}}}
+\if{html}{\out{<a id="method-Transformer-format"></a>}}
+\if{latex}{\out{\hypertarget{method-Transformer-format}{}}}
 \subsection{Method \code{format()}}{
 format class
 \subsection{Usage}{
@@ -284,8 +284,8 @@ format class
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-Transformer-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-Transformer-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

@@ -21,22 +21,22 @@ Config object for handling images
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{ImageConfig$new()}}
-\item \href{#method-get_image_config}{\code{ImageConfig$get_image_config()}}
-\item \href{#method-clone}{\code{ImageConfig$clone()}}
+\item \href{#method-ImageConfig-new}{\code{ImageConfig$new()}}
+\item \href{#method-ImageConfig-get_image_config}{\code{ImageConfig$get_image_config()}}
+\item \href{#method-ImageConfig-clone}{\code{ImageConfig$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="ExplainabilityConfig" data-id="format">}\href{../../sagemaker.common/html/ExplainabilityConfig.html#method-format}{\code{sagemaker.common::ExplainabilityConfig$format()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="ExplainabilityConfig" data-id="get_explainability_config">}\href{../../sagemaker.common/html/ExplainabilityConfig.html#method-get_explainability_config}{\code{sagemaker.common::ExplainabilityConfig$get_explainability_config()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="sagemaker.common" data-topic="ExplainabilityConfig" data-id="format"><a href='../../sagemaker.common/html/ExplainabilityConfig.html#method-ExplainabilityConfig-format'><code>sagemaker.common::ExplainabilityConfig$format()</code></a></li>
+<li><span class="pkg-link" data-pkg="sagemaker.common" data-topic="ExplainabilityConfig" data-id="get_explainability_config"><a href='../../sagemaker.common/html/ExplainabilityConfig.html#method-ExplainabilityConfig-get_explainability_config'><code>sagemaker.common::ExplainabilityConfig$get_explainability_config()</code></a></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-ImageConfig-new"></a>}}
+\if{latex}{\out{\hypertarget{method-ImageConfig-new}{}}}
 \subsection{Method \code{new()}}{
 Initializes all configuration parameters needed for SHAP CV explainability
 \subsection{Usage}{
@@ -87,8 +87,8 @@ Scale is [0.0, 1.0]. If set to 1.0, whole image is considered, if set to
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_image_config"></a>}}
-\if{latex}{\out{\hypertarget{method-get_image_config}{}}}
+\if{html}{\out{<a id="method-ImageConfig-get_image_config"></a>}}
+\if{latex}{\out{\hypertarget{method-ImageConfig-get_image_config}{}}}
 \subsection{Method \code{get_image_config()}}{
 Returns the image config part of an analysis config dictionary.
 \subsection{Usage}{
@@ -97,8 +97,8 @@ Returns the image config part of an analysis config dictionary.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-ImageConfig-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-ImageConfig-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

@@ -16,15 +16,15 @@ Config object related to bias configurations of the input dataset.
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{BiasConfig$new()}}
-\item \href{#method-get_config}{\code{BiasConfig$get_config()}}
-\item \href{#method-format}{\code{BiasConfig$format()}}
-\item \href{#method-clone}{\code{BiasConfig$clone()}}
+\item \href{#method-BiasConfig-new}{\code{BiasConfig$new()}}
+\item \href{#method-BiasConfig-get_config}{\code{BiasConfig$get_config()}}
+\item \href{#method-BiasConfig-format}{\code{BiasConfig$format()}}
+\item \href{#method-BiasConfig-clone}{\code{BiasConfig$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-BiasConfig-new"></a>}}
+\if{latex}{\out{\hypertarget{method-BiasConfig-new}{}}}
 \subsection{Method \code{new()}}{
 Initializes a configuration of the sensitive groups in the dataset.
 \subsection{Usage}{
@@ -58,8 +58,8 @@ for the bias metric 'Conditional Demographic Disparity in Labels - CDDL' or
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_config"></a>}}
-\if{latex}{\out{\hypertarget{method-get_config}{}}}
+\if{html}{\out{<a id="method-BiasConfig-get_config"></a>}}
+\if{latex}{\out{\hypertarget{method-BiasConfig-get_config}{}}}
 \subsection{Method \code{get_config()}}{
 Returns part of an analysis config dictionary.
 \subsection{Usage}{
@@ -68,8 +68,8 @@ Returns part of an analysis config dictionary.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-format"></a>}}
-\if{latex}{\out{\hypertarget{method-format}{}}}
+\if{html}{\out{<a id="method-BiasConfig-format"></a>}}
+\if{latex}{\out{\hypertarget{method-BiasConfig-format}{}}}
 \subsection{Method \code{format()}}{
 format class
 \subsection{Usage}{
@@ -78,8 +78,8 @@ format class
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-BiasConfig-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-BiasConfig-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

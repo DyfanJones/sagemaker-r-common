@@ -18,15 +18,15 @@ Other Processor:
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{ProcessingOutput$new()}}
-\item \href{#method-to_request_list}{\code{ProcessingOutput$to_request_list()}}
-\item \href{#method-format}{\code{ProcessingOutput$format()}}
-\item \href{#method-clone}{\code{ProcessingOutput$clone()}}
+\item \href{#method-ProcessingOutput-new}{\code{ProcessingOutput$new()}}
+\item \href{#method-ProcessingOutput-to_request_list}{\code{ProcessingOutput$to_request_list()}}
+\item \href{#method-ProcessingOutput-format}{\code{ProcessingOutput$format()}}
+\item \href{#method-ProcessingOutput-clone}{\code{ProcessingOutput$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-ProcessingOutput-new"></a>}}
+\if{latex}{\out{\hypertarget{method-ProcessingOutput-new}{}}}
 \subsection{Method \code{new()}}{
 Initializes a ``ProcessingOutput`` instance. ``ProcessingOutput`` accepts parameters that
              specify an Amazon S3 output for a processing job and provides a method to turn
@@ -66,8 +66,8 @@ Configuration for processing job outputs of FeatureStore.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-to_request_list"></a>}}
-\if{latex}{\out{\hypertarget{method-to_request_list}{}}}
+\if{html}{\out{<a id="method-ProcessingOutput-to_request_list"></a>}}
+\if{latex}{\out{\hypertarget{method-ProcessingOutput-to_request_list}{}}}
 \subsection{Method \code{to_request_list()}}{
 Generates a request dictionary using the parameters provided to the class.
 \subsection{Usage}{
@@ -76,8 +76,8 @@ Generates a request dictionary using the parameters provided to the class.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-format"></a>}}
-\if{latex}{\out{\hypertarget{method-format}{}}}
+\if{html}{\out{<a id="method-ProcessingOutput-format"></a>}}
+\if{latex}{\out{\hypertarget{method-ProcessingOutput-format}{}}}
 \subsection{Method \code{format()}}{
 format class
 \subsection{Usage}{
@@ -86,8 +86,8 @@ format class
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-ProcessingOutput-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-ProcessingOutput-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

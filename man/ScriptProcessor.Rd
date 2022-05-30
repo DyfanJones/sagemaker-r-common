@@ -20,22 +20,22 @@ Other Processor:
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{ScriptProcessor$new()}}
-\item \href{#method-get_run_args}{\code{ScriptProcessor$get_run_args()}}
-\item \href{#method-run}{\code{ScriptProcessor$run()}}
-\item \href{#method-clone}{\code{ScriptProcessor$clone()}}
+\item \href{#method-ScriptProcessor-new}{\code{ScriptProcessor$new()}}
+\item \href{#method-ScriptProcessor-get_run_args}{\code{ScriptProcessor$get_run_args()}}
+\item \href{#method-ScriptProcessor-run}{\code{ScriptProcessor$run()}}
+\item \href{#method-ScriptProcessor-clone}{\code{ScriptProcessor$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="Processor" data-id="format">}\href{../../sagemaker.common/html/Processor.html#method-format}{\code{sagemaker.common::Processor$format()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="sagemaker.common" data-topic="Processor" data-id="format"><a href='../../sagemaker.common/html/Processor.html#method-Processor-format'><code>sagemaker.common::Processor$format()</code></a></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-ScriptProcessor-new"></a>}}
+\if{latex}{\out{\hypertarget{method-ScriptProcessor-new}{}}}
 \subsection{Method \code{new()}}{
 Initializes a ``ScriptProcessor`` instance. The ``ScriptProcessor``
              handles Amazon SageMaker Processing tasks for jobs using a machine learning framework,
@@ -116,8 +116,8 @@ inter-container traffic, security group IDs, and subnets.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_run_args"></a>}}
-\if{latex}{\out{\hypertarget{method-get_run_args}{}}}
+\if{html}{\out{<a id="method-ScriptProcessor-get_run_args"></a>}}
+\if{latex}{\out{\hypertarget{method-ScriptProcessor-get_run_args}{}}}
 \subsection{Method \code{get_run_args()}}{
 Returns a RunArgs object.
              For processors (:class:`~sagemaker.spark.processing.PySparkProcessor`,
@@ -154,8 +154,8 @@ processing job (default: None).}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-run"></a>}}
-\if{latex}{\out{\hypertarget{method-run}{}}}
+\if{html}{\out{<a id="method-ScriptProcessor-run"></a>}}
+\if{latex}{\out{\hypertarget{method-ScriptProcessor-run}{}}}
 \subsection{Method \code{run()}}{
 Runs a processing job.
 \subsection{Usage}{
@@ -208,8 +208,8 @@ user code file (default: None).}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-ScriptProcessor-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-ScriptProcessor-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

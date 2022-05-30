@@ -10,17 +10,17 @@ Base class for tuning job or training job analytics classes. Understands
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{AnalyticsMetricsBase$new()}}
-\item \href{#method-export_csv}{\code{AnalyticsMetricsBase$export_csv()}}
-\item \href{#method-dataframe}{\code{AnalyticsMetricsBase$dataframe()}}
-\item \href{#method-clear_cache}{\code{AnalyticsMetricsBase$clear_cache()}}
-\item \href{#method-format}{\code{AnalyticsMetricsBase$format()}}
-\item \href{#method-clone}{\code{AnalyticsMetricsBase$clone()}}
+\item \href{#method-AnalyticsMetricsBase-new}{\code{AnalyticsMetricsBase$new()}}
+\item \href{#method-AnalyticsMetricsBase-export_csv}{\code{AnalyticsMetricsBase$export_csv()}}
+\item \href{#method-AnalyticsMetricsBase-dataframe}{\code{AnalyticsMetricsBase$dataframe()}}
+\item \href{#method-AnalyticsMetricsBase-clear_cache}{\code{AnalyticsMetricsBase$clear_cache()}}
+\item \href{#method-AnalyticsMetricsBase-format}{\code{AnalyticsMetricsBase$format()}}
+\item \href{#method-AnalyticsMetricsBase-clone}{\code{AnalyticsMetricsBase$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-AnalyticsMetricsBase-new"></a>}}
+\if{latex}{\out{\hypertarget{method-AnalyticsMetricsBase-new}{}}}
 \subsection{Method \code{new()}}{
 Initialize a ``AnalyticsMetricsBase`` instance.
 \subsection{Usage}{
@@ -29,8 +29,8 @@ Initialize a ``AnalyticsMetricsBase`` instance.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-export_csv"></a>}}
-\if{latex}{\out{\hypertarget{method-export_csv}{}}}
+\if{html}{\out{<a id="method-AnalyticsMetricsBase-export_csv"></a>}}
+\if{latex}{\out{\hypertarget{method-AnalyticsMetricsBase-export_csv}{}}}
 \subsection{Method \code{export_csv()}}{
 ersists the analytics dataframe to a file.
 \subsection{Usage}{
@@ -46,8 +46,8 @@ ersists the analytics dataframe to a file.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-dataframe"></a>}}
-\if{latex}{\out{\hypertarget{method-dataframe}{}}}
+\if{html}{\out{<a id="method-AnalyticsMetricsBase-dataframe"></a>}}
+\if{latex}{\out{\hypertarget{method-AnalyticsMetricsBase-dataframe}{}}}
 \subsection{Method \code{dataframe()}}{
 A dataframe with lots of interesting results about this
              object. Created by calling SageMaker List and Describe APIs and
@@ -66,8 +66,8 @@ SageMaker API.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clear_cache"></a>}}
-\if{latex}{\out{\hypertarget{method-clear_cache}{}}}
+\if{html}{\out{<a id="method-AnalyticsMetricsBase-clear_cache"></a>}}
+\if{latex}{\out{\hypertarget{method-AnalyticsMetricsBase-clear_cache}{}}}
 \subsection{Method \code{clear_cache()}}{
 Clear the object of all local caches of API methods, so that the next
              time any properties are accessed they will be refreshed from the
@@ -78,8 +78,8 @@ Clear the object of all local caches of API methods, so that the next
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-format"></a>}}
-\if{latex}{\out{\hypertarget{method-format}{}}}
+\if{html}{\out{<a id="method-AnalyticsMetricsBase-format"></a>}}
+\if{latex}{\out{\hypertarget{method-AnalyticsMetricsBase-format}{}}}
 \subsection{Method \code{format()}}{
 format class
 \subsection{Usage}{
@@ -88,8 +88,8 @@ format class
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-AnalyticsMetricsBase-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-AnalyticsMetricsBase-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

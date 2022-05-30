@@ -1,7 +1,7 @@
 Package: sagemaker.common
 Type: Package
 Title: R6sagemaker lower level api calls
-Version: 0.2.0
+Version: 0.2.0.9000
 Authors@R: c(person("Dyfan", "Jones", email="dyfan.r.jones@gmail.com", role= c("aut", "cre")),
              person("Amazon.com, Inc.", role = "cph"))
 Description: `R6sagemaker` lower level api calls.
@@ -13,10 +13,11 @@ Imports:
     jsonlite,
     urltools,
     utils,
+    listenv,
     zip,
     stats,
     sagemaker.debugger,
-    sagemaker.core
+    sagemaker.core,
 Suggests:
     mockthat,
     crayon,
@@ -26,7 +27,7 @@ Remotes:
     DyfanJones/sagemaker-r-core
 License: Apache License (>= 2.0)
 Encoding: UTF-8
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
 Collate: 
     'r_utils.R'
     'analytics.R'
@@ -42,6 +43,18 @@ Collate:
     'debugger_framework_profile.R'
     'debugger_profiler_config.R'
     'drift_check_baselines.R'
+    'jumpstart_types.R'
+    'jumpstart_enums.R'
+    'jumpstart_constants.R'
+    'jumpstart_exceptions.R'
+    'jumpstart_utils.R'
+    'jumpstart_parameters.R'
+    'jumpstart_cache.R'
+    'jumpstart_accessors.R'
+    'jumpstart_artifacts.R'
+    'jumpstart_filters.R'
+    'jumpstart_notebook_utils.R'
+    'jumpstart_validators.R'
     'lambda_helper.R'
     'lineage_api_types.R'
     'lineage_action.R'

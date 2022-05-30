@@ -14,22 +14,22 @@ DatasetDefinition input.
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{DatasetDefinition$new()}}
-\item \href{#method-clone}{\code{DatasetDefinition$clone()}}
+\item \href{#method-DatasetDefinition-new}{\code{DatasetDefinition$new()}}
+\item \href{#method-DatasetDefinition-clone}{\code{DatasetDefinition$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="sagemaker.core" data-topic="ApiObject" data-id="format">}\href{../../sagemaker.core/html/ApiObject.html#method-format}{\code{sagemaker.core::ApiObject$format()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="sagemaker.core" data-topic="ApiObject" data-id="from_paws">}\href{../../sagemaker.core/html/ApiObject.html#method-from_paws}{\code{sagemaker.core::ApiObject$from_paws()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="sagemaker.core" data-topic="ApiObject" data-id="to_paws">}\href{../../sagemaker.core/html/ApiObject.html#method-to_paws}{\code{sagemaker.core::ApiObject$to_paws()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="sagemaker.core" data-topic="ApiObject" data-id="format"><a href='../../sagemaker.core/html/ApiObject.html#method-ApiObject-format'><code>sagemaker.core::ApiObject$format()</code></a></li>
+<li><span class="pkg-link" data-pkg="sagemaker.core" data-topic="ApiObject" data-id="from_paws"><a href='../../sagemaker.core/html/ApiObject.html#method-ApiObject-from_paws'><code>sagemaker.core::ApiObject$from_paws()</code></a></li>
+<li><span class="pkg-link" data-pkg="sagemaker.core" data-topic="ApiObject" data-id="to_paws"><a href='../../sagemaker.core/html/ApiObject.html#method-ApiObject-to_paws'><code>sagemaker.core::ApiObject$to_paws()</code></a></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-DatasetDefinition-new"></a>}}
+\if{latex}{\out{\hypertarget{method-DatasetDefinition-new}{}}}
 \subsection{Method \code{new()}}{
 Initialize DatasetDefinition.
 \subsection{Usage}{
@@ -72,8 +72,8 @@ Configuration for Athena Dataset Definition input.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-DatasetDefinition-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-DatasetDefinition-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

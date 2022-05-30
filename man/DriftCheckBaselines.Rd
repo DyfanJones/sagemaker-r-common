@@ -9,14 +9,14 @@ Accepts drift check baselines parameters for conversion to request dict.
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{DriftCheckBaselines$new()}}
-\item \href{#method-to_request_list}{\code{DriftCheckBaselines$to_request_list()}}
-\item \href{#method-clone}{\code{DriftCheckBaselines$clone()}}
+\item \href{#method-DriftCheckBaselines-new}{\code{DriftCheckBaselines$new()}}
+\item \href{#method-DriftCheckBaselines-to_request_list}{\code{DriftCheckBaselines$to_request_list()}}
+\item \href{#method-DriftCheckBaselines-clone}{\code{DriftCheckBaselines$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-DriftCheckBaselines-new"></a>}}
+\if{latex}{\out{\hypertarget{method-DriftCheckBaselines-new}{}}}
 \subsection{Method \code{new()}}{
 Initialize a ``DriftCheckBaselines`` instance and turn parameters into dict.
 \subsection{Usage}{
@@ -58,8 +58,8 @@ Initialize a ``DriftCheckBaselines`` instance and turn parameters into dict.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-to_request_list"></a>}}
-\if{latex}{\out{\hypertarget{method-to_request_list}{}}}
+\if{html}{\out{<a id="method-DriftCheckBaselines-to_request_list"></a>}}
+\if{latex}{\out{\hypertarget{method-DriftCheckBaselines-to_request_list}{}}}
 \subsection{Method \code{to_request_list()}}{
 Generates a request dictionary using the parameters provided to the class.
 \subsection{Usage}{
@@ -68,8 +68,8 @@ Generates a request dictionary using the parameters provided to the class.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-DriftCheckBaselines-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-DriftCheckBaselines-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

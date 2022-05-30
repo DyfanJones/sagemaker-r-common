@@ -27,23 +27,23 @@ Fetch training curve data from CloudWatch Metrics for a specific training
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{TrainingJobAnalytics$new()}}
-\item \href{#method-clear_cache}{\code{TrainingJobAnalytics$clear_cache()}}
-\item \href{#method-clone}{\code{TrainingJobAnalytics$clone()}}
+\item \href{#method-TrainingJobAnalytics-new}{\code{TrainingJobAnalytics$new()}}
+\item \href{#method-TrainingJobAnalytics-clear_cache}{\code{TrainingJobAnalytics$clear_cache()}}
+\item \href{#method-TrainingJobAnalytics-clone}{\code{TrainingJobAnalytics$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="AnalyticsMetricsBase" data-id="dataframe">}\href{../../sagemaker.common/html/AnalyticsMetricsBase.html#method-dataframe}{\code{sagemaker.common::AnalyticsMetricsBase$dataframe()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="AnalyticsMetricsBase" data-id="export_csv">}\href{../../sagemaker.common/html/AnalyticsMetricsBase.html#method-export_csv}{\code{sagemaker.common::AnalyticsMetricsBase$export_csv()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="AnalyticsMetricsBase" data-id="format">}\href{../../sagemaker.common/html/AnalyticsMetricsBase.html#method-format}{\code{sagemaker.common::AnalyticsMetricsBase$format()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="sagemaker.common" data-topic="AnalyticsMetricsBase" data-id="dataframe"><a href='../../sagemaker.common/html/AnalyticsMetricsBase.html#method-AnalyticsMetricsBase-dataframe'><code>sagemaker.common::AnalyticsMetricsBase$dataframe()</code></a></li>
+<li><span class="pkg-link" data-pkg="sagemaker.common" data-topic="AnalyticsMetricsBase" data-id="export_csv"><a href='../../sagemaker.common/html/AnalyticsMetricsBase.html#method-AnalyticsMetricsBase-export_csv'><code>sagemaker.common::AnalyticsMetricsBase$export_csv()</code></a></li>
+<li><span class="pkg-link" data-pkg="sagemaker.common" data-topic="AnalyticsMetricsBase" data-id="format"><a href='../../sagemaker.common/html/AnalyticsMetricsBase.html#method-AnalyticsMetricsBase-format'><code>sagemaker.common::AnalyticsMetricsBase$format()</code></a></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-TrainingJobAnalytics-new"></a>}}
+\if{latex}{\out{\hypertarget{method-TrainingJobAnalytics-new}{}}}
 \subsection{Method \code{new()}}{
 Initialize a ``TrainingJobAnalytics`` instance.
 \subsection{Usage}{
@@ -81,8 +81,8 @@ the default AWS configuration chain.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clear_cache"></a>}}
-\if{latex}{\out{\hypertarget{method-clear_cache}{}}}
+\if{html}{\out{<a id="method-TrainingJobAnalytics-clear_cache"></a>}}
+\if{latex}{\out{\hypertarget{method-TrainingJobAnalytics-clear_cache}{}}}
 \subsection{Method \code{clear_cache()}}{
 Clear the object of all local caches of API methods, so that the next
              time any properties are accessed they will be refreshed from the
@@ -93,8 +93,8 @@ Clear the object of all local caches of API methods, so that the next
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-TrainingJobAnalytics-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-TrainingJobAnalytics-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

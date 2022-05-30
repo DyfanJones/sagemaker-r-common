@@ -32,14 +32,14 @@ Debugger rule classes inheriting this RuleBase class are
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{RuleBase$new()}}
-\item \href{#method-format}{\code{RuleBase$format()}}
-\item \href{#method-clone}{\code{RuleBase$clone()}}
+\item \href{#method-RuleBase-new}{\code{RuleBase$new()}}
+\item \href{#method-RuleBase-format}{\code{RuleBase$format()}}
+\item \href{#method-RuleBase-clone}{\code{RuleBase$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-RuleBase-new"></a>}}
+\if{latex}{\out{\hypertarget{method-RuleBase-new}{}}}
 \subsection{Method \code{new()}}{
 Initialize RuleBase class
 \subsection{Usage}{
@@ -75,8 +75,8 @@ Initialize RuleBase class
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-format"></a>}}
-\if{latex}{\out{\hypertarget{method-format}{}}}
+\if{html}{\out{<a id="method-RuleBase-format"></a>}}
+\if{latex}{\out{\hypertarget{method-RuleBase-format}{}}}
 \subsection{Method \code{format()}}{
 format class
 \subsection{Usage}{
@@ -85,8 +85,8 @@ format class
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-RuleBase-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-RuleBase-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

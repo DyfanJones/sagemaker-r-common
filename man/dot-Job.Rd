@@ -32,18 +32,18 @@ This class shouldn't be directly instantiated.
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{.Job$new()}}
-\item \href{#method-start_new}{\code{.Job$start_new()}}
-\item \href{#method-wait}{\code{.Job$wait()}}
-\item \href{#method-describe}{\code{.Job$describe()}}
-\item \href{#method-stop}{\code{.Job$stop()}}
-\item \href{#method-format}{\code{.Job$format()}}
-\item \href{#method-clone}{\code{.Job$clone()}}
+\item \href{#method-.Job-new}{\code{.Job$new()}}
+\item \href{#method-.Job-start_new}{\code{.Job$start_new()}}
+\item \href{#method-.Job-wait}{\code{.Job$wait()}}
+\item \href{#method-.Job-describe}{\code{.Job$describe()}}
+\item \href{#method-.Job-stop}{\code{.Job$stop()}}
+\item \href{#method-.Job-format}{\code{.Job$format()}}
+\item \href{#method-.Job-clone}{\code{.Job$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-.Job-new"></a>}}
+\if{latex}{\out{\hypertarget{method-.Job-new}{}}}
 \subsection{Method \code{new()}}{
 Base class initializer. Subclasses which override ``__init__`` should
              invoke ``super()``
@@ -65,8 +65,8 @@ using the default AWS configuration chain.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-start_new"></a>}}
-\if{latex}{\out{\hypertarget{method-start_new}{}}}
+\if{html}{\out{<a id="method-.Job-start_new"></a>}}
+\if{latex}{\out{\hypertarget{method-.Job-start_new}{}}}
 \subsection{Method \code{start_new()}}{
 Create a new Amazon SageMaker job from the estimator.
 \subsection{Usage}{
@@ -90,8 +90,8 @@ sagemaker.job: Constructed object that captures all information
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-wait"></a>}}
-\if{latex}{\out{\hypertarget{method-wait}{}}}
+\if{html}{\out{<a id="method-.Job-wait"></a>}}
+\if{latex}{\out{\hypertarget{method-.Job-wait}{}}}
 \subsection{Method \code{wait()}}{
 Wait for the Amazon SageMaker job to finish.
 \subsection{Usage}{
@@ -100,8 +100,8 @@ Wait for the Amazon SageMaker job to finish.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-describe"></a>}}
-\if{latex}{\out{\hypertarget{method-describe}{}}}
+\if{html}{\out{<a id="method-.Job-describe"></a>}}
+\if{latex}{\out{\hypertarget{method-.Job-describe}{}}}
 \subsection{Method \code{describe()}}{
 Describe the job.
 \subsection{Usage}{
@@ -110,8 +110,8 @@ Describe the job.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-stop"></a>}}
-\if{latex}{\out{\hypertarget{method-stop}{}}}
+\if{html}{\out{<a id="method-.Job-stop"></a>}}
+\if{latex}{\out{\hypertarget{method-.Job-stop}{}}}
 \subsection{Method \code{stop()}}{
 Stop the job.
 \subsection{Usage}{
@@ -120,8 +120,8 @@ Stop the job.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-format"></a>}}
-\if{latex}{\out{\hypertarget{method-format}{}}}
+\if{html}{\out{<a id="method-.Job-format"></a>}}
+\if{latex}{\out{\hypertarget{method-.Job-format}{}}}
 \subsection{Method \code{format()}}{
 format class
 \subsection{Usage}{
@@ -130,8 +130,8 @@ format class
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-.Job-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-.Job-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

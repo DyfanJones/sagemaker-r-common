@@ -58,15 +58,15 @@ Other Processor:
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{Processor$new()}}
-\item \href{#method-run}{\code{Processor$run()}}
-\item \href{#method-format}{\code{Processor$format()}}
-\item \href{#method-clone}{\code{Processor$clone()}}
+\item \href{#method-Processor-new}{\code{Processor$new()}}
+\item \href{#method-Processor-run}{\code{Processor$run()}}
+\item \href{#method-Processor-format}{\code{Processor$format()}}
+\item \href{#method-Processor-clone}{\code{Processor$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-Processor-new"></a>}}
+\if{latex}{\out{\hypertarget{method-Processor-new}{}}}
 \subsection{Method \code{new()}}{
 Initializes a ``Processor`` instance. The ``Processor`` handles Amazon
              SageMaker Processing tasks.
@@ -146,8 +146,8 @@ inter-container traffic, security group IDs, and subnets.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-run"></a>}}
-\if{latex}{\out{\hypertarget{method-run}{}}}
+\if{html}{\out{<a id="method-Processor-run"></a>}}
+\if{latex}{\out{\hypertarget{method-Processor-run}{}}}
 \subsection{Method \code{run()}}{
 Runs a processing job.
 \subsection{Usage}{
@@ -192,8 +192,8 @@ Dictionary contains three optional keys:
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-format"></a>}}
-\if{latex}{\out{\hypertarget{method-format}{}}}
+\if{html}{\out{<a id="method-Processor-format"></a>}}
+\if{latex}{\out{\hypertarget{method-Processor-format}{}}}
 \subsection{Method \code{format()}}{
 format class
 \subsection{Usage}{
@@ -202,8 +202,8 @@ format class
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-Processor-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-Processor-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

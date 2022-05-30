@@ -9,18 +9,18 @@ Contains lambda boto3 wrappers to Create, Update, Delete and Invoke Lambda funct
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{Lambda$new()}}
-\item \href{#method-create}{\code{Lambda$create()}}
-\item \href{#method-update}{\code{Lambda$update()}}
-\item \href{#method-invoke}{\code{Lambda$invoke()}}
-\item \href{#method-delete}{\code{Lambda$delete()}}
-\item \href{#method-format}{\code{Lambda$format()}}
-\item \href{#method-clone}{\code{Lambda$clone()}}
+\item \href{#method-Lambda-new}{\code{Lambda$new()}}
+\item \href{#method-Lambda-create}{\code{Lambda$create()}}
+\item \href{#method-Lambda-update}{\code{Lambda$update()}}
+\item \href{#method-Lambda-invoke}{\code{Lambda$invoke()}}
+\item \href{#method-Lambda-delete}{\code{Lambda$delete()}}
+\item \href{#method-Lambda-format}{\code{Lambda$format()}}
+\item \href{#method-Lambda-clone}{\code{Lambda$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-Lambda-new"></a>}}
+\if{latex}{\out{\hypertarget{method-Lambda-new}{}}}
 \subsection{Method \code{new()}}{
 Constructs a Lambda instance.
              This instance represents a Lambda function and provides methods for updating,
@@ -82,8 +82,8 @@ If not specified, new session is created.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-create"></a>}}
-\if{latex}{\out{\hypertarget{method-create}{}}}
+\if{html}{\out{<a id="method-Lambda-create"></a>}}
+\if{latex}{\out{\hypertarget{method-Lambda-create}{}}}
 \subsection{Method \code{create()}}{
 Method to create a lambda function.
 \subsection{Usage}{
@@ -95,8 +95,8 @@ boto3 response from Lambda's create_function method.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-update"></a>}}
-\if{latex}{\out{\hypertarget{method-update}{}}}
+\if{html}{\out{<a id="method-Lambda-update"></a>}}
+\if{latex}{\out{\hypertarget{method-Lambda-update}{}}}
 \subsection{Method \code{update()}}{
 Method to update a lambda function.
 \subsection{Usage}{
@@ -108,8 +108,8 @@ Method to update a lambda function.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-invoke"></a>}}
-\if{latex}{\out{\hypertarget{method-invoke}{}}}
+\if{html}{\out{<a id="method-Lambda-invoke"></a>}}
+\if{latex}{\out{\hypertarget{method-Lambda-invoke}{}}}
 \subsection{Method \code{invoke()}}{
 Method to invoke a lambda function.
 \subsection{Usage}{
@@ -121,8 +121,8 @@ paws response from Lambda's invoke method.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-delete"></a>}}
-\if{latex}{\out{\hypertarget{method-delete}{}}}
+\if{html}{\out{<a id="method-Lambda-delete"></a>}}
+\if{latex}{\out{\hypertarget{method-Lambda-delete}{}}}
 \subsection{Method \code{delete()}}{
 Method to delete a lambda function.
 \subsection{Usage}{
@@ -134,8 +134,8 @@ paws response from Lambda's delete_function method.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-format"></a>}}
-\if{latex}{\out{\hypertarget{method-format}{}}}
+\if{html}{\out{<a id="method-Lambda-format"></a>}}
+\if{latex}{\out{\hypertarget{method-Lambda-format}{}}}
 \subsection{Method \code{format()}}{
 foramt class
 \subsection{Usage}{
@@ -144,8 +144,8 @@ foramt class
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-Lambda-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-Lambda-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

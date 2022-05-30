@@ -19,15 +19,15 @@ This object specifies configuration related to serverless endpoint. Use this con
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{ServerlessInferenceConfig$new()}}
-\item \href{#method-to_request_list}{\code{ServerlessInferenceConfig$to_request_list()}}
-\item \href{#method-format}{\code{ServerlessInferenceConfig$format()}}
-\item \href{#method-clone}{\code{ServerlessInferenceConfig$clone()}}
+\item \href{#method-ServerlessInferenceConfig-new}{\code{ServerlessInferenceConfig$new()}}
+\item \href{#method-ServerlessInferenceConfig-to_request_list}{\code{ServerlessInferenceConfig$to_request_list()}}
+\item \href{#method-ServerlessInferenceConfig-format}{\code{ServerlessInferenceConfig$format()}}
+\item \href{#method-ServerlessInferenceConfig-clone}{\code{ServerlessInferenceConfig$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-ServerlessInferenceConfig-new"></a>}}
+\if{latex}{\out{\hypertarget{method-ServerlessInferenceConfig-new}{}}}
 \subsection{Method \code{new()}}{
 Initialize a ServerlessInferenceConfig object for serverless inference configuration.
 \subsection{Usage}{
@@ -50,8 +50,8 @@ SageMaker will choose the default value for you. (Default: 5)}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-to_request_list"></a>}}
-\if{latex}{\out{\hypertarget{method-to_request_list}{}}}
+\if{html}{\out{<a id="method-ServerlessInferenceConfig-to_request_list"></a>}}
+\if{latex}{\out{\hypertarget{method-ServerlessInferenceConfig-to_request_list}{}}}
 \subsection{Method \code{to_request_list()}}{
 Generates a request dictionary using the parameters provided to the class.
 \subsection{Usage}{
@@ -60,8 +60,8 @@ Generates a request dictionary using the parameters provided to the class.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-format"></a>}}
-\if{latex}{\out{\hypertarget{method-format}{}}}
+\if{html}{\out{<a id="method-ServerlessInferenceConfig-format"></a>}}
+\if{latex}{\out{\hypertarget{method-ServerlessInferenceConfig-format}{}}}
 \subsection{Method \code{format()}}{
 Format class
 \subsection{Usage}{
@@ -70,8 +70,8 @@ Format class
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-ServerlessInferenceConfig-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-ServerlessInferenceConfig-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

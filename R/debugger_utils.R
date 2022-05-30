@@ -45,7 +45,6 @@ cProfileTimer = sagemaker.core::Enum(
 #' @title Helper function to determine whether the provided regex is valid.
 #' @param regex (str): The user provided regex.
 #' @return bool: Indicates whether the provided regex was valid or not.
-#' @return
 is_valid_regex = function(regex){
   tryCatch({
     suppressWarnings(regexpr(regex,"regex", perl = TRUE))
@@ -54,4 +53,3 @@ is_valid_regex = function(regex){
     error = function(e)
       return(FALSE))
 }
-

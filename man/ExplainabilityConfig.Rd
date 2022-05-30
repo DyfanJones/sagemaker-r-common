@@ -9,14 +9,14 @@ Abstract config class to configure an explainability method.
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-get_explainability_config}{\code{ExplainabilityConfig$get_explainability_config()}}
-\item \href{#method-format}{\code{ExplainabilityConfig$format()}}
-\item \href{#method-clone}{\code{ExplainabilityConfig$clone()}}
+\item \href{#method-ExplainabilityConfig-get_explainability_config}{\code{ExplainabilityConfig$get_explainability_config()}}
+\item \href{#method-ExplainabilityConfig-format}{\code{ExplainabilityConfig$format()}}
+\item \href{#method-ExplainabilityConfig-clone}{\code{ExplainabilityConfig$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_explainability_config"></a>}}
-\if{latex}{\out{\hypertarget{method-get_explainability_config}{}}}
+\if{html}{\out{<a id="method-ExplainabilityConfig-get_explainability_config"></a>}}
+\if{latex}{\out{\hypertarget{method-ExplainabilityConfig-get_explainability_config}{}}}
 \subsection{Method \code{get_explainability_config()}}{
 Returns config.
 \subsection{Usage}{
@@ -25,8 +25,8 @@ Returns config.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-format"></a>}}
-\if{latex}{\out{\hypertarget{method-format}{}}}
+\if{html}{\out{<a id="method-ExplainabilityConfig-format"></a>}}
+\if{latex}{\out{\hypertarget{method-ExplainabilityConfig-format}{}}}
 \subsection{Method \code{format()}}{
 format class
 \subsection{Usage}{
@@ -35,8 +35,8 @@ format class
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-ExplainabilityConfig-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-ExplainabilityConfig-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

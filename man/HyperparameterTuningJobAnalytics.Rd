@@ -54,25 +54,25 @@ https://botocore.readthedocs.io/en/latest/reference/services/sagemaker.html#Sage
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{HyperparameterTuningJobAnalytics$new()}}
-\item \href{#method-description}{\code{HyperparameterTuningJobAnalytics$description()}}
-\item \href{#method-training_job_summaries}{\code{HyperparameterTuningJobAnalytics$training_job_summaries()}}
-\item \href{#method-clear_cache}{\code{HyperparameterTuningJobAnalytics$clear_cache()}}
-\item \href{#method-clone}{\code{HyperparameterTuningJobAnalytics$clone()}}
+\item \href{#method-HyperparameterTuningJobAnalytics-new}{\code{HyperparameterTuningJobAnalytics$new()}}
+\item \href{#method-HyperparameterTuningJobAnalytics-description}{\code{HyperparameterTuningJobAnalytics$description()}}
+\item \href{#method-HyperparameterTuningJobAnalytics-training_job_summaries}{\code{HyperparameterTuningJobAnalytics$training_job_summaries()}}
+\item \href{#method-HyperparameterTuningJobAnalytics-clear_cache}{\code{HyperparameterTuningJobAnalytics$clear_cache()}}
+\item \href{#method-HyperparameterTuningJobAnalytics-clone}{\code{HyperparameterTuningJobAnalytics$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="AnalyticsMetricsBase" data-id="dataframe">}\href{../../sagemaker.common/html/AnalyticsMetricsBase.html#method-dataframe}{\code{sagemaker.common::AnalyticsMetricsBase$dataframe()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="AnalyticsMetricsBase" data-id="export_csv">}\href{../../sagemaker.common/html/AnalyticsMetricsBase.html#method-export_csv}{\code{sagemaker.common::AnalyticsMetricsBase$export_csv()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic="AnalyticsMetricsBase" data-id="format">}\href{../../sagemaker.common/html/AnalyticsMetricsBase.html#method-format}{\code{sagemaker.common::AnalyticsMetricsBase$format()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="sagemaker.common" data-topic="AnalyticsMetricsBase" data-id="dataframe"><a href='../../sagemaker.common/html/AnalyticsMetricsBase.html#method-AnalyticsMetricsBase-dataframe'><code>sagemaker.common::AnalyticsMetricsBase$dataframe()</code></a></li>
+<li><span class="pkg-link" data-pkg="sagemaker.common" data-topic="AnalyticsMetricsBase" data-id="export_csv"><a href='../../sagemaker.common/html/AnalyticsMetricsBase.html#method-AnalyticsMetricsBase-export_csv'><code>sagemaker.common::AnalyticsMetricsBase$export_csv()</code></a></li>
+<li><span class="pkg-link" data-pkg="sagemaker.common" data-topic="AnalyticsMetricsBase" data-id="format"><a href='../../sagemaker.common/html/AnalyticsMetricsBase.html#method-AnalyticsMetricsBase-format'><code>sagemaker.common::AnalyticsMetricsBase$format()</code></a></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-HyperparameterTuningJobAnalytics-new"></a>}}
+\if{latex}{\out{\hypertarget{method-HyperparameterTuningJobAnalytics-new}{}}}
 \subsection{Method \code{new()}}{
 Initialize a ``HyperparameterTuningJobAnalytics`` instance.
 \subsection{Usage}{
@@ -97,8 +97,8 @@ default AWS configuration chain.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-description"></a>}}
-\if{latex}{\out{\hypertarget{method-description}{}}}
+\if{html}{\out{<a id="method-HyperparameterTuningJobAnalytics-description"></a>}}
+\if{latex}{\out{\hypertarget{method-HyperparameterTuningJobAnalytics-description}{}}}
 \subsection{Method \code{description()}}{
 Call ``DescribeHyperParameterTuningJob`` for the hyperparameter
              tuning job.
@@ -120,8 +120,8 @@ dict: The Amazon SageMaker response for
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-training_job_summaries"></a>}}
-\if{latex}{\out{\hypertarget{method-training_job_summaries}{}}}
+\if{html}{\out{<a id="method-HyperparameterTuningJobAnalytics-training_job_summaries"></a>}}
+\if{latex}{\out{\hypertarget{method-HyperparameterTuningJobAnalytics-training_job_summaries}{}}}
 \subsection{Method \code{training_job_summaries()}}{
 A (paginated) list of everything from
              ``ListTrainingJobsForTuningJob``.
@@ -143,8 +143,8 @@ dict: The Amazon SageMaker response for
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clear_cache"></a>}}
-\if{latex}{\out{\hypertarget{method-clear_cache}{}}}
+\if{html}{\out{<a id="method-HyperparameterTuningJobAnalytics-clear_cache"></a>}}
+\if{latex}{\out{\hypertarget{method-HyperparameterTuningJobAnalytics-clear_cache}{}}}
 \subsection{Method \code{clear_cache()}}{
 Clear the object of all local caches of API methods.
 \subsection{Usage}{
@@ -153,8 +153,8 @@ Clear the object of all local caches of API methods.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-HyperparameterTuningJobAnalytics-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-HyperparameterTuningJobAnalytics-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

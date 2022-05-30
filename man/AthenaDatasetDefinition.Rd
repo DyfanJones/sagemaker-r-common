@@ -12,22 +12,22 @@ With this input, SQL queries will be executed using Athena to generate datasets 
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{AthenaDatasetDefinition$new()}}
-\item \href{#method-clone}{\code{AthenaDatasetDefinition$clone()}}
+\item \href{#method-AthenaDatasetDefinition-new}{\code{AthenaDatasetDefinition$new()}}
+\item \href{#method-AthenaDatasetDefinition-clone}{\code{AthenaDatasetDefinition$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="sagemaker.core" data-topic="ApiObject" data-id="format">}\href{../../sagemaker.core/html/ApiObject.html#method-format}{\code{sagemaker.core::ApiObject$format()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="sagemaker.core" data-topic="ApiObject" data-id="from_paws">}\href{../../sagemaker.core/html/ApiObject.html#method-from_paws}{\code{sagemaker.core::ApiObject$from_paws()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="sagemaker.core" data-topic="ApiObject" data-id="to_paws">}\href{../../sagemaker.core/html/ApiObject.html#method-to_paws}{\code{sagemaker.core::ApiObject$to_paws()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="sagemaker.core" data-topic="ApiObject" data-id="format"><a href='../../sagemaker.core/html/ApiObject.html#method-ApiObject-format'><code>sagemaker.core::ApiObject$format()</code></a></li>
+<li><span class="pkg-link" data-pkg="sagemaker.core" data-topic="ApiObject" data-id="from_paws"><a href='../../sagemaker.core/html/ApiObject.html#method-ApiObject-from_paws'><code>sagemaker.core::ApiObject$from_paws()</code></a></li>
+<li><span class="pkg-link" data-pkg="sagemaker.core" data-topic="ApiObject" data-id="to_paws"><a href='../../sagemaker.core/html/ApiObject.html#method-ApiObject-to_paws'><code>sagemaker.core::ApiObject$to_paws()</code></a></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-AthenaDatasetDefinition-new"></a>}}
+\if{latex}{\out{\hypertarget{method-AthenaDatasetDefinition-new}{}}}
 \subsection{Method \code{new()}}{
 Initialize AthenaDatasetDefinition.
 \subsection{Usage}{
@@ -73,8 +73,8 @@ Valid options are "GZIP", "SNAPPY", "ZLIB"}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-AthenaDatasetDefinition-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-AthenaDatasetDefinition-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

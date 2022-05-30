@@ -22,13 +22,13 @@ Accepts parameters that correspond to ScriptProcessors.
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{RunArgs$new()}}
-\item \href{#method-clone}{\code{RunArgs$clone()}}
+\item \href{#method-RunArgs-new}{\code{RunArgs$new()}}
+\item \href{#method-RunArgs-clone}{\code{RunArgs$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-RunArgs-new"></a>}}
+\if{latex}{\out{\hypertarget{method-RunArgs-new}{}}}
 \subsection{Method \code{new()}}{
 An instance of this class is returned from the ``get_run_args()`` method on processors,
             and is used for normalizing the arguments so that they can be passed to
@@ -58,8 +58,8 @@ processing job (default: None).}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-RunArgs-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-RunArgs-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

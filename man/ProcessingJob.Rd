@@ -31,30 +31,30 @@ Other Processor:
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{ProcessingJob$new()}}
-\item \href{#method-start_new}{\code{ProcessingJob$start_new()}}
-\item \href{#method-from_processing_name}{\code{ProcessingJob$from_processing_name()}}
-\item \href{#method-from_processing_arn}{\code{ProcessingJob$from_processing_arn()}}
-\item \href{#method-wait}{\code{ProcessingJob$wait()}}
-\item \href{#method-describe}{\code{ProcessingJob$describe()}}
-\item \href{#method-stop}{\code{ProcessingJob$stop()}}
-\item \href{#method-prepare_app_specification}{\code{ProcessingJob$prepare_app_specification()}}
-\item \href{#method-prepare_output_config}{\code{ProcessingJob$prepare_output_config()}}
-\item \href{#method-prepare_processing_resources}{\code{ProcessingJob$prepare_processing_resources()}}
-\item \href{#method-prepare_stopping_condition}{\code{ProcessingJob$prepare_stopping_condition()}}
-\item \href{#method-clone}{\code{ProcessingJob$clone()}}
+\item \href{#method-ProcessingJob-new}{\code{ProcessingJob$new()}}
+\item \href{#method-ProcessingJob-start_new}{\code{ProcessingJob$start_new()}}
+\item \href{#method-ProcessingJob-from_processing_name}{\code{ProcessingJob$from_processing_name()}}
+\item \href{#method-ProcessingJob-from_processing_arn}{\code{ProcessingJob$from_processing_arn()}}
+\item \href{#method-ProcessingJob-wait}{\code{ProcessingJob$wait()}}
+\item \href{#method-ProcessingJob-describe}{\code{ProcessingJob$describe()}}
+\item \href{#method-ProcessingJob-stop}{\code{ProcessingJob$stop()}}
+\item \href{#method-ProcessingJob-prepare_app_specification}{\code{ProcessingJob$prepare_app_specification()}}
+\item \href{#method-ProcessingJob-prepare_output_config}{\code{ProcessingJob$prepare_output_config()}}
+\item \href{#method-ProcessingJob-prepare_processing_resources}{\code{ProcessingJob$prepare_processing_resources()}}
+\item \href{#method-ProcessingJob-prepare_stopping_condition}{\code{ProcessingJob$prepare_stopping_condition()}}
+\item \href{#method-ProcessingJob-clone}{\code{ProcessingJob$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="sagemaker.common" data-topic=".Job" data-id="format">}\href{../../sagemaker.common/html/.Job.html#method-format}{\code{sagemaker.common::.Job$format()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="sagemaker.common" data-topic=".Job" data-id="format"><a href='../../sagemaker.common/html/.Job.html#method-.Job-format'><code>sagemaker.common::.Job$format()</code></a></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-ProcessingJob-new"></a>}}
+\if{latex}{\out{\hypertarget{method-ProcessingJob-new}{}}}
 \subsection{Method \code{new()}}{
 Initializes a Processing job.
 \subsection{Usage}{
@@ -89,8 +89,8 @@ one using the default AWS configuration chain.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-start_new"></a>}}
-\if{latex}{\out{\hypertarget{method-start_new}{}}}
+\if{html}{\out{<a id="method-ProcessingJob-start_new"></a>}}
+\if{latex}{\out{\hypertarget{method-ProcessingJob-start_new}{}}}
 \subsection{Method \code{start_new()}}{
 Starts a new processing job using the provided inputs and outputs.
 \subsection{Usage}{
@@ -121,8 +121,8 @@ Dictionary contains three optional keys:
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-from_processing_name"></a>}}
-\if{latex}{\out{\hypertarget{method-from_processing_name}{}}}
+\if{html}{\out{<a id="method-ProcessingJob-from_processing_name"></a>}}
+\if{latex}{\out{\hypertarget{method-ProcessingJob-from_processing_name}{}}}
 \subsection{Method \code{from_processing_name()}}{
 Initializes a ``ProcessingJob`` from a processing job name.
 \subsection{Usage}{
@@ -147,8 +147,8 @@ one using the default AWS configuration chain.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-from_processing_arn"></a>}}
-\if{latex}{\out{\hypertarget{method-from_processing_arn}{}}}
+\if{html}{\out{<a id="method-ProcessingJob-from_processing_arn"></a>}}
+\if{latex}{\out{\hypertarget{method-ProcessingJob-from_processing_arn}{}}}
 \subsection{Method \code{from_processing_arn()}}{
 Initializes a ``ProcessingJob`` from a Processing ARN.
 \subsection{Usage}{
@@ -173,8 +173,8 @@ one using the default AWS configuration chain.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-wait"></a>}}
-\if{latex}{\out{\hypertarget{method-wait}{}}}
+\if{html}{\out{<a id="method-ProcessingJob-wait"></a>}}
+\if{latex}{\out{\hypertarget{method-ProcessingJob-wait}{}}}
 \subsection{Method \code{wait()}}{
 Waits for the processing job to complete.
 \subsection{Usage}{
@@ -190,8 +190,8 @@ Waits for the processing job to complete.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-describe"></a>}}
-\if{latex}{\out{\hypertarget{method-describe}{}}}
+\if{html}{\out{<a id="method-ProcessingJob-describe"></a>}}
+\if{latex}{\out{\hypertarget{method-ProcessingJob-describe}{}}}
 \subsection{Method \code{describe()}}{
 Prints out a response from the DescribeProcessingJob API call.
 \subsection{Usage}{
@@ -200,8 +200,8 @@ Prints out a response from the DescribeProcessingJob API call.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-stop"></a>}}
-\if{latex}{\out{\hypertarget{method-stop}{}}}
+\if{html}{\out{<a id="method-ProcessingJob-stop"></a>}}
+\if{latex}{\out{\hypertarget{method-ProcessingJob-stop}{}}}
 \subsection{Method \code{stop()}}{
 the processing job.
 \subsection{Usage}{
@@ -210,8 +210,8 @@ the processing job.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-prepare_app_specification"></a>}}
-\if{latex}{\out{\hypertarget{method-prepare_app_specification}{}}}
+\if{html}{\out{<a id="method-ProcessingJob-prepare_app_specification"></a>}}
+\if{latex}{\out{\hypertarget{method-ProcessingJob-prepare_app_specification}{}}}
 \subsection{Method \code{prepare_app_specification()}}{
 Prepares a dict that represents a ProcessingJob's AppSpecification.
 \subsection{Usage}{
@@ -241,8 +241,8 @@ dict: Represents AppSpecification which configures the
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-prepare_output_config"></a>}}
-\if{latex}{\out{\hypertarget{method-prepare_output_config}{}}}
+\if{html}{\out{<a id="method-ProcessingJob-prepare_output_config"></a>}}
+\if{latex}{\out{\hypertarget{method-ProcessingJob-prepare_output_config}{}}}
 \subsection{Method \code{prepare_output_config()}}{
 Prepares a dict that represents a ProcessingOutputConfig.
 \subsection{Usage}{
@@ -266,8 +266,8 @@ dict: Represents output configuration for the processing job.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-prepare_processing_resources"></a>}}
-\if{latex}{\out{\hypertarget{method-prepare_processing_resources}{}}}
+\if{html}{\out{<a id="method-ProcessingJob-prepare_processing_resources"></a>}}
+\if{latex}{\out{\hypertarget{method-ProcessingJob-prepare_processing_resources}{}}}
 \subsection{Method \code{prepare_processing_resources()}}{
 Prepares a dict that represents the ProcessingResources.
 \subsection{Usage}{
@@ -305,8 +305,8 @@ dict: Represents ProcessingResources which identifies the resources,
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-prepare_stopping_condition"></a>}}
-\if{latex}{\out{\hypertarget{method-prepare_stopping_condition}{}}}
+\if{html}{\out{<a id="method-ProcessingJob-prepare_stopping_condition"></a>}}
+\if{latex}{\out{\hypertarget{method-ProcessingJob-prepare_stopping_condition}{}}}
 \subsection{Method \code{prepare_stopping_condition()}}{
 Prepares a dict that represents the job's StoppingCondition.
 \subsection{Usage}{
@@ -325,8 +325,8 @@ list
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-ProcessingJob-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-ProcessingJob-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

@@ -26,15 +26,15 @@ profiler_config = ProfilerConfig$new(
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{ProfilerConfig$new()}}
-\item \href{#method-to_request_list}{\code{ProfilerConfig$to_request_list()}}
-\item \href{#method-format}{\code{ProfilerConfig$format()}}
-\item \href{#method-clone}{\code{ProfilerConfig$clone()}}
+\item \href{#method-ProfilerConfig-new}{\code{ProfilerConfig$new()}}
+\item \href{#method-ProfilerConfig-to_request_list}{\code{ProfilerConfig$to_request_list()}}
+\item \href{#method-ProfilerConfig-format}{\code{ProfilerConfig$format()}}
+\item \href{#method-ProfilerConfig-clone}{\code{ProfilerConfig$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-ProfilerConfig-new"></a>}}
+\if{latex}{\out{\hypertarget{method-ProfilerConfig-new}{}}}
 \subsection{Method \code{new()}}{
 Initialize a ``ProfilerConfig`` instance.
              Pass the output of this class
@@ -89,8 +89,8 @@ profiler_config = ProfilerConfig$new(
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-to_request_list"></a>}}
-\if{latex}{\out{\hypertarget{method-to_request_list}{}}}
+\if{html}{\out{<a id="method-ProfilerConfig-to_request_list"></a>}}
+\if{latex}{\out{\hypertarget{method-ProfilerConfig-to_request_list}{}}}
 \subsection{Method \code{to_request_list()}}{
 Generate a request dictionary using the parameters provided when initializing the object.
 \subsection{Usage}{
@@ -102,8 +102,8 @@ dict: An portion of an API request as a dictionary.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-format"></a>}}
-\if{latex}{\out{\hypertarget{method-format}{}}}
+\if{html}{\out{<a id="method-ProfilerConfig-format"></a>}}
+\if{latex}{\out{\hypertarget{method-ProfilerConfig-format}{}}}
 \subsection{Method \code{format()}}{
 format class
 \subsection{Usage}{
@@ -112,8 +112,8 @@ format class
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-ProfilerConfig-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-ProfilerConfig-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{
